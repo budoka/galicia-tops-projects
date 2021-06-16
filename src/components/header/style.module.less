@@ -1,0 +1,116 @@
+/* header */
+
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/app/style.module.less';
+
+.header {
+  width: 100%;
+  position: relative;
+  z-index: 11 !important;
+  min-height: @header-height !important;
+  max-height: @header-height !important;
+  height: @header-height !important;
+
+  padding: 0 !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.logoWrapper {
+  height: 100%;
+  flex: 0 1 auto;
+
+  .logo {
+    // background-color: green;
+    height: 100% !important;
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+
+    .logoText {
+      min-width: 80px;
+      text-align: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+  }
+}
+
+.siderButtonWrapper {
+  height: 100% !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.siderButton {
+  font-size: 18px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+  color: @primary-color !important;
+
+  svg:hover {
+    color: @primary-8;
+    //color: red;
+  }
+}
+
+.rightWrapper {
+  min-height: 100% !important;
+
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  line-height: 100%;
+
+  .right {
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: end;
+    margin-right: 20px;
+    color: @primary-7;
+
+    .info {
+      // line-height: 1.5;
+      color: fade(@black, 70%);
+
+      padding-right: 15px;
+      //cursor: pointer;
+
+      &:hover {
+        color: @text-color;
+        // color: @primary-color;
+      }
+    }
+  }
+
+  .logoutWrapper {
+    height: 100%;
+    width: 50px;
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin-right: 10px;
+
+    .logout {
+      height: 50% !important;
+      flex: 0 1 auto;
+      cursor: pointer;
+    }
+  }
+}

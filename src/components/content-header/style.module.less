@@ -1,0 +1,38 @@
+/* content header */
+
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/app/style.module.less';
+
+.wrapper {
+  transition: width 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+  left: 0;
+  // width: 100vw;
+  position: static;
+  padding: 0 40px;
+  background: @layout-body-background;
+  z-index: 8 !important;
+}
+
+.wrapperPinned {
+  transform: /* translateX(-8px) */ translateY(-16px);
+  //width: 100vw;
+  width: calc(100%);
+  .shadow();
+}
+
+.wrapperContent {
+  transition: width 0.4s ease, top 0.4s ease, height 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+  height: 72px;
+  justify-content: space-between !important;
+}
+
+.wrapperContentPinned {
+  transform: translateY(8px);
+}
+
+.contentHeader {
+  :global(.ant-breadcrumb-link) {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
