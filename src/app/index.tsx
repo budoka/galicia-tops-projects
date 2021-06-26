@@ -18,11 +18,16 @@ import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { RootState } from 'src/reducers';
 import 'src/api/setup/setup-axios';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
 import styles from './style.module.less';
+
+/**
+ * Configuración de context para hacer funcionar la autenticacion con msal.
+ * TODO: Se debe reemplazar por la library de msal nueva.
+ */
 
 export type State = {
   account?: Account;
@@ -30,6 +35,10 @@ export type State = {
 };
 
 export const StateContext = createContext<State>({});
+
+/**
+ * Inicio de App
+ */
 
 export const siderItems: SiderItem[] = [
   { view: views['Inicio'], icon: <HomeOutlined /> },
@@ -71,6 +80,7 @@ export const App = () => {
     return title;
   };
 
+  // TODO: Eliminar
   const [gS, setGS] = useState<State>({
     msalInstance: new UserAgentApplication({
       auth: {
@@ -91,6 +101,8 @@ export const App = () => {
       // }
     });
   } */
+
+  // TODO: Eliminar
   if (gS && gS.msalInstance && !gS.msalInstance.getAccount() && !gS.msalInstance.getLoginInProgress()) {
     gS.msalInstance.loginRedirect({ scopes: ['user.read'] });
   } else if (gS && gS.msalInstance && !gS.account) {
@@ -117,6 +129,8 @@ export const App = () => {
     </>
   );
  */
+
+  // TODO: Reemplazar por la autenticacion con msal 2.
   return (
     <StateContext.Provider value={gS}>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>

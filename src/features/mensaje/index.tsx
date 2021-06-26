@@ -9,7 +9,7 @@ import { getFreshToken } from 'src/utils/auth';
 import { Cuenta, Cliente } from 'src/features/shared/types';
 import { NuevaTransferenciaForm } from '../transferencia/nueva-solicitud/types';
 import { MensajeState, UIState } from './types';
-import { addTransferencia } from '../transferencia/nueva-solicitud';
+import { addSolicitud } from '../transferencia/nueva-solicitud';
 
 const FEATURE_NAME = 'mensaje';
 
@@ -158,14 +158,14 @@ const slice = createSlice({
         state.error = action.error.message ?? null;
       });
     builder
-      .addCase(addTransferencia.pending, (state) => {
+      .addCase(addSolicitud.pending, (state) => {
         state.form = { ...state.form, loading: true };
         state.error = null;
       })
-      .addCase(addTransferencia.fulfilled, (state) => {
+      .addCase(addSolicitud.fulfilled, (state) => {
         state.form = { ...state.form, loading: false };
       })
-      .addCase(addTransferencia.rejected, (state, action) => {
+      .addCase(addSolicitud.rejected, (state, action) => {
         state.form = { ...state.form, loading: false };
         state.error = action.error.message ?? null;
       });

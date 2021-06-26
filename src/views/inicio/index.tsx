@@ -1,15 +1,11 @@
 import { Col, Row, Skeleton } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { ReactNode, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { ReactNode } from 'react';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/interfaces';
 import { Wrapper } from 'src/components/wrapper';
-import { Texts } from 'src/constants/texts';
-import { CantidadCajas } from 'src/features/cajas/cajas-pendientes/types';
-import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/store';
 import { views } from 'src/views';
 import styles from './style.module.less';
 

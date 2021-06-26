@@ -10,7 +10,7 @@ import { fetchConceptos, fetchCorresponsales, fetchMonedas } from 'src/features/
 import { clearState } from 'src/features/transferencia/nueva-solicitud';
 import { ClienteForm, NuevaTransferenciaForm } from 'src/features/transferencia/nueva-solicitud/types';
 import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
 

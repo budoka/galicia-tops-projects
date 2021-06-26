@@ -1,5 +1,5 @@
 import { matchPath, useLocation } from 'react-router-dom';
-import { history } from 'src/store';
+import { history } from 'src/app/store';
 import { View, views } from 'src/views';
 
 /**

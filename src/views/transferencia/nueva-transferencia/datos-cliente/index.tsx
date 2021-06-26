@@ -10,7 +10,7 @@ import { fetchDatosClientes, fetchProductos } from 'src/features/shared';
 import { setPersona } from 'src/features/transferencia/nueva-solicitud';
 import { ClienteForm } from 'src/features/transferencia/nueva-solicitud/types';
 import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { Rules } from 'src/types';
 import { interpolateString } from 'src/utils/string';
 import { renderFormTitle, renderOptions } from '../utils';

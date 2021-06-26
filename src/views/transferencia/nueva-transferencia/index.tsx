@@ -9,10 +9,10 @@ import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
 import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchProductos } from 'src/features/shared';
-import { addTransferencia, clearForm, clearState, clearUI } from 'src/features/transferencia/nueva-solicitud';
+import { addSolicitud, clearForm, clearState, clearUI } from 'src/features/transferencia/nueva-solicitud';
 import { ClienteForm, NuevaTransferenciaForm } from 'src/features/transferencia/nueva-solicitud/types';
 import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
@@ -186,7 +186,7 @@ export const NuevaTransferencia: React.FC = (props) => {
   }, [nuevaTransferencia.requiredData.persona]);
 
   const handleNuevaTransferenciaForm = (values: NuevaTransferenciaForm) => {
-    dispatch(addTransferencia({ data: values }))
+    dispatch(addSolicitud({ data: values }))
       .then(unwrapResult)
       .then(() => {
         message.success({ key: 'loading', content: Texts.TRANSFER_CREATION_OK, duration: 3 });

@@ -5,14 +5,14 @@ import { fetchConceptos, fetchCorresponsales, fetchDatosClientes, fetchMonedas, 
 import { AddTransferenciaDTO } from 'src/features/shared/dto/transferencia';
 import { Cliente, Cuenta } from 'src/features/shared/types';
 import { RootState } from 'src/reducers';
-import { NuevaTransferenciaForm, NuevaTransferenciaState, UIState } from './types';
+import { NuevaTransferenciaForm, NuevaSolicitudState, UIState } from './types';
 
 const FEATURE_NAME = 'nuevaSolicitud';
 
 // Async actions
 
-export const addTransferencia = createAsyncThunk<void, RequestConfig<NuevaTransferenciaForm>, { state: RootState }>(
-  FEATURE_NAME + '/addTransferencia',
+export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaTransferenciaForm>, { state: RootState }>(
+  FEATURE_NAME + '/addSolicitud',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
     const data = options?.data;
@@ -77,7 +77,7 @@ export const addTransferencia = createAsyncThunk<void, RequestConfig<NuevaTransf
 
 // Slice
 
-const initialState: NuevaTransferenciaState = {
+const initialState: NuevaSolicitudState = {
   requiredData: {},
   form: {},
   ui: {},
@@ -174,14 +174,14 @@ const slice = createSlice({
         state.error = action.error.message ?? null;
       });
     builder
-      .addCase(addTransferencia.pending, (state) => {
+      .addCase(addSolicitud.pending, (state) => {
         state.form = { ...state.form, loading: true };
         state.error = null;
       })
-      .addCase(addTransferencia.fulfilled, (state) => {
+      .addCase(addSolicitud.fulfilled, (state) => {
         state.form = { ...state.form, loading: false };
       })
-      .addCase(addTransferencia.rejected, (state, action) => {
+      .addCase(addSolicitud.rejected, (state, action) => {
         state.form = { ...state.form, loading: false };
         state.error = action.error.message ?? null;
       });
