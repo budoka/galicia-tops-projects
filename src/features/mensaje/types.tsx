@@ -1,5 +1,3 @@
-import { Banco, Concepto, Cuenta, Moneda, Persona, InfoProductos, TipoComision, Paginator } from 'src/features/shared/types';
-
 export interface MensajeState {
   requiredData: Partial<RequiredData>;
   form: Partial<Form>;
@@ -32,7 +30,7 @@ export interface BusquedaMensajesForm {
   importeHasta: number;
   uetr: string;
   mt: string;
-  paginador: Paginator;
+  // paginador: Paginator;
 }
 
 export interface UIState {}

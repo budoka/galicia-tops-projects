@@ -42,11 +42,11 @@ export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceTyp
   const endpoint = buildEndpoint(baseURL, path, placeholders);
   const verb = config?.verb ?? defaultOptions?.verb;
   const headers = { ...defaultOptions?.headers, ...config?.headers };
-  const params = { ...defaultOptions?.params, ...config?.params };
+  const query = { ...defaultOptions?.query, ...config?.query };
   const data = { ...defaultOptions?.data, ...config?.data };
   const timeout = config?.timeout ?? defaultOptions?.timeout;
 
-  const axiosConfig: AxiosRequestConfig = { method: verb, url: endpoint, headers, params, data, cancelToken, timeout };
+  const axiosConfig: AxiosRequestConfig = { method: verb, url: endpoint, headers, params: query, data, cancelToken, timeout };
 
   return axiosConfig;
 }

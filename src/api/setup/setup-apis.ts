@@ -8,8 +8,10 @@ export const apis: APIList = {
   COMMON: {
     baseURL: buildBaseURL('COMMON'),
     resources: {
-      DATOS_PERSONAS: { path: 'api/v1/ConsultaCliente/GetDatosPersonas', config: { verb: 'GET' } },
-      MONEDA: { path: 'api/v1/moneda', config: { verb: 'GET' } },
+      CONCEPTOS: { path: 'api/v1/Concepto', config: { verb: 'GET' } },
+      CORRESPONSALES: { path: 'api/v1/Corresponsal', config: { verb: 'GET' } },
+      DATOS_CLIENTES: { path: 'api/v1/ConsultaCliente/GetDatosPersonas', config: { verb: 'GET' } },
+      MONEDAS: { path: 'api/v1/moneda', config: { verb: 'GET' } },
       PRODUCTOS: { path: 'api/v1/ConsultaPosicion/GetProductos', config: { verb: 'GET' } },
     },
   },

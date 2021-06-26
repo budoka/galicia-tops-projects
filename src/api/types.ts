@@ -2,7 +2,7 @@ import { CancelToken } from 'axios';
 
 export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-interface HeadersParamsDictionary {
+interface BasicDictionary {
   [key: string]: string | number | boolean;
 }
 
@@ -14,8 +14,8 @@ interface DataDictionary {
   [key: string]: any;
 }
 
-export interface Headers extends HeadersParamsDictionary {}
-export interface Params extends HeadersParamsDictionary {}
+export interface Headers extends BasicDictionary {}
+export interface Query extends BasicDictionary {}
 export interface Placeholders extends PlaceholdersDictionary {}
 export type Data<T> = T;
 
@@ -23,7 +23,7 @@ export interface RequestConfig<T = DataDictionary | void> {
   verb?: HttpVerb;
   headers?: Headers;
   placeholders?: Placeholders;
-  params?: Params;
+  query?: Query;
   data?: Data<T>;
   timeout?: number;
   cancelToken?: CancelToken;

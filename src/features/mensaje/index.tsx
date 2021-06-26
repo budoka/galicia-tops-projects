@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosRequestConfig } from 'axios';
-import { fetchConceptos, fetchCorresponsales, fetchProductos, fetchDatosPersonas, fetchMonedas } from 'src/features/shared';
+import { fetchConceptos, fetchCorresponsales, fetchProductos, fetchDatosClientes, fetchMonedas } from 'src/features/shared';
 import { RootState } from 'src/reducers';
 import { apis } from 'src/api/setup/setup-apis';
 import { RequestConfig } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { getFreshToken } from 'src/utils/auth';
-import { Cuenta, Persona, UIState } from 'src/features/shared/types';
-import { NuevaTransferenciaForm, NuevaTransferenciaFormRequest } from '../transferencias/nueva-transferencia/types';
-import { MensajeState } from './types';
-import { addTransferencia } from '../transferencias/nueva-transferencia';
+import { Cuenta, Cliente } from 'src/features/shared/types';
+import { NuevaTransferenciaForm } from '../transferencia/nueva-solicitud/types';
+import { MensajeState, UIState } from './types';
+import { addTransferencia } from '../transferencia/nueva-solicitud';
 
 const FEATURE_NAME = 'mensaje';
 
@@ -72,7 +72,7 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
-    setPersona(state, action: PayloadAction<Persona>) {
+    setPersona(state, action: PayloadAction<Cliente>) {
       // state.requiredData.persona = action.payload;
     },
     setCuenta(state, action: PayloadAction<Cuenta>) {
@@ -134,14 +134,14 @@ const slice = createSlice({
         state.error = action.error.message ?? null;
       });
     builder
-      .addCase(fetchDatosPersonas.pending, (state) => {
+      .addCase(fetchDatosClientes.pending, (state) => {
         //   state.requiredData.personas = { value: [], loading: true };
         state.error = null;
       })
-      .addCase(fetchDatosPersonas.fulfilled, (state, action) => {
+      .addCase(fetchDatosClientes.fulfilled, (state, action) => {
         //   state.requiredData.personas = { value: action.payload, loading: false };
       })
-      .addCase(fetchDatosPersonas.rejected, (state, action) => {
+      .addCase(fetchDatosClientes.rejected, (state, action) => {
         //    state.requiredData.personas = { value: [], loading: false };
         state.error = action.error.message ?? null;
       });

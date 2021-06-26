@@ -14,8 +14,10 @@ export interface APIList {
 // Resources
 
 export interface ResourcesCommon {
-  DATOS_PERSONAS: Resource;
-  MONEDA: Resource;
+  CONCEPTOS: Resource;
+  CORRESPONSALES: Resource;
+  DATOS_CLIENTES: Resource;
+  MONEDAS: Resource;
   PRODUCTOS: Resource;
 }
 

@@ -1,3 +1,4 @@
+import { VIEW } from 'src/constants';
 import { Size } from './hooks';
 
 export type ScreenOrientation = 'portrait' | 'landscape';
@@ -7,3 +8,9 @@ export function getScreenOrientation(size: Size) {
   if (size.width > size.height) orientation = 'landscape';
   return orientation;
 }
+
+export function getViewWidth(loading: boolean) {
+  return loading ? '100%' : VIEW.MAX_WIDTH
+}
+
+

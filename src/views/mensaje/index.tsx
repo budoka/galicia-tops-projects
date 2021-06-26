@@ -1,24 +1,18 @@
-import { unwrapResult } from '@reduxjs/toolkit';
-import { Alert, Button, Col, DatePicker, Divider, Form, Input, message, Row, Select, Space, Typography } from 'antd';
+import { Col, DatePicker, Divider, Row, Select, Typography } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
-import _ from 'lodash';
 import React, { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { StateContext } from 'src/app';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
-import { DATE_DD_MM_YYYY_FORMAT, TipoPersona } from 'src/constants';
-import { Texts } from 'src/constants/texts';
-import { fetchConceptos, fetchCorresponsales, fetchProductos, fetchDatosPersonas, fetchMonedas } from 'src/features/shared';
-import { addTransferencia, clearForm, clearState, clearUI, setCuenta, setPersona } from 'src/features/transferencias/nueva-transferencia';
-import { NuevaTransferenciaForm, PersonaForm } from 'src/features/transferencias/nueva-transferencia/types';
+import { fetchConceptos, fetchCorresponsales, fetchMonedas } from 'src/features/shared';
+import { clearState } from 'src/features/transferencia/nueva-solicitud';
+import { ClienteForm, NuevaTransferenciaForm } from 'src/features/transferencia/nueva-solicitud/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
-import { OpcionEx, Rules } from 'src/types';
+import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
-import { interpolateString } from 'src/utils/string';
-import styles from './style.module.less';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -105,11 +99,11 @@ const loadingMessage: ArgsProps = {
 
 export const NuevaTransferencia: React.FC = (props) => {
   const [transferenciaForm] = useForm<NuevaTransferenciaForm>();
-  const [personaForm] = useForm<PersonaForm>();
+  const [personaForm] = useForm<ClienteForm>();
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
-  const nuevaTransferencia = useSelector((state: RootState) => state.transferencias.nuevaTransferencia);
+  const nuevaTransferencia = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 

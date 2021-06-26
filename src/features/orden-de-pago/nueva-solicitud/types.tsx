@@ -1,4 +1,4 @@
-import { Banco, Concepto, Moneda, Persona, TipoComision } from 'src/features/shared/types';
+import { Banco, Concepto, Moneda, Cliente, TipoComision } from 'src/features/shared/types';
 import { Opcion, OpcionEx } from 'src/types';
 
 export interface NuevaSolicitudState {
@@ -12,8 +12,8 @@ export interface NuevaSolicitudState {
 // Modelo front
 
 export interface RequiredData {
-  persona: { value: Persona; loading: boolean };
-  personas: { value: Persona[]; loading: boolean };
+  persona: { value: Cliente; loading: boolean };
+  personas: { value: Cliente[]; loading: boolean };
   conceptos: { values: Concepto[]; loading: boolean };
   corresponsales: { values: Banco[]; loading: boolean };
   tiposComisiones: { values: TipoComision[]; loading: boolean };

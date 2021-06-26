@@ -1,15 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosRequestConfig } from 'axios';
-import { fetchConceptos, fetchCorresponsales, fetchProductos, fetchDatosPersonas, fetchMonedas } from 'src/features/shared';
-import { RootState } from 'src/reducers';
-import { apis } from 'src/api/setup/setup-apis';
 import { RequestConfig } from 'src/api/types';
-import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { getFreshToken } from 'src/utils/auth';
-import { NuevaTransferenciaForm, NuevaTransferenciaState, UIState, NuevaTransferenciaFormRequest, Form } from './types';
-import { Cuenta, Persona } from 'src/features/shared/types';
+import { fetchConceptos, fetchCorresponsales, fetchDatosClientes, fetchMonedas, fetchProductos } from 'src/features/shared';
+import { AddTransferenciaDTO } from 'src/features/shared/dto/transferencia';
+import { Cliente, Cuenta } from 'src/features/shared/types';
+import { RootState } from 'src/reducers';
+import { NuevaTransferenciaForm, NuevaTransferenciaState, UIState } from './types';
 
-const FEATURE_NAME = 'nuevaTransferencia';
+const FEATURE_NAME = 'nuevaSolicitud';
 
 // Async actions
 
@@ -19,13 +17,13 @@ export const addTransferencia = createAsyncThunk<void, RequestConfig<NuevaTransf
     const { dispatch, getState } = thunkApi;
     const data = options?.data;
 
-    if (!data) throw new Error('AddTransferencia - no incluye datos');
+    if (!data) throw new Error('No se ha incluido datos para crear una nueva transferencia.');
 
     const importeComision = 100;
 
     console.log(data);
 
-    const requestData: NuevaTransferenciaFormRequest = {
+    const requestData: AddTransferenciaDTO = {
       fechaAlta: data.fecha.toISOString(true),
       codigoConcepto: data.concepto.value,
       importe: data.importe,
@@ -90,7 +88,7 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
-    setPersona(state, action: PayloadAction<Persona>) {
+    setPersona(state, action: PayloadAction<Cliente>) {
       state.requiredData.persona = action.payload;
     },
     setCuenta(state, action: PayloadAction<Cuenta>) {
@@ -102,7 +100,7 @@ const slice = createSlice({
     clearForm(state) {
       state.form = {};
       state.requiredData.persona = undefined;
-      state.requiredData.infoProductos = undefined;
+      //   state.requiredData.infoProductos = undefined;
     },
     setUI(state, action: PayloadAction<UIState>) {
       state.ui = action.payload;
@@ -152,27 +150,27 @@ const slice = createSlice({
         state.error = action.error.message ?? null;
       });
     builder
-      .addCase(fetchDatosPersonas.pending, (state) => {
+      .addCase(fetchDatosClientes.pending, (state) => {
         state.requiredData.personas = { value: [], loading: true };
         state.error = null;
       })
-      .addCase(fetchDatosPersonas.fulfilled, (state, action) => {
+      .addCase(fetchDatosClientes.fulfilled, (state, action) => {
         state.requiredData.personas = { value: action.payload, loading: false };
       })
-      .addCase(fetchDatosPersonas.rejected, (state, action) => {
+      .addCase(fetchDatosClientes.rejected, (state, action) => {
         state.requiredData.personas = { value: [], loading: false };
         state.error = action.error.message ?? null;
       });
     builder
       .addCase(fetchProductos.pending, (state) => {
-        state.requiredData.infoProductos = { values: null, loading: true };
+        state.requiredData.cuentas = { values: [], loading: true };
         state.error = null;
       })
       .addCase(fetchProductos.fulfilled, (state, action) => {
-        state.requiredData.infoProductos = { values: action.payload, loading: false };
+        state.requiredData.cuentas = { values: action.payload.productos.cuentas, loading: false };
       })
       .addCase(fetchProductos.rejected, (state, action) => {
-        state.requiredData.infoProductos = { values: null, loading: false };
+        state.requiredData.cuentas = { values: [], loading: false };
         state.error = action.error.message ?? null;
       });
     builder

@@ -1,4 +1,4 @@
-import { Banco, Concepto, Cuenta, Moneda, Persona, InfoProductos, TipoComision } from 'src/features/shared/types';
+import { Banco, Concepto, Cuenta, Moneda, Cliente, TipoComision } from 'src/features/shared/types';
 
 export interface NuevaTransferenciaState {
   requiredData: Partial<RequiredData>;
@@ -11,10 +11,10 @@ export interface NuevaTransferenciaState {
 // Modelo front
 
 export interface RequiredData {
-  persona: Persona;
+  persona: Cliente;
   cuenta: Cuenta;
-  personas: { value: Persona[]; loading: boolean };
-  infoProductos: { values: InfoProductos | null; loading: boolean };
+  personas: { value: Cliente[]; loading: boolean };
+  cuentas: { values: CuentaProducto[]; loading: boolean };
   conceptos: { values: Concepto[]; loading: boolean };
   corresponsales: { values: Banco[]; loading: boolean };
   tiposComisiones: { values: TipoComision[]; loading: boolean };
@@ -37,7 +37,7 @@ export interface OrdenanteTransferencia {
   banco: string; //Banco;
 }
 
-export interface PersonaForm {
+export interface ClienteForm {
   cuit: string;
 }
 
@@ -68,44 +68,13 @@ export interface UIState {}
 
 export interface BeneficiarioRequest {}
 
-export interface GastoRequest {
-  moneda: string;
-  importe: number;
-  detalle?: string;
-}
-
-export interface CuentaRequest {
-  numero: string;
-  sucursal: string;
-  tipoCuenta: string;
-  moneda: string;
-}
-
-export interface ComisionRequest {
-  monedaComision: string;
-  monedaCuenta: string;
-  importeComision: number;
-  importeCuenta: number;
-  cotizacionComision: number;
-  tipoComision: string;
-  businessProcessCode?: string;
-  transactionType?: string;
-  estado: string;
-  esBonificada: boolean;
-}
-
-export interface NuevaTransferenciaFormRequest {
-  fechaAlta: string;
-  codigoConcepto: string;
-  // beneficiario: BeneficiarioTransferencia;
-  // ordenante: OrdenanteTransferencia;
-  // corresponsal: Banco;
-  //  tipoComision: TipoComision;
-  importe: number;
-  monedaId: string;
-  producto: string;
-  gasto?: GastoRequest;
-  cuentaDebitoComisiones?: CuentaRequest;
-  cuentaDebitoTransferencia?: CuentaRequest;
-  comision?: ComisionRequest;
+export interface CuentaProducto {
+  valor: string;
+  codigo: string;
+  descripcion: string;
+  numero: number;
+  moneda: number;
+  monedaIso: string;
+  saldo: number;
+  sucursalAdministradora: number;
 }
