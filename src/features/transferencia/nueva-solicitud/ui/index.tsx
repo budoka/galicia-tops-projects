@@ -11,7 +11,12 @@ import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
 import { addSolicitud, clearState } from 'src/features/transferencia/nueva-solicitud/logic';
-import { DatosOperacion, NuevaSolicitudExtraState, NuevaSolicitudFormState } from 'src/features/transferencia/nueva-solicitud/data/types';
+import {
+  ClienteForm,
+  DatosOperacion,
+  NuevaSolicitudExtraState,
+  NuevaSolicitudFormState,
+} from 'src/features/transferencia/nueva-solicitud/data/types';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
@@ -20,6 +25,7 @@ import { ClienteFormPanel } from './datos-cliente';
 import { IntermediariosFormPanel } from './datos-intermediario';
 import { DetalleGasto } from 'src/features/shared/data/types';
 import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchMonedas } from '../../shared/logic';
+import { CheckCircleFilled } from '@ant-design/icons';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -113,7 +119,7 @@ export const detalleGasto = [
 
 export const NuevaSolicitud: React.FC = (props) => {
   const [transferenciaForm] = useForm<NuevaSolicitudFormState>();
-  const [clienteForm] = useForm<Pick<DatosOperacion, 'cuitCliente'>>();
+  const [clienteForm] = useForm<ClienteForm>();
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
@@ -239,7 +245,14 @@ export const NuevaSolicitud: React.FC = (props) => {
 
   const transferenciaTabs: TransferenciaTabs = {
     cliente: (
-      <TabPane tab={`Datos del Cliente`} key={1}>
+      <TabPane
+        tab={
+          <span>
+            Datos del Cliente
+            <CheckCircleFilled style={{ paddingLeft: 10 }} hidden={!nuevaTransferencia.data.form?.datosOperacion.completed} />
+          </span>
+        }
+        key={1}>
         <ClienteFormPanel form={clienteForm} />
       </TabPane>
     ),

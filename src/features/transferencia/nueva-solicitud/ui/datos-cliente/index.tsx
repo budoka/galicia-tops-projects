@@ -7,12 +7,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import { DatosOperacion } from 'src/features/transferencia/nueva-solicitud/data/types';
+import { ClienteForm, DatosOperacion } from 'src/features/transferencia/nueva-solicitud/data/types';
 import { fetchDatosClientes } from 'src/features/transferencia/shared/logic';
 import { Rules } from 'src/types';
 import { interpolateString } from 'src/utils/string';
 import { renderFormTitle } from '../../../../shared/ui/utils';
-import { setCliente } from '../../logic';
+import { setCliente, setClienteForm } from '../../logic';
 import styles from './style.module.less';
 
 const reglas: Rules = {
@@ -25,7 +25,7 @@ const reglas: Rules = {
 };
 
 interface ClienteFormPanelProps {
-  form: FormInstance<Pick<DatosOperacion, 'cuitCliente'>>;
+  form: FormInstance<ClienteForm>;
 }
 
 export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
@@ -64,7 +64,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   };
 
   const handleFormularioCliente = () => {
-    if (nuevaSolicitud.data.extra?.cliente) return;
+    if (nuevaSolicitud.data.extra?.cliente && !nuevaSolicitud.data.form?.datosOperacion.completed) dispatch(setClienteForm(true));
   };
 
   // renders

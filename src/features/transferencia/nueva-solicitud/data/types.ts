@@ -38,11 +38,14 @@ export interface NuevaSolicitudDataState {
 
 export interface NuevaSolicitudFormState {
   datosOperacion: DatosOperacion;
+  // datosOperacion: { fields?: DatosOperacion; completed?: boolean };
 }
 
 export interface NuevaSolicitudExtraState {
   cliente: Cliente;
 }
+
+export interface ClienteForm extends Pick<DatosOperacion, 'cuitCliente'> {}
 
 export interface DatosOperacion {
   fechaEntrada: string;

@@ -25,32 +25,32 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
 
     const requestData: AddSolicitudDTO = {
       datosOperacion: {
-        ...data.form.datosOperacion,
-        monedaId: data.form.datosOperacion.moneda.id,
+        ...data.form.datosOperacion.fields!,
+        monedaId: data.form.datosOperacion.fields?.moneda.id!,
         beneficiario: {
-          ...data.form.datosOperacion.beneficiario,
-          paisId: data.form.datosOperacion.beneficiario.pais.id,
+          ...data.form.datosOperacion.fields?.beneficiario!,
+          paisId: data.form.datosOperacion.fields?.beneficiario.pais.id!,
           razonSocial:
-            data.form.datosOperacion.beneficiario.razonSocial ??
-            `${data.form.datosOperacion.beneficiario.nombre} ${data.form.datosOperacion.beneficiario.apellido}`,
+            data.form.datosOperacion.fields?.beneficiario.razonSocial ??
+            `${data.form.datosOperacion.fields?.beneficiario.nombre} ${data.form.datosOperacion.fields?.beneficiario.apellido}`,
           banco: {
-            ...data.form.datosOperacion.beneficiario.banco,
-            nroCuenta: data.form.datosOperacion.beneficiario.banco.cuenta,
-            paisId: data.form.datosOperacion.beneficiario.banco.pais.id,
+            ...data.form.datosOperacion.fields?.beneficiario.banco!,
+            nroCuenta: data.form.datosOperacion.fields?.beneficiario.banco.cuenta!,
+            paisId: data.form.datosOperacion.fields?.beneficiario.banco.pais.id!,
           },
         },
         bancoIntermediario: {
-          ...data.form.datosOperacion.bancoIntermediario,
-          nroCuenta: data.form.datosOperacion.bancoIntermediario.cuenta,
-          paisId: data.form.datosOperacion.bancoIntermediario.pais.id,
+          ...data.form.datosOperacion.fields?.bancoIntermediario!,
+          nroCuenta: data.form.datosOperacion.fields?.bancoIntermediario.cuenta!,
+          paisId: data.form.datosOperacion.fields?.bancoIntermediario.pais.id!,
         },
         cuentaDebito: {
-          ...data.form.datosOperacion.cuentaDebito,
-          monedaId: data.form.datosOperacion.cuentaDebito.moneda.id,
+          ...data.form.datosOperacion.fields?.cuentaDebito!,
+          monedaId: data.form.datosOperacion.fields?.cuentaDebito.moneda.id!,
         },
         cuentaDebitoGasto: {
-          ...data.form.datosOperacion.cuentaDebitoGasto,
-          monedaId: data.form.datosOperacion.cuentaDebitoGasto.moneda.id,
+          ...data.form.datosOperacion.fields?.cuentaDebitoGasto!,
+          monedaId: data.form.datosOperacion.fields?.cuentaDebitoGasto.moneda.id!,
         },
       },
     };
@@ -74,7 +74,7 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
 
 const initialState: NuevaSolicitudState = {
   info: {},
-  data: { extra: {} },
+  data: { extra: {}, form: { datosOperacion: {} } },
   error: null,
 };
 
@@ -82,11 +82,14 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
-    setForm(state, action: PayloadAction<NuevaSolicitudFormState>) {
+    /*    setForm(state, action: PayloadAction<NuevaSolicitudFormState>) {
       state.data.form = action.payload;
-    },
+    }, */
     setCliente(state, action: PayloadAction<Cliente>) {
       state.data.extra!.cliente = action.payload;
+    },
+    setClienteForm(state, action: PayloadAction<boolean>) {
+      state.data.form!.datosOperacion.completed = action.payload;
     },
     /*     clearForm(state) {
       state.form = {};
@@ -173,8 +176,8 @@ const slice = createSlice({
   },
 });
 
-const { setForm, setCliente, clearState } = slice.actions;
+const { setCliente, setClienteForm, clearState } = slice.actions;
 
-export { setForm, setCliente, clearState };
+export { setCliente, setClienteForm, clearState };
 
 export default slice.reducer;
