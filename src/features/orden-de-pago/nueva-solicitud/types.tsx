@@ -1,4 +1,4 @@
-import { Banco, Concepto, Moneda, Cliente, TipoComision } from 'src/features/shared/types';
+import { BancoOpt, ConceptoOpt, MonedaOpt, Cliente, TipoComision } from 'src/features/shared/data/types';
 import { Opcion, OpcionEx } from 'src/types';
 
 export interface NuevaSolicitudState {
@@ -14,10 +14,10 @@ export interface NuevaSolicitudState {
 export interface RequiredData {
   persona: { value: Cliente; loading: boolean };
   personas: { value: Cliente[]; loading: boolean };
-  conceptos: { values: Concepto[]; loading: boolean };
-  corresponsales: { values: Banco[]; loading: boolean };
+  conceptos: { values: ConceptoOpt[]; loading: boolean };
+  corresponsales: { values: BancoOpt[]; loading: boolean };
   tiposComisiones: { values: TipoComision[]; loading: boolean };
-  monedas: { values: Moneda[]; loading: boolean };
+  monedas: { values: MonedaOpt[]; loading: boolean };
 }
 
 export interface Form {
@@ -44,11 +44,11 @@ export interface SolicitudForm {
   fecha: moment.Moment;
   beneficiario: BeneficiarioTransferencia;
   ordenante: OrdenanteTransferencia;
-  corresponsal: Banco;
+  corresponsal: BancoOpt;
   tipoComision: TipoComision;
-  concepto: Concepto;
+  concepto: ConceptoOpt;
   importe: number;
-  moneda: Moneda;
+  moneda: MonedaOpt;
 }
 
 export interface UIState {}

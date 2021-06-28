@@ -4,11 +4,12 @@ import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'src/app/store';
 import { APP_TITLE, SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
 import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
-import { RootState } from 'src/reducers';
+
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
 import { getScreenOrientation } from 'src/utils/screen';

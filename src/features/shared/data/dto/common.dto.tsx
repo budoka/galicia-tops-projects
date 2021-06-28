@@ -70,7 +70,7 @@ export interface GetClienteDTO {
 export interface GetDocumentoDTO {
   tipo: string;
   descripcion: string;
-  valor: string;
+  numero: string;
 }
 
 export type GetTipoPersonaDTO = 'FISICA' | 'JURIDICA';

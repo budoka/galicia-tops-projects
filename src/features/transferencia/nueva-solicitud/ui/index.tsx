@@ -5,20 +5,21 @@ import { ArgsProps } from 'antd/lib/message';
 import React, { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { StateContext } from 'src/app';
+import { RootState } from 'src/app/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
-import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchProductos } from 'src/features/shared';
-import { addSolicitud, clearForm, clearState, clearUI } from 'src/features/transferencia/nueva-solicitud';
-import { ClienteForm, NuevaTransferenciaForm } from 'src/features/transferencia/nueva-solicitud/types';
-import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { addSolicitud, clearState } from 'src/features/transferencia/nueva-solicitud/logic';
+import { DatosOperacion, NuevaSolicitudExtraState, NuevaSolicitudFormState } from 'src/features/transferencia/nueva-solicitud/data/types';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
 import { BeneficiarioFormPanel } from './datos-beneficiario';
 import { ClienteFormPanel } from './datos-cliente';
 import { IntermediariosFormPanel } from './datos-intermediario';
+import { DetalleGasto } from 'src/features/shared/data/types';
+import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchMonedas } from '../../shared/logic';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -104,9 +105,15 @@ const loadingMessage: ArgsProps = {
   duration: 0,
 };
 
-export const NuevaTransferencia: React.FC = (props) => {
-  const [transferenciaForm] = useForm<NuevaTransferenciaForm>();
-  const [personaForm] = useForm<ClienteForm>();
+export const detalleGasto = [
+  { id: 'ben', value: 'ben' } as { id: DetalleGasto; value: DetalleGasto },
+  { id: 'our', value: 'our' } as { id: DetalleGasto; value: DetalleGasto },
+  { id: 'sha', value: 'sha' } as { id: DetalleGasto; value: DetalleGasto },
+];
+
+export const NuevaSolicitud: React.FC = (props) => {
+  const [transferenciaForm] = useForm<NuevaSolicitudFormState>();
+  const [clienteForm] = useForm<Pick<DatosOperacion, 'cuitCliente'>>();
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
@@ -162,20 +169,19 @@ export const NuevaTransferencia: React.FC = (props) => {
   };
  */
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (nuevaTransferencia.form.loading || nuevaTransferencia.requiredData.personas?.loading) message.loading(loadingMessage);
   }, [nuevaTransferencia.form.loading, nuevaTransferencia.requiredData.persona]);
+ */
 
   useEffect(() => {
-    const persona = nuevaTransferencia.requiredData.persona;
+    const persona = nuevaTransferencia.data.extra?.cliente;
     if (persona) {
       const { hostId } = persona;
-      dispatch(fetchProductos({ query: { hostId, productos: 'CA,CC' } }))
+      dispatch(fetchCuentas({ query: { hostId, productos: 'CA,CC' } }))
         .then(unwrapResult)
-        .then((infoProductos) => {
-          console.log(infoProductos);
-          const { productos } = infoProductos;
-          const { cuentas } = productos;
+        .then((cuentas) => {
+          console.log(cuentas);
           const count = cuentas?.length;
           /*  console.log(count);
           if (count > 1) {
@@ -183,9 +189,9 @@ export const NuevaTransferencia: React.FC = (props) => {
           }*/
         });
     }
-  }, [nuevaTransferencia.requiredData.persona]);
+  }, [nuevaTransferencia.data.extra?.cliente]);
 
-  const handleNuevaTransferenciaForm = (values: NuevaTransferenciaForm) => {
+  const handleNuevaTransferenciaForm = (values: any) => {
     dispatch(addSolicitud({ data: values }))
       .then(unwrapResult)
       .then(() => {
@@ -197,14 +203,14 @@ export const NuevaTransferencia: React.FC = (props) => {
   };
 
   const handleReset = () => {
-    personaForm.resetFields();
+    clienteForm.resetFields();
     transferenciaForm.resetFields();
-    dispatch(clearUI());
-    dispatch(clearForm());
+    /*     dispatch(clearUI());
+    dispatch(clearForm()); */
   };
 
   const handleFill = () => {
-    personaForm.setFieldsValue({ cuit: '30612732503' });
+    /*  personaForm.setFieldsValue({ cuit: '30612732503' });
     transferenciaForm.setFieldsValue({
       ordenante: {
         banco: 'Any Bank',
@@ -222,7 +228,7 @@ export const NuevaTransferencia: React.FC = (props) => {
     });
 
     console.log(personaForm.getFieldsValue());
-    console.log(transferenciaForm.getFieldsValue());
+    console.log(transferenciaForm.getFieldsValue()); */
   };
 
   // renders
@@ -234,19 +240,29 @@ export const NuevaTransferencia: React.FC = (props) => {
   const transferenciaTabs: TransferenciaTabs = {
     cliente: (
       <TabPane tab={`Datos del Cliente`} key={1}>
-        <ClienteFormPanel />
+        <ClienteFormPanel form={clienteForm} />
       </TabPane>
     ),
     beneficiario: (
       <TabPane tab={`Datos del Beneficiario`} key={2}>
-        <BeneficiarioFormPanel />
+        <BeneficiarioFormPanel form={transferenciaForm} />
       </TabPane>
     ),
     intermediarios: (
       <TabPane tab={`Datos de Intermediarios`} key={3}>
-        <IntermediariosFormPanel />
+        <IntermediariosFormPanel form={transferenciaForm} />
       </TabPane>
     ),
+  };
+
+  const Form = () => {
+    return (
+      <>
+        <Tabs defaultActiveKey="1" tabPosition={'left'}>
+          {Object.values(transferenciaTabs).map((tab) => tab)}
+        </Tabs>
+      </>
+    );
   };
 
   const loadingContent = false;
@@ -259,15 +275,7 @@ export const NuevaTransferencia: React.FC = (props) => {
       vertical="top"
       horizontal="left"
       style={{ width: getViewWidth(loadingContent) }}>
-      {loadingContent ? (
-        <LoadingContent />
-      ) : (
-        <>
-          <Tabs defaultActiveKey="1" tabPosition={'left'}>
-            {Object.values(transferenciaTabs).map((tab) => tab)}
-          </Tabs>
-        </>
-      )}
+      {loadingContent ? <LoadingContent /> : <Form />}
     </Wrapper>
   );
 };

@@ -4,8 +4,7 @@ import { createBrowserHistory } from 'history';
 import logger from 'redux-logger';
 import { PersistConfig } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { RootState } from 'src/reducers';
-import { history } from '.';
+import { history, RootState } from '.';
 
 interface Configuration {
   devTools: boolean;
@@ -23,7 +22,7 @@ export const config = {
   middlewares: [
     {
       middleware: logger,
-      enabled: process.env.NODE_ENV !== 'production',
+      enabled: false && process.env.NODE_ENV !== 'production',
     },
     {
       middleware: routerMiddleware(history),

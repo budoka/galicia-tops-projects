@@ -6,13 +6,12 @@ import { useSelector } from 'react-redux';
 import { StateContext } from 'src/app';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
-import { fetchConceptos, fetchCorresponsales, fetchMonedas } from 'src/features/shared';
-import { clearState } from 'src/features/transferencia/nueva-solicitud';
-import { ClienteForm, NuevaTransferenciaForm } from 'src/features/transferencia/nueva-solicitud/types';
-import { RootState } from 'src/reducers';
+import { clearState } from 'src/features/transferencia/nueva-solicitud/logic';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
+import { RootState } from 'src/app/store';
+import { fetchMonedas, fetchCorresponsales, fetchConceptos } from 'src/features/transferencia/shared/logic';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -98,8 +97,8 @@ const loadingMessage: ArgsProps = {
 };
 
 export const NuevaTransferencia: React.FC = (props) => {
-  const [transferenciaForm] = useForm<NuevaTransferenciaForm>();
-  const [personaForm] = useForm<ClienteForm>();
+  const [transferenciaForm] = useForm<any>();
+  const [personaForm] = useForm<any>();
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 

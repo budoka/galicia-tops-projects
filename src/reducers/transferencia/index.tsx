@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import nuevaSolicitudReducer from 'src/features/transferencia/nueva-solicitud';
+import nuevaSolicitudReducer from 'src/features/transferencia/nueva-solicitud/logic';
 
 const reducers = {
   nuevaSolicitud: nuevaSolicitudReducer,

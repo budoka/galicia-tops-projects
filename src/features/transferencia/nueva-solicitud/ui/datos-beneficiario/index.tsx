@@ -1,25 +1,17 @@
-import { unwrapResult } from '@reduxjs/toolkit';
-import { Alert, Button, Carousel, Col, DatePicker, Divider, Form, Input, message, Row, Select, Space, Tabs, Typography } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
+import { Button, Col, DatePicker, Form, Input, Row, Select, Space, Tabs, Typography } from 'antd';
+import { FormInstance, useForm } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
-import _ from 'lodash';
-import React, { CSSProperties, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { StateContext } from 'src/app';
-import { LoadingContent } from 'src/components/loading';
-import { Wrapper } from 'src/components/wrapper';
+import { RootState } from 'src/app/store';
+import { useAppDispatch } from 'src/app/store/hooks';
 import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { fetchConceptos, fetchCorresponsales, fetchProductos, fetchDatosClientes, fetchMonedas } from 'src/features/shared';
-import { addSolicitud, clearForm, clearState, clearUI, setCuenta, setPersona } from 'src/features/transferencia/nueva-solicitud';
-import { NuevaTransferenciaForm, ClienteForm } from 'src/features/transferencia/nueva-solicitud/types';
-import { RootState } from 'src/reducers';
-import { useAppDispatch } from 'src/app/store/hooks';
-import { OpcionEx, Rules } from 'src/types';
-import { getFreshToken } from 'src/utils/auth';
-import { getViewWidth } from 'src/utils/screen';
-import { interpolateString } from 'src/utils/string';
-import { renderFormTitle, renderOptions } from '../utils';
+import { NuevaSolicitudFormState } from 'src/features/transferencia/nueva-solicitud/data/types';
+import { Rules } from 'src/types';
+import { detalleGasto } from '..';
+import { renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
 import styles from './style.module.less';
 
 const { Option } = Select;
@@ -106,13 +98,14 @@ const loadingMessage: ArgsProps = {
   duration: 0,
 };
 
-export const BeneficiarioFormPanel: React.FC = (props) => {
-  const [transferenciaForm] = useForm<NuevaTransferenciaForm>();
-  const [personaForm] = useForm<ClienteForm>();
-  const state = useContext(StateContext);
-  const dispatch = useAppDispatch();
+interface BeneficiarioFormPanelProps {
+  form: FormInstance<NuevaSolicitudFormState>;
+}
 
-  const nuevaTransferencia = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (props) => {
+  const { form } = props;
+
+  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -128,7 +121,7 @@ export const BeneficiarioFormPanel: React.FC = (props) => {
 
   return (
     <>
-      <Form className={styles.form} form={transferenciaForm} name="nuevaTransferencia" layout="vertical" onFinish={handleOnFinish}>
+      <Form className={styles.form} form={form} name="nuevaTransferencia" layout="vertical" onFinish={handleOnFinish}>
         <Form.Item>{renderFormTitle('Datos del Beneficiario')}</Form.Item>
 
         <Row wrap={false}>
@@ -162,12 +155,12 @@ export const BeneficiarioFormPanel: React.FC = (props) => {
                   showSearch
                   optionFilterProp="children"
                   placeholder={Texts.SELECT_CONCEPT}
-                  loading={nuevaTransferencia.requiredData.conceptos?.loading}
-                  disabled={nuevaTransferencia.requiredData.conceptos?.loading}
+                  loading={nuevaSolicitud.info.conceptos?.loading}
+                  disabled={nuevaSolicitud.info.conceptos?.loading}
 
                   /* onChange={handleTipoCaja} */
                 >
-                  {renderOptions(nuevaTransferencia.requiredData.conceptos?.values)}
+                  {renderOptions(nuevaSolicitud.info.conceptos?.value!, 'codigo')}
                 </Select>
               </Form.Item>
             </Col>
@@ -179,11 +172,11 @@ export const BeneficiarioFormPanel: React.FC = (props) => {
                   showSearch
                   optionFilterProp="children"
                   placeholder={Texts.SELECT_CORRESPONDENT}
-                  loading={nuevaTransferencia.requiredData.corresponsales?.loading}
-                  disabled={nuevaTransferencia.requiredData.corresponsales?.loading}
+                  loading={nuevaSolicitud.info.corresponsales?.loading}
+                  disabled={nuevaSolicitud.info.corresponsales?.loading}
                   /* onChange={handleTipoCaja} */
                 >
-                  {renderOptions(nuevaTransferencia.requiredData.corresponsales?.values)}
+                  {renderOptions(nuevaSolicitud.info.corresponsales?.value!, 'nombre')}
                 </Select>
               </Form.Item>
             </Col>
@@ -199,11 +192,7 @@ export const BeneficiarioFormPanel: React.FC = (props) => {
                   //disabled={nuevaTransferencia.requiredData.tiposComisiones?.loading}
                   /* onChange={handleTipoCaja} */
                 >
-                  {renderOptions([
-                    { value: 'BEN', label: 'BEN' },
-                    { value: 'OUR', label: 'OUR' },
-                    { value: 'SHA', label: 'SHA' },
-                  ])}
+                  {renderOptions(detalleGasto)}
                 </Select>
               </Form.Item>
             </Col>
@@ -219,11 +208,11 @@ export const BeneficiarioFormPanel: React.FC = (props) => {
                   showSearch
                   optionFilterProp="children"
                   placeholder={Texts.SELECT_CURRENCY}
-                  loading={nuevaTransferencia.requiredData.monedas?.loading}
-                  disabled={nuevaTransferencia.requiredData.monedas?.loading}
+                  loading={nuevaSolicitud.info.monedas?.loading}
+                  disabled={nuevaSolicitud.info.monedas?.loading}
                   /* onChange={handleTipoCaja} */
                 >
-                  {renderOptions(nuevaTransferencia.requiredData.monedas?.values)}
+                  {renderOptions(nuevaSolicitud.info.monedas?.value!, 'descripcion')}
                 </Select>
               </Form.Item>
             </Col>

@@ -1,5 +1,4 @@
-export interface FeatureState<T> {
-  data: T;
+export interface BaseState {
   error: string | null;
 }
 /* 
@@ -10,10 +9,6 @@ export interface FormState<T> {
  */
 
 export interface InfoState<T> {
-  value: T;
-}
-
-export interface InfoAsyncState<T> {
   value: T;
   loading: boolean;
 }

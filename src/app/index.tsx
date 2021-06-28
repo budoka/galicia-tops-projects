@@ -16,13 +16,13 @@ import { Sider } from 'src/components/sider';
 import { SiderChildItem, SiderItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { RootState } from 'src/reducers';
 import 'src/api/setup/setup-axios';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
 import styles from './style.module.less';
+import { RootState } from './store';
 
 /**
  * Configuración de context para hacer funcionar la autenticacion con msal.

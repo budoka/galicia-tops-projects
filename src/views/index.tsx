@@ -2,9 +2,9 @@ import React from 'react';
 import { NotFound } from 'src/components/not-found';
 import { Unavailable } from 'src/components/unavailable';
 import { Texts } from 'src/constants/texts';
+import { NuevaSolicitud } from 'src/features/transferencia/nueva-solicitud/ui';
 import { Inicio } from 'src/views/inicio';
 import { View } from 'src/views/types';
-import { NuevaTransferencia } from './transferencia/nueva-transferencia';
 
 /* Definición de las vistas de la aplicación */
 
@@ -22,7 +22,7 @@ const views: Views = {
   Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <Unavailable />, scope: 'user.read' },
   Solicitudes: { title: Texts.REQUESTS, path: '/solicitudes', component: <Unavailable />, scope: 'user.read' },
   Crear_Solicitud: { title: Texts.NEW_REQUEST, path: '/nueva-solicitud', component: <Unavailable />, scope: 'user.read' },
-  Crear_Transferencia: { title: Texts.NEW_TRANSFER, path: '/nueva-transferencia', component: <NuevaTransferencia />, scope: 'user.read' },
+  Crear_Transferencia: { title: Texts.NEW_TRANSFER, path: '/nueva-transferencia', component: <NuevaSolicitud />, scope: 'user.read' },
   // Not Found
   Not_Found: { title: Texts.NOT_FOUND, path: undefined, component: <NotFound /> },
 };

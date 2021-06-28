@@ -3,7 +3,6 @@ import axios from 'axios';
 import moment from 'moment';
 import { apis } from 'src/api/setup/setup-apis';
 import { RequestConfig } from 'src/api/types';
-import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { splitStringByWords } from 'src/utils/string';
 import { InfoAzure, InfoSesion, SesionResponseBody, SesionSliceState } from './types';

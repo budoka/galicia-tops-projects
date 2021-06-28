@@ -1,11 +1,19 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { apis } from 'src/api/setup/setup-apis';
 import { RequestConfig } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { RootState } from 'src/reducers';
-import { GetClienteDTO, GetConceptoDTO, GetCorresponsalDTO, GetCuentaDTO, GetInfoProductosDTO, GetMonedaDTO } from './dto/common';
-import { Banco, Cliente, Concepto, Moneda } from './types';
+import { RootState } from 'src/app/store';
+import {
+  GetMonedaDTO,
+  GetCorresponsalDTO,
+  GetConceptoDTO,
+  GetClienteDTO,
+  GetInfoProductosDTO,
+  GetCuentaDTO,
+} from 'src/features/shared/data/dto/common.dto';
+import { Cliente, CuentaProducto } from 'src/features/shared/data/types';
+import { BancoCorresponsal, Concepto, Moneda } from '../../nueva-solicitud/data/types';
 
 const FEATURE_NAME = 'shared';
 
@@ -21,32 +29,21 @@ export const fetchMonedas = createAsyncThunk<Moneda[], RequestConfig | undefined
     const resource = api.resources['MONEDAS'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
-    /*   const endpoint = 'https://gateway-exto-tops-dev.devcloud.bancogalicia.com.ar/api/v1/Moneda';
-    const verb = 'GET';
-    const headers = {
-      ...options?.headers,
-    };
-    const config: AxiosRequestConfig = { method: verb, url: endpoint, headers };*/
-
-    console.log(config);
-
     // Respuesta del servicio
     const response = await axios.request<GetMonedaDTO[]>(config);
     const responseData = response.data;
 
     // Mapeo de la respuesta
-    const monedas = responseData.map((moneda) => {
-      return {
-        value: moneda.iso,
-        label: `${moneda.iso} (${moneda.descripcion})`,
-      };
-    }) as Moneda[];
+    const monedas = responseData.map((m) => ({
+      id: m.iso,
+      descripcion: `${m.iso} (${m.descripcion})`,
+    })) as Moneda[];
 
     return monedas;
   },
 );
 
-export const fetchCorresponsales = createAsyncThunk<Banco[], RequestConfig | undefined, { state: RootState }>(
+export const fetchCorresponsales = createAsyncThunk<BancoCorresponsal[], RequestConfig | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchCorresponsales',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
@@ -56,32 +53,17 @@ export const fetchCorresponsales = createAsyncThunk<Banco[], RequestConfig | und
     const resource = api.resources['CORRESPONSALES'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
-    /* const endpoint = 'https://common-exto-tops-dev.devcloud.bancogalicia.com.ar/api/v1/Corresponsal';
-    const verb = 'GET';
-    const headers = {
-      ...options?.headers,
-    };
-    const config: AxiosRequestConfig = { method: verb, url: endpoint, headers };*/
-
-    console.log(config);
-
     // Respuesta del servicio
     const response = await axios.request<GetCorresponsalDTO[]>(config);
     const responseData = response.data;
 
     // Mapeo de la respuesta
-    const bancos = responseData.map((banco) => {
-      return {
-        value: banco.codigo,
-        label: banco.nombre,
-        pais: {
-          value: banco.pais.id,
-          label: banco.pais.descripcion,
-        },
-      };
-    }) as Banco[];
+    const corresponsales = responseData.map((c) => ({
+      id: c.codigo,
+      nombre: c.nombre,
+    })) as BancoCorresponsal[];
 
-    return bancos;
+    return corresponsales;
   },
 );
 
@@ -95,33 +77,22 @@ export const fetchConceptos = createAsyncThunk<Concepto[], RequestConfig | undef
     const resource = api.resources['CONCEPTOS'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
-    /*     const endpoint = 'https://common-exto-tops-dev.devcloud.bancogalicia.com.ar/api/v1/Concepto';
-    const verb = 'GET';
-    const headers = {
-      ...options?.headers,
-    };
-    const config: AxiosRequestConfig = { method: verb, url: endpoint, headers }; */
-
-    console.log(config);
-
     // Respuesta del servicio
     const response = await axios.request<GetConceptoDTO[]>(config);
     const responseData = response.data;
 
     // Mapeo de la respuesta
-    const conceptos = responseData.map((concepto) => {
-      return {
-        value: concepto.codigo,
-        label: `${concepto.codigo} (${concepto.descripcion})`,
-      };
-    }) as Concepto[];
+    const conceptos = responseData.map((c) => ({
+      id: c.codigo,
+      descripcion: `${c.codigo} (${c.descripcion})`,
+    })) as Concepto[];
 
     return conceptos;
   },
 );
 
 export const fetchDatosClientes = createAsyncThunk<Cliente[], RequestConfig | undefined, { state: RootState }>(
-  FEATURE_NAME + '/fetchDatosPersona',
+  FEATURE_NAME + '/fetchDatosClientes',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
 
@@ -135,14 +106,21 @@ export const fetchDatosClientes = createAsyncThunk<Cliente[], RequestConfig | un
     const responseData = response.data;
 
     // Mapeo de la respuesta
-    const clientes: Cliente[] = responseData.map((c) => ({ ...c, tipo: c.tipo.toLowerCase() } as Cliente));
+    const clientes: Cliente[] = responseData.map(
+      (c) =>
+        ({
+          ...c,
+          tipo: c.tipo.toLowerCase(),
+          //    documentos: c.documentos.map((d) => ({ tipo: d.tipo, descripcion: d.descripcion, numero: d.numero })),
+        } as Cliente),
+    );
 
     return clientes;
   },
 );
 
-export const fetchProductos = createAsyncThunk<GetInfoProductosDTO, RequestConfig | undefined, { state: RootState }>(
-  FEATURE_NAME + '/fetchProductos',
+export const fetchCuentas = createAsyncThunk<CuentaProducto[], RequestConfig | undefined, { state: RootState }>(
+  FEATURE_NAME + '/fetchCuentas',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
 
@@ -155,7 +133,7 @@ export const fetchProductos = createAsyncThunk<GetInfoProductosDTO, RequestConfi
     // Respuesta del servicio
     const response = await axios.request<GetInfoProductosDTO>(config);
     const responseData = response.data;
-    console.log(responseData);
+
     // Mapeo de la respuesta
     let infoProductos: GetInfoProductosDTO = responseData;
 
@@ -166,11 +144,9 @@ export const fetchProductos = createAsyncThunk<GetInfoProductosDTO, RequestConfi
         /*   key: value,
         label: value, */
         valor,
-      } as GetCuentaDTO;
+      } as CuentaProducto;
     });
 
-    infoProductos.productos.cuentas = cuentas;
-    console.log(infoProductos);
-    return infoProductos;
+    return cuentas;
   },
 );

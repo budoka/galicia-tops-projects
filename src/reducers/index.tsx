@@ -20,4 +20,4 @@ export const createRootReducer = (history: History) => {
   });
 };
 
-export type RootState = ReturnType<ReturnType<typeof createRootReducer>>;
+// export type RootState = ReturnType<ReturnType<typeof createRootReducer>>;
