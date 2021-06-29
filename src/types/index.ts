@@ -25,7 +25,7 @@ export interface IElement extends ObjectLiteral {
 }
 
 export interface Rules {
-  [key: string]: Rule[];
+  [key: string]: Rule[] | Rules;
 }
 
 export interface QueryParams {

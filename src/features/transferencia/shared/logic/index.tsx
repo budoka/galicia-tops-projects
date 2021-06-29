@@ -11,9 +11,10 @@ import {
   GetClienteDTO,
   GetInfoProductosDTO,
   GetCuentaDTO,
+  GetPaisDTO,
 } from 'src/features/shared/data/dto/common.dto';
 import { Cliente, CuentaProducto } from 'src/features/shared/data/types';
-import { BancoCorresponsal, Concepto, Moneda } from '../../nueva-solicitud/data/types';
+import { BancoCorresponsal, Concepto, Moneda, Pais } from '../../nueva-solicitud/data/types';
 
 const FEATURE_NAME = 'shared';
 
@@ -38,6 +39,30 @@ export const fetchMonedas = createAsyncThunk<Moneda[], RequestConfig | undefined
       id: m.iso,
       descripcion: `${m.iso} (${m.descripcion})`,
     })) as Moneda[];
+
+    return monedas;
+  },
+);
+
+export const fetchPaises = createAsyncThunk<Pais[], RequestConfig | undefined, { state: RootState }>(
+  FEATURE_NAME + '/fetchPaises',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+
+    // Configuracion del servicio
+    const api = apis['COMMON'];
+    const resource = api.resources['PAISES'];
+    const config = buildAxiosRequestConfig(api, resource, options);
+
+    // Respuesta del servicio
+    const response = await axios.request<GetPaisDTO[]>(config);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const monedas = responseData.map((p) => ({
+      id: p.id,
+      nombre: p.descripcion,
+    })) as Pais[];
 
     return monedas;
   },
@@ -111,6 +136,7 @@ export const fetchDatosClientes = createAsyncThunk<Cliente[], RequestConfig | un
         ({
           ...c,
           tipo: c.tipo.toLowerCase(),
+          documentos: c.documentos.map((d) => ({ tipo: d.tipo, descripcion: d.descripcion, numero: d.id })),
           //    documentos: c.documentos.map((d) => ({ tipo: d.tipo, descripcion: d.descripcion, numero: d.numero })),
         } as Cliente),
     );

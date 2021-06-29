@@ -10,12 +10,15 @@ import { useAppDispatch } from 'src/app/store/hooks';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
-import { addSolicitud, clearState } from 'src/features/transferencia/nueva-solicitud/logic';
+import { addSolicitud, clearState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
 import {
+  BeneficiarioForm,
   ClienteForm,
   DatosOperacion,
+  GastosForm,
   NuevaSolicitudExtraState,
   NuevaSolicitudFormState,
+  TransferenciaTabsNames,
 } from 'src/features/transferencia/nueva-solicitud/data/types';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
@@ -23,9 +26,13 @@ import { getViewWidth } from 'src/utils/screen';
 import { BeneficiarioFormPanel } from './datos-beneficiario';
 import { ClienteFormPanel } from './datos-cliente';
 import { IntermediariosFormPanel } from './datos-intermediario';
-import { DetalleGasto } from 'src/features/shared/data/types';
-import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchMonedas } from '../../shared/logic';
+import { DetalleGasto, TipoPersona } from 'src/features/shared/data/types';
+import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchMonedas, fetchPaises } from '../../shared/logic';
 import { CheckCircleFilled } from '@ant-design/icons';
+import styles from './style.module.less';
+import { useState } from 'react';
+import { ConfirmacionPanel } from './confirmacion';
+import { GastoFormPanel } from './gasto';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -33,6 +40,16 @@ const { Text, Link } = Typography;
 const { TabPane } = Tabs;
 
 const width = 250;
+
+/* export enum TransferenciaTabsNames {
+  DATOS_CLIENTE = 'Datos del Cliente',
+  DATOS_BENEFICIARIO = 'Datos del Beneficiario',
+  GASTOS = 'Gastos',
+  CUENTAS = 'Cuentas',
+  INTERMEDIARIO = 'Intermediario',
+  VARIOS = 'Varios',
+  CONFIRMACION = 'Confirmación',
+} */
 
 const reglas: Rules = {
   cuit: [
@@ -111,19 +128,32 @@ const loadingMessage: ArgsProps = {
   duration: 0,
 };
 
-export const detalleGasto = [
-  { id: 'ben', value: 'ben' } as { id: DetalleGasto; value: DetalleGasto },
-  { id: 'our', value: 'our' } as { id: DetalleGasto; value: DetalleGasto },
-  { id: 'sha', value: 'sha' } as { id: DetalleGasto; value: DetalleGasto },
+export const tiposPersona = [
+  { id: 'fisica', descripcion: 'Física' } as { id: TipoPersona; descripcion: string },
+  { id: 'juridica', descripcion: 'Jurídica' } as { id: TipoPersona; descripcion: string },
+];
+
+/* export const tiposPersona = [
+  { value: 'fisica', label: 'Física' } as { value: TipoPersona; label: string },
+  { value: 'juridica', label: 'Jurídica' } as { value: TipoPersona; label: string },
+]; */
+
+export const detallesGastos = [
+  { id: 'ben', descripcion: 'BEN' } as { id: DetalleGasto; descripcion: string },
+  { id: 'our', descripcion: 'OUR' } as { id: DetalleGasto; descripcion: string },
+  { id: 'sha', descripcion: 'SHA' } as { id: DetalleGasto; descripcion: string },
 ];
 
 export const NuevaSolicitud: React.FC = (props) => {
   const [transferenciaForm] = useForm<NuevaSolicitudFormState>();
   const [clienteForm] = useForm<ClienteForm>();
+  const [beneficiarioForm] = useForm<BeneficiarioForm>();
+  const [gastoForm] = useForm<GastosForm>();
+  //  const [currentTab, setCurrentTab] = useState('1');
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
-  const nuevaTransferencia = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -133,6 +163,14 @@ export const NuevaSolicitud: React.FC = (props) => {
 
       dispatch(
         fetchMonedas({
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        }),
+      );
+
+      dispatch(
+        fetchPaises({
           headers: {
             Authorization: 'Bearer ' + token,
           },
@@ -167,21 +205,8 @@ export const NuevaSolicitud: React.FC = (props) => {
 
   // handlers
 
-  /*   const handleTipoCaja = () => {
-    const tipoCaja: Filtro = form.getFieldsValue().tipoCaja!;
-
-    const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaContenido', 'descripcion', 'restringida'];
-    form.resetFields(fieldsToReset);
-  };
- */
-
-  /*   useEffect(() => {
-    if (nuevaTransferencia.form.loading || nuevaTransferencia.requiredData.personas?.loading) message.loading(loadingMessage);
-  }, [nuevaTransferencia.form.loading, nuevaTransferencia.requiredData.persona]);
- */
-
   useEffect(() => {
-    const persona = nuevaTransferencia.data.extra?.cliente;
+    const persona = nuevaSolicitud.data.form?.datosOperacion?.cliente;
     if (persona) {
       const { hostId } = persona;
       dispatch(fetchCuentas({ query: { hostId, productos: 'CA,CC' } }))
@@ -195,7 +220,7 @@ export const NuevaSolicitud: React.FC = (props) => {
           }*/
         });
     }
-  }, [nuevaTransferencia.data.extra?.cliente]);
+  }, [nuevaSolicitud.data.form?.datosOperacion?.cliente]);
 
   const handleNuevaTransferenciaForm = (values: any) => {
     dispatch(addSolicitud({ data: values }))
@@ -215,26 +240,16 @@ export const NuevaSolicitud: React.FC = (props) => {
     dispatch(clearForm()); */
   };
 
-  const handleFill = () => {
-    /*  personaForm.setFieldsValue({ cuit: '30612732503' });
-    transferenciaForm.setFieldsValue({
-      ordenante: {
-        banco: 'Any Bank',
-        cuenta: '0000-1111-2222',
-      },
-      beneficiario: {
-        nombre: 'Pepe SRL',
-        cuenta: '9999-8888-7777',
-      },
-      importe: 10000,
-      tipoComision: {
-        value: 'BEN',
-        label: 'BEN',
-      },
-    });
+  const handleTabClick = (activeKey: string) => {
+    dispatch(setActiveForm(activeKey));
+  };
 
-    console.log(personaForm.getFieldsValue());
-    console.log(transferenciaForm.getFieldsValue()); */
+  const isConfirmationEnabled = () => {
+    const status = nuevaSolicitud.ui.form.status;
+    return Object.values(status).every((s) => {
+      //console.log(status, s);
+      return s === true;
+    });
   };
 
   // renders
@@ -247,23 +262,71 @@ export const NuevaSolicitud: React.FC = (props) => {
     cliente: (
       <TabPane
         tab={
-          <span>
-            Datos del Cliente
-            <CheckCircleFilled style={{ paddingLeft: 10 }} hidden={!nuevaTransferencia.data.form?.datosOperacion.completed} />
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.DATOS_CLIENTE}</span>
+            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosClientes} />
           </span>
         }
-        key={1}>
-        <ClienteFormPanel form={clienteForm} />
+        key={TransferenciaTabsNames.DATOS_CLIENTE}>
+        <ClienteFormPanel title={TransferenciaTabsNames.DATOS_CLIENTE} form={clienteForm} />
       </TabPane>
     ),
     beneficiario: (
-      <TabPane tab={`Datos del Beneficiario`} key={2}>
-        <BeneficiarioFormPanel form={transferenciaForm} />
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.DATOS_BENEFICIARIO}</span>
+            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosBeneficiario} />
+          </span>
+        }
+        key={TransferenciaTabsNames.DATOS_BENEFICIARIO}>
+        <BeneficiarioFormPanel title={TransferenciaTabsNames.DATOS_BENEFICIARIO} form={beneficiarioForm} />
+      </TabPane>
+    ),
+    gastos: (
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.GASTOS}</span>
+          </span>
+        }
+        key={TransferenciaTabsNames.GASTOS}>
+        <GastoFormPanel title={TransferenciaTabsNames.GASTOS} form={gastoForm} />
+      </TabPane>
+    ),
+    cuentas: (
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.CUENTAS}</span>
+          </span>
+        }
+        key={TransferenciaTabsNames.CUENTAS}>
+        <GastoFormPanel title={TransferenciaTabsNames.CUENTAS} form={gastoForm} />
       </TabPane>
     ),
     intermediarios: (
-      <TabPane tab={`Datos de Intermediarios`} key={3}>
-        <IntermediariosFormPanel form={transferenciaForm} />
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.INTERMEDIARIO}</span>
+            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosIntermediarios} />
+          </span>
+        }
+        key={TransferenciaTabsNames.INTERMEDIARIO}>
+        <IntermediariosFormPanel title={TransferenciaTabsNames.GASTOS} form={transferenciaForm} />
+      </TabPane>
+    ),
+    confirmacion: (
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.CONFIRMACION}</span>
+          </span>
+        }
+        disabled={!isConfirmationEnabled()}
+        key={TransferenciaTabsNames.CONFIRMACION}>
+        <ConfirmacionPanel title={TransferenciaTabsNames.CONFIRMACION} />
       </TabPane>
     ),
   };
@@ -271,7 +334,7 @@ export const NuevaSolicitud: React.FC = (props) => {
   const Form = () => {
     return (
       <>
-        <Tabs defaultActiveKey="1" tabPosition={'left'}>
+        <Tabs className={styles.tabs} activeKey={nuevaSolicitud.ui.form.active} tabPosition={'left'} onTabClick={handleTabClick}>
           {Object.values(transferenciaTabs).map((tab) => tab)}
         </Tabs>
       </>

@@ -18,6 +18,7 @@ export interface ResourcesCommon {
   CORRESPONSALES: Resource;
   DATOS_CLIENTES: Resource;
   MONEDAS: Resource;
+  PAISES: Resource;
   PRODUCTOS: Resource;
 }
 

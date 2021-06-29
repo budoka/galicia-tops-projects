@@ -5,9 +5,18 @@ import { RequestConfig } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { RootState } from 'src/app/store';
 import { Cliente } from 'src/features/shared/data/types';
-import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas } from '../../shared/logic';
+import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas, fetchPaises } from '../../shared/logic';
 import { AddSolicitudDTO } from '../data/dto';
-import { NuevaSolicitudDataState, NuevaSolicitudFormState, NuevaSolicitudState } from '../data/types';
+import {
+  StatusForm,
+  NuevaSolicitudDataState,
+  NuevaSolicitudFormState,
+  NuevaSolicitudState,
+  Beneficiario,
+  Gastos,
+  Cuenta,
+} from '../data/types';
+import { TransferenciaTabsNames } from '../data/types';
 
 const FEATURE_NAME = 'nuevaSolicitud';
 
@@ -23,42 +32,43 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
 
     console.log(data);
 
-    const requestData: AddSolicitudDTO = {
+    /*   const requestData: AddSolicitudDTO = {
       datosOperacion: {
-        ...data.form.datosOperacion.fields!,
-        monedaId: data.form.datosOperacion.fields?.moneda.id!,
+        ...data.form.datosOperacion!,
+        cuitCliente: data.form.datosOperacion?.cliente.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
+        monedaId: data.form.datosOperacion!.moneda.id!,
         beneficiario: {
-          ...data.form.datosOperacion.fields?.beneficiario!,
-          paisId: data.form.datosOperacion.fields?.beneficiario.pais.id!,
+          ...data.form.datosOperacion!.beneficiario!,
+          paisId: data.form.datosOperacion!.beneficiario.pais.id!,
           razonSocial:
-            data.form.datosOperacion.fields?.beneficiario.razonSocial ??
-            `${data.form.datosOperacion.fields?.beneficiario.nombre} ${data.form.datosOperacion.fields?.beneficiario.apellido}`,
+            data.form.datosOperacion!.beneficiario.razonSocial ??
+            `${data.form.datosOperacion!.beneficiario.apellido}, ${data.form.datosOperacion!.beneficiario.nombre}`,
           banco: {
-            ...data.form.datosOperacion.fields?.beneficiario.banco!,
-            nroCuenta: data.form.datosOperacion.fields?.beneficiario.banco.cuenta!,
-            paisId: data.form.datosOperacion.fields?.beneficiario.banco.pais.id!,
+            ...data.form.datosOperacion!.beneficiario.banco!,
+            nroCuenta: data.form.datosOperacion!.beneficiario.banco.cuenta!,
+            paisId: data.form.datosOperacion!.beneficiario.banco.pais.id!,
           },
         },
         bancoIntermediario: {
-          ...data.form.datosOperacion.fields?.bancoIntermediario!,
-          nroCuenta: data.form.datosOperacion.fields?.bancoIntermediario.cuenta!,
-          paisId: data.form.datosOperacion.fields?.bancoIntermediario.pais.id!,
+          ...data.form.datosOperacion!.bancoIntermediario!,
+          nroCuenta: data.form.datosOperacion!.bancoIntermediario.cuenta!,
+          paisId: data.form.datosOperacion!.bancoIntermediario.pais.id!,
         },
         cuentaDebito: {
-          ...data.form.datosOperacion.fields?.cuentaDebito!,
-          monedaId: data.form.datosOperacion.fields?.cuentaDebito.moneda.id!,
+          ...data.form.datosOperacion!.cuentaDebito!,
+          monedaId: data.form.datosOperacion!.cuentaDebito.moneda.id!,
         },
-        cuentaDebitoGasto: {
-          ...data.form.datosOperacion.fields?.cuentaDebitoGasto!,
-          monedaId: data.form.datosOperacion.fields?.cuentaDebitoGasto.moneda.id!,
+        cuentaDebitoGastos: {
+          ...data.form.datosOperacion!.cuentaDebitoGastos!,
+          monedaId: data.form.datosOperacion!.cuentaDebitoGastos.moneda.id!,
         },
       },
-    };
+    }; */
 
     // Configuracion del servicio
     const api = apis['TRANSFERENCIA'];
     const resource = api.resources['AGREGAR_SOLICITUD'];
-    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
+    const config = buildAxiosRequestConfig(api, resource, { ...options /*  data: requestData  */ });
 
     console.log(config);
 
@@ -74,7 +84,13 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
 
 const initialState: NuevaSolicitudState = {
   info: {},
-  data: { extra: {}, form: { datosOperacion: {} } },
+  data: {},
+  ui: {
+    form: {
+      active: TransferenciaTabsNames.DATOS_CLIENTE,
+      status: { datosClientes: false, datosBeneficiario: false, datosIntermediarios: false, cuentas: false, gastos: false },
+    },
+  },
   error: null,
 };
 
@@ -85,17 +101,24 @@ const slice = createSlice({
     /*    setForm(state, action: PayloadAction<NuevaSolicitudFormState>) {
       state.data.form = action.payload;
     }, */
-    setCliente(state, action: PayloadAction<Cliente>) {
-      state.data.extra!.cliente = action.payload;
+    setDatosCliente(state, action: PayloadAction<Cliente>) {
+      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cliente: action.payload } };
     },
-    setClienteForm(state, action: PayloadAction<boolean>) {
-      state.data.form!.datosOperacion.completed = action.payload;
+    setDatosBeneficiario(state, action: PayloadAction<Beneficiario>) {
+      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, beneficiario: action.payload } };
     },
-    /*     clearForm(state) {
-      state.form = {};
-      state.info.persona = undefined;
-      //   state.info.infoProductos = undefined;
-    }, */
+    setDatosGastos(state, action: PayloadAction<Gastos>) {
+      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, gastos: action.payload } };
+    },
+    setDatosCuentas(state, action: PayloadAction<Cuenta>) {
+      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cuentaDebito: action.payload } };
+    },
+    setActiveForm(state, action: PayloadAction<string>) {
+      state.ui.form.active = action.payload;
+    },
+    setEstadoForm(state, action: PayloadAction<StatusForm>) {
+      state.ui.form.status = { ...state.ui.form.status, ...action.payload };
+    },
     clearState() {
       return initialState;
     },
@@ -111,6 +134,18 @@ const slice = createSlice({
       })
       .addCase(fetchMonedas.rejected, (state, action) => {
         state.info.monedas = { value: [], loading: false };
+        state.error = action.error.message ?? null;
+      });
+    builder
+      .addCase(fetchPaises.pending, (state) => {
+        state.info.paises = { value: [], loading: true };
+        state.error = null;
+      })
+      .addCase(fetchPaises.fulfilled, (state, action) => {
+        state.info.paises = { value: action.payload, loading: false };
+      })
+      .addCase(fetchPaises.rejected, (state, action) => {
+        state.info.paises = { value: [], loading: false };
         state.error = action.error.message ?? null;
       });
     builder
@@ -176,8 +211,8 @@ const slice = createSlice({
   },
 });
 
-const { setCliente, setClienteForm, clearState } = slice.actions;
+const { setDatosCliente, setDatosBeneficiario, setDatosGastos, setDatosCuentas, setActiveForm, setEstadoForm, clearState } = slice.actions;
 
-export { setCliente, setClienteForm, clearState };
+export { setDatosCliente, setDatosBeneficiario, setDatosGastos, setDatosCuentas, setActiveForm, setEstadoForm, clearState };
 
 export default slice.reducer;

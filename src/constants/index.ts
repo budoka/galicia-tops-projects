@@ -25,8 +25,8 @@ export const VIEW = {
 
 export class Pattern {
   public static readonly ANY = /^.+$/;
-  public static readonly ONLY_NUMBERS = /^\\d+$/;
-  public static readonly ONLY_WORDS = /^([a-záéíóúäëïöü]+( ?[a-záéíóúäëïöü])+ ?)$/i;
+  public static readonly ONLY_NUMBERS = /^\d+$/;
+  public static readonly ONLY_WORDS = /^([a-zñáéíóúäëïöü]+( ?[a-zñáéíóúäëïöü])+ ?)$/i;
 }
 
 /* export const PATTERN_ANY = /^.+$/;

@@ -1,9 +1,10 @@
+import { LabeledValue } from 'antd/lib/select';
 import {
   Cliente,
   ConceptoOpt,
   CuentaOpt,
   CuentaProducto,
-  DetalleGasto,
+  DetalleGasto as DetalleGastos,
   Keyable,
   MonedaOpt,
   TipoCodigo,
@@ -17,9 +18,20 @@ import { InfoState, BaseState } from 'src/features/types';
  * Nueva Solicitud
  */
 
+export enum TransferenciaTabsNames {
+  DATOS_CLIENTE = 'Datos del Cliente',
+  DATOS_BENEFICIARIO = 'Datos del Beneficiario',
+  GASTOS = 'Gastos',
+  CUENTAS = 'Cuentas',
+  INTERMEDIARIO = 'Intermediario',
+  VARIOS = 'Varios',
+  CONFIRMACION = 'Confirmación',
+}
+
 export interface NuevaSolicitudState extends BaseState {
   info: Partial<NuevaSolicitudInfoState>;
   data: Partial<NuevaSolicitudDataState>;
+  ui: NuevaSolicitudUIState;
 }
 
 export interface NuevaSolicitudInfoState {
@@ -29,39 +41,72 @@ export interface NuevaSolicitudInfoState {
   corresponsales: InfoState<BancoCorresponsal[]>;
   tiposComisiones: InfoState<TipoComision[]>;
   monedas: InfoState<Moneda[]>;
+  paises: InfoState<Pais[]>;
 }
 
 export interface NuevaSolicitudDataState {
-  form: NuevaSolicitudFormState;
+  form: Partial<NuevaSolicitudFormState>;
   extra: Partial<NuevaSolicitudExtraState>;
+}
+
+export interface NuevaSolicitudUIState {
+  form: { status: StatusForm; active: string };
 }
 
 export interface NuevaSolicitudFormState {
   datosOperacion: DatosOperacion;
-  // datosOperacion: { fields?: DatosOperacion; completed?: boolean };
 }
 
-export interface NuevaSolicitudExtraState {
-  cliente: Cliente;
+export interface NuevaSolicitudExtraState {}
+
+//#region Formularios
+
+export interface ClienteForm {
+  cuitCliente: string;
 }
 
-export interface ClienteForm extends Pick<DatosOperacion, 'cuitCliente'> {}
+export interface BeneficiarioForm extends Omit<Beneficiario, 'fechaNacimiento' | 'tipoPersona' | 'pais'> {
+  fechaNacimiento: moment.Moment;
+  tipoPersona: LabeledValue;
+  pais: LabeledValue;
+}
+
+export interface GastosForm {
+  gastos: {
+    detalle: LabeledValue;
+    importe?: number;
+    moneda?: Moneda;
+    swiftCorresponsal?: string;
+    cuentaCorresponsal?: string;
+  };
+  cuentaDebitoGastos?: LabeledValue;
+}
+
+//#endregion
+
+export interface StatusForm {
+  datosClientes?: boolean;
+  datosBeneficiario?: boolean;
+  datosIntermediarios?: boolean;
+  cuentas?: boolean;
+  gastos?: boolean;
+}
 
 export interface DatosOperacion {
   fechaEntrada: string;
-  cuitCliente: string;
+  cliente: Cliente;
   beneficiario: Beneficiario;
   bancoIntermediario: Banco;
   cuentaDebito: Cuenta;
-  cuentaDebitoGasto: Cuenta;
-  gasto: Gasto;
+  cuentaDebitoGastos?: Cuenta;
+  gastos: Gastos;
   importes: Importe[];
   moneda: Moneda;
   vinculadoConBeneficiario: boolean;
 }
 
 export interface Beneficiario {
-  tipoPersona: TipoPersona;
+  tipoPersona: TipoPersonaObj;
   razonSocial?: string;
   nombre?: string;
   apellido?: string;
@@ -72,6 +117,11 @@ export interface Beneficiario {
   codigoPostal: string;
   pais: Pais;
   banco: Banco;
+}
+
+export interface TipoPersonaObj {
+  id: string;
+  descripcion: TipoPersona;
 }
 
 export interface Direccion {
@@ -92,7 +142,7 @@ export interface Banco {
 }
 
 export interface Pais extends Keyable {
-  id: string;
+  id: number;
   nombre: string;
 }
 
@@ -102,12 +152,17 @@ export interface Cuenta {
   numero: string;
 }
 
-export interface Gasto {
-  detalle: DetalleGasto;
+export interface Gastos {
+  detalle: DetalleGastosObj;
   importe?: number;
   moneda?: Moneda;
   swiftCorresponsal?: string;
   cuentaCorresponsal?: string;
+}
+
+export interface DetalleGastosObj {
+  id: string;
+  descripcion: DetalleGastos;
 }
 
 export interface Importe {

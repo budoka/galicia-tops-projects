@@ -4,6 +4,52 @@
 @import (reference) '~src/styles/shared.less';
 @import (reference) '~src/app/style.module.less';
 
+.tabs {
+  :global(.ant-tabs-nav-wrap) {
+    // background-color: @gray-2;
+  }
+}
+
+.tabWrapper {
+  display: grid;
+  grid-template-columns: 150px 10px;
+  grid-template-rows: auto;
+  column-gap: 10px;
+}
+
+.tabLabel {
+  justify-self: start;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.tabIcon {
+  justify-self: start;
+  align-self: center;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+}
+
+.form {
+  justify-self: start;
+  grid-row: 1;
+}
+
+.button {
+  justify-self: start;
+  align-self: center;
+  grid-row: 2;
+}
+
+/* revisar lo de abajo */
+
 .form {
   //.hideErrorMessageForm();
   min-width: 300px;

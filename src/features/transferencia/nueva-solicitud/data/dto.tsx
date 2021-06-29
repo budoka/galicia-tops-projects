@@ -10,7 +10,7 @@ export interface DatosOperacionDTO {
   beneficiario: BeneficiarioDTO;
   bancoIntermediario?: BancoDTO;
   cuentaDebito: CuentaDTO;
-  cuentaDebitoGasto?: CuentaDTO;
+  cuentaDebitoGastos?: CuentaDTO;
   gasto: GastoDTO;
   importes: ImporteDTO[];
   monedaId: string;
@@ -25,7 +25,7 @@ export interface BeneficiarioDTO {
   domicilio: DireccionDTO;
   localidad: string;
   codigoPostal: string;
-  paisId: string;
+  paisId: number;
   banco: BancoDTO;
 }
 
@@ -39,7 +39,7 @@ export interface DireccionDTO {
 export interface BancoDTO {
   nombre: string;
   localidad: string;
-  paisId: string;
+  paisId: number;
   nroCuenta: string;
   tipoCodigo?: TipoCodigo;
   codigo?: string;

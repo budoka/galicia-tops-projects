@@ -7,12 +7,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import { ClienteForm, DatosOperacion } from 'src/features/transferencia/nueva-solicitud/data/types';
+import { ClienteForm, DatosOperacion, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
 import { fetchDatosClientes } from 'src/features/transferencia/shared/logic';
 import { Rules } from 'src/types';
 import { interpolateString } from 'src/utils/string';
-import { renderFormTitle } from '../../../../shared/ui/utils';
-import { setCliente, setClienteForm } from '../../logic';
+import { getRule, renderFormTitle } from '../../../../shared/ui/utils';
+import { setActiveForm, setDatosCliente, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
 const reglas: Rules = {
@@ -25,19 +25,30 @@ const reglas: Rules = {
 };
 
 interface ClienteFormPanelProps {
+  title: string;
   form: FormInstance<ClienteForm>;
 }
 
 export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   const dispatch = useAppDispatch();
 
-  const { form } = props;
+  const { title, form } = props;
 
   const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const currentActiveForm = nuevaSolicitud.ui.form.active;
+    const currentStatus = nuevaSolicitud.ui.form.status.datosClientes;
+    if (currentActiveForm === TransferenciaTabsNames.DATOS_CLIENTE && currentStatus) {
+      const cuit = nuevaSolicitud.data.form?.datosOperacion?.cliente?.cuit;
+      form.resetFields();
+      form.setFieldsValue({
+        cuitCliente: cuit,
+      });
+    }
+  }, [nuevaSolicitud.ui.form.active]);
 
   // handlers
 
@@ -47,7 +58,8 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
       .then((clientes) => {
         const count = clientes.length;
         console.log('clientes encontrados: ', count);
-        if (count === 1) {
+        message.success({ key: 'loading', content: Texts.SEARCH_PERSON_OK, duration: 3 });
+        /*         if (count === 1) {
           dispatch(setCliente(clientes[0]));
           message.success({ key: 'loading', content: Texts.SEARCH_PERSON_OK, duration: 3 });
         } else {
@@ -56,39 +68,60 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
             content: interpolateString(Texts.SEARCH_PERSON_OK_MULTIPLE_RESULTS, [count]),
             duration: 3,
           });
-        }
+        } */
       })
       .catch((err) => {
         message.error({ key: 'loading', content: Texts.SEARCH_PERSON_ERROR, duration: 3 });
       });
   };
 
-  const handleFormularioCliente = () => {
-    if (nuevaSolicitud.data.extra?.cliente && !nuevaSolicitud.data.form?.datosOperacion.completed) dispatch(setClienteForm(true));
+  const handleOnFinish = () => {
+    setData();
+    dispatch(setEstadoForm({ datosClientes: true }));
+    dispatch(setActiveForm(TransferenciaTabsNames.DATOS_BENEFICIARIO));
+  };
+
+  const setData = () => {
+    const cliente = nuevaSolicitud.info.clientes?.value[0];
+    if (cliente) dispatch(setDatosCliente({ ...cliente, cuit: form.getFieldsValue().cuitCliente }));
   };
 
   // renders
 
-  const renderDatosPersona = () => {
-    const persona = nuevaSolicitud.data.extra?.cliente;
+  const renderDatosCliente = () => {
+    const cliente = nuevaSolicitud.info.clientes?.value[0];
+    console.log(cliente);
 
-    if (!persona || _.isEmpty(persona)) return undefined;
+    if (!cliente) return undefined;
 
-    const datosPersona = {
-      fisica: `${persona.apellido}, ${persona.nombre}`,
-      juridica: `${persona.razonSocial}`,
+    const nombreCliente = {
+      fisica: `${cliente.apellido}, ${cliente.nombre}`,
+      juridica: `${cliente.razonSocial}`,
     };
 
-    return <Alert type="success" showIcon style={{ fontWeight: 'bold' }} message={datosPersona[persona.tipo]} />;
+    const documentoPersona = _.first(cliente.documentos.filter((d) => d.tipo === 'CUIT' || d.tipo === 'DU'));
+
+    const datosCliente = (
+      <div className={styles.messageClienteWrapper}>
+        <span className={styles.messageClienteNombre}>{nombreCliente[cliente.tipo]}</span>
+        <span className={styles.messageClienteTipoPersona}>{cliente.tipo.toUpperCase()}</span>
+        <span className={styles.messageClienteHostId}>{cliente.hostId} (Host ID)</span>
+        <span className={styles.messageClienteDocumento}>
+          {+documentoPersona?.numero!} ({documentoPersona?.descripcion})
+        </span>
+      </div>
+    );
+
+    return <Alert type="success" style={{ fontWeight: 'bold' }} message={datosCliente} />;
   };
 
   const renderFormularioCliente = () => {
     return (
-      <Form className={styles.form} form={form} name="cliente" layout="vertical" onFinish={handleFormularioCliente}>
-        <Form.Item> {renderFormTitle('Datos del Cliente')} </Form.Item>
+      <Form className={styles.form} form={form} layout="vertical" onFinish={handleOnFinish}>
+        <Form.Item> {renderFormTitle(title)} </Form.Item>
         <Form.Item>
           <Space size={'middle'}>
-            <Form.Item label={Texts.CUIT} name={['cuitCliente']} rules={reglas['cuit']} required>
+            <Form.Item label={Texts.CUIT} name={'cuitCliente'} rules={getRule(reglas, 'cuit')} required>
               <Input disabled={nuevaSolicitud.info.clientes?.loading} />
             </Form.Item>
             <Button
@@ -103,40 +136,16 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
           </Space>
         </Form.Item>
 
-        {nuevaSolicitud.data.extra?.cliente && (
-          <>
-            <Form.Item>{renderDatosPersona()}</Form.Item>
-            {/*    <Form.Item label={Texts.ACCOUNT} name={['ordenante', 'cuenta']} rules={reglas['cuentaOrdenante']} required>
-              <Select
-                labelInValue
-                //optionFilterProp="children"
-                // filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                placeholder={Texts.SELECT_ACCOUNT}
-                loading={nuevaSolicitud.info.cuentas?.loading}
-                disabled={nuevaSolicitud.info.cuentas?.loading}
-
-               //onChange={handleTipoCaja} 
-              >
-                {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'cuenta')}
-              </Select>
-            </Form.Item> */}
-          </>
-        )}
+        {nuevaSolicitud.info.clientes?.value.length! > 0 && <Form.Item>{renderDatosCliente()}</Form.Item>}
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            /*    disabled={nuevaSolicitud.info.clientes?.loading} */
-            style={{ marginTop: 5 }}>
-            Siguiente
+          <Button type="primary" htmlType="submit">
+            Confirmar
           </Button>
         </Form.Item>
       </Form>
     );
   };
 
-  const loadingContent = false; //ingresarCajas.loading.tiposCaja;
-
-  return <>{renderFormularioCliente()}</>;
+  return <div className={styles.contentWrapper}>{renderFormularioCliente()}</div>;
 };

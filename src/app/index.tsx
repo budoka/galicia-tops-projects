@@ -23,6 +23,7 @@ import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
 import styles from './style.module.less';
 import { RootState } from './store';
+import { setUsuario } from 'src/features/sesion/sesion.slice';
 
 /**
  * Configuración de context para hacer funcionar la autenticacion con msal.
@@ -61,10 +62,12 @@ export const App = () => {
   const contentRef = React.createRef();
 
   useEffect(() => {
+    /*   console.log('********************************');
+    console.log(auth, sesion); */
     if (!auth.data || !_.isEmpty(sesion)) return;
     const nombreUsuario = auth.data.account?.name;
     const legajo = getLegajoFromEmail(auth.data.account?.username)!;
-    // dispatch(fetchInfoSesion({ data: { nombreUsuario, legajo } }));
+    dispatch(setUsuario({ nombreUsuario, legajo }));
   }, [auth.data]);
 
   const getTitle = () => {
@@ -107,6 +110,10 @@ export const App = () => {
     gS.msalInstance.loginRedirect({ scopes: ['user.read'] });
   } else if (gS && gS.msalInstance && !gS.account) {
     setGS({ ...gS, account: gS.msalInstance.getAccount() });
+
+    const nombreUsuario = gS.msalInstance.getAccount().name;
+    const legajo = getLegajoFromEmail(gS.msalInstance.getAccount().userName)!;
+    dispatch(setUsuario({ nombreUsuario, legajo }));
   }
 
   /*   return !auth.disabled && _.isEmpty(sesion) ? (

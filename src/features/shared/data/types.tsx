@@ -44,6 +44,7 @@ export interface Cliente {
   apellido?: string;
   razonSocial?: string;
   documentos: Documento[];
+  cuit?: string;
 }
 
 export interface Documento {

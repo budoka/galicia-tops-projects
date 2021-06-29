@@ -12,6 +12,7 @@ export const apis: APIList = {
       CORRESPONSALES: { path: 'api/v1/Corresponsal', config: { verb: 'GET' } },
       DATOS_CLIENTES: { path: 'api/v1/ConsultaCliente/GetDatosPersonas', config: { verb: 'GET' } },
       MONEDAS: { path: 'api/v1/moneda', config: { verb: 'GET' } },
+      PAISES: { path: 'api/v1/pais', config: { verb: 'GET' } },
       PRODUCTOS: { path: 'api/v1/ConsultaPosicion/GetProductos', config: { verb: 'GET' } },
     },
   },
