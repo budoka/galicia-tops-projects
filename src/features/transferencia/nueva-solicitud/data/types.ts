@@ -1,18 +1,6 @@
 import { LabeledValue } from 'antd/lib/select';
-import {
-  Cliente,
-  ConceptoOpt,
-  CuentaOpt,
-  CuentaProducto,
-  DetalleGasto as DetalleGastos,
-  Keyable,
-  MonedaOpt,
-  TipoCodigo,
-  TipoComision,
-  TipoCuenta,
-  TipoPersona,
-} from 'src/features/shared/data/types';
-import { InfoState, BaseState } from 'src/features/types';
+import { Cliente, DetalleGasto, Keyable, TipoCodigo, TipoComision, TipoPersona } from 'src/features/shared/data/types';
+import { BaseState, InfoState } from 'src/features/types';
 
 /**
  * Nueva Solicitud
@@ -36,7 +24,7 @@ export interface NuevaSolicitudState extends BaseState {
 
 export interface NuevaSolicitudInfoState {
   clientes: InfoState<Cliente[]>;
-  cuentas: InfoState<CuentaProducto[]>;
+  cuentas: InfoState<Cuenta[]>;
   conceptos: InfoState<Concepto[]>;
   corresponsales: InfoState<BancoCorresponsal[]>;
   tiposComisiones: InfoState<TipoComision[]>;
@@ -82,6 +70,12 @@ export interface GastosForm {
   cuentaDebitoGastos?: LabeledValue;
 }
 
+export interface CuentasForm {
+  cuentaDebito: LabeledValue;
+}
+
+export interface VariosForm {}
+
 //#endregion
 
 export interface StatusForm {
@@ -90,6 +84,7 @@ export interface StatusForm {
   datosIntermediarios?: boolean;
   cuentas?: boolean;
   gastos?: boolean;
+  varios?: boolean;
 }
 
 export interface DatosOperacion {
@@ -146,10 +141,22 @@ export interface Pais extends Keyable {
   nombre: string;
 }
 
-export interface Cuenta {
+/* export interface Cuenta {
   tipoCuenta: TipoCuenta;
   moneda: Moneda;
   numero: string;
+} */
+
+export interface Cuenta extends Keyable {
+  id: string;
+  valor: string;
+  codigo: string;
+  descripcion: string;
+  numero: number;
+  moneda: number;
+  monedaIso: string;
+  saldo: number;
+  sucursalAdministradora: number;
 }
 
 export interface Gastos {
@@ -162,7 +169,7 @@ export interface Gastos {
 
 export interface DetalleGastosObj {
   id: string;
-  descripcion: DetalleGastos;
+  descripcion: DetalleGasto;
 }
 
 export interface Importe {

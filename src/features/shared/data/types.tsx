@@ -54,7 +54,7 @@ export interface Documento {
 }
 
 export interface CuentaProducto {
-  id: string;
+  // id: string;
   valor: string;
   codigo: string;
   descripcion: string;

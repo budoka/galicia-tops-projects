@@ -20,7 +20,7 @@ export function renderOptions<T extends Keyable>(options: T[], descriptionKey: s
   if (!options) return;
 
   return options.map((option) => (
-    <Option key={option.id} value={option.value ?? option.id}>
+    <Option key={option.id ?? option.value} value={option.value ?? option.id}>
       {option[descriptionKey] ?? option.id}
     </Option>
   ));

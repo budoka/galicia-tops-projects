@@ -7,12 +7,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import { GastosForm, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
+import { DetalleGastosObj, GastosForm, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
 import { Rules } from 'src/types';
 import { detallesGastos } from '..';
 
 import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
-import { setActiveForm, setEstadoForm } from '../../logic';
+import { setActiveForm, setDatosGastos, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
 const { Option } = Select;
@@ -31,7 +31,7 @@ const reglas: Rules = {
       },
     ],
   },
-  cuenta: [
+  cuentaDebitoGastos: [
     {
       required: true,
       message: 'Cuenta no válida',
@@ -48,12 +48,12 @@ const loadingMessage: ArgsProps = {
   duration: 0,
 };
 
-interface GastoFormPanelProps {
+interface GastosFormPanelProps {
   title: string;
   form: FormInstance<GastosForm>;
 }
 
-export const GastoFormPanel: React.FC<GastoFormPanelProps> = (props) => {
+export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
   const dispatch = useAppDispatch();
 
   const { title, form } = props;
@@ -78,8 +78,9 @@ export const GastoFormPanel: React.FC<GastoFormPanelProps> = (props) => {
         },
         cuentaDebitoGastos: getOption(
           {
-            id: cuentaDebitoGastos?.numero!,
-            descripcion: `${cuentaDebitoGastos?.tipoCuenta} | ${cuentaDebitoGastos?.moneda} | ${cuentaDebitoGastos?.numero}`,
+            id: cuentaDebitoGastos?.valor!,
+            descripcion: cuentaDebitoGastos?.valor,
+            //  descripcion: `${cuentaDebitoGastos?.codigo} | ${cuentaDebitoGastos?.monedaIso} | ${cuentaDebitoGastos?.numero}`,
           },
           'descripcion',
         ),
@@ -92,13 +93,26 @@ export const GastoFormPanel: React.FC<GastoFormPanelProps> = (props) => {
   // handlers
 
   const handleOnDetalleGastosChange = () => {
-    console.log(form.getFieldsValue());
     setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
   };
 
   const handleOnFinish = () => {
+    setData();
     dispatch(setEstadoForm({ gastos: true }));
     dispatch(setActiveForm(TransferenciaTabsNames.CUENTAS));
+  };
+
+  const setData = () => {
+    const { gastos, cuentaDebitoGastos } = form.getFieldsValue() || {};
+    dispatch(
+      setDatosGastos({
+        gastos: {
+          ...gastos,
+          detalle: { id: gastos.detalle.value, descripcion: gastos.detalle.label } as DetalleGastosObj,
+        },
+        cuentaDebitoGastos: nuevaSolicitud.info.cuentas?.value?.find((c) => c.id === cuentaDebitoGastos?.value)!,
+      }),
+    );
   };
 
   // renders
@@ -125,13 +139,13 @@ export const GastoFormPanel: React.FC<GastoFormPanelProps> = (props) => {
 
             {'ben' !== currentDetalleGastos.value && (
               <Col style={{ width: width }}>
-                <Form.Item
-                  label={Texts.EXPENSE_DETAIL}
-                  name={['gastos', 'detalle']}
-                  rules={getRule(reglas, ['gastos', 'detalle'])}
-                  required>
-                  <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL}>
-                    {renderOptions(detallesGastos, 'descripcion')}
+                <Form.Item label={Texts.ACCOUNT} name={'cuentaDebitoGastos'} rules={getRule(reglas, 'cuentaDebitoGastos')} required>
+                  <Select
+                    labelInValue
+                    placeholder={Texts.SELECT_ACCOUNT}
+                    loading={nuevaSolicitud.info.cuentas?.loading}
+                    disabled={nuevaSolicitud.info.cuentas?.loading}>
+                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'valor')}
                   </Select>
                 </Form.Item>
               </Col>
@@ -144,14 +158,6 @@ export const GastoFormPanel: React.FC<GastoFormPanelProps> = (props) => {
             <Button type="primary" htmlType="submit">
               Confirmar
             </Button>
-
-            {/*   <Button type="default" htmlType="button" onClick={handleReset}>
-              Limpiar
-            </Button>
-
-            <Button type="link" htmlType="button" onClick={handleFill}>
-              Completar
-            </Button> */}
           </Space>
         </Form.Item>
       </Form>

@@ -14,7 +14,7 @@ import {
   GetPaisDTO,
 } from 'src/features/shared/data/dto/common.dto';
 import { Cliente, CuentaProducto } from 'src/features/shared/data/types';
-import { BancoCorresponsal, Concepto, Moneda, Pais } from '../../nueva-solicitud/data/types';
+import { BancoCorresponsal, Concepto, Cuenta, Moneda, Pais } from '../../nueva-solicitud/data/types';
 
 const FEATURE_NAME = 'shared';
 
@@ -145,7 +145,7 @@ export const fetchDatosClientes = createAsyncThunk<Cliente[], RequestConfig | un
   },
 );
 
-export const fetchCuentas = createAsyncThunk<CuentaProducto[], RequestConfig | undefined, { state: RootState }>(
+export const fetchCuentas = createAsyncThunk<Cuenta[], RequestConfig | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchCuentas',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
@@ -167,10 +167,10 @@ export const fetchCuentas = createAsyncThunk<CuentaProducto[], RequestConfig | u
       const valor = `${cuenta.codigo} | ${cuenta.monedaIso} | ${cuenta.numero}`;
       return {
         ...cuenta,
-        /*   key: value,
-        label: value, */
+        id: valor,
+        label: valor,
         valor,
-      } as CuentaProducto;
+      } as Cuenta;
     });
 
     return cuentas;

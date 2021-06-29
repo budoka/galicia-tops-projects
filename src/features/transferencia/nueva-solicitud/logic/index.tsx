@@ -107,8 +107,15 @@ const slice = createSlice({
     setDatosBeneficiario(state, action: PayloadAction<Beneficiario>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, beneficiario: action.payload } };
     },
-    setDatosGastos(state, action: PayloadAction<Gastos>) {
-      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, gastos: action.payload } };
+    setDatosGastos(state, action: PayloadAction<{ gastos: Gastos; cuentaDebitoGastos: Cuenta }>) {
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: {
+          ...state.data.form?.datosOperacion!,
+          gastos: action.payload.gastos,
+          cuentaDebitoGastos: action.payload.cuentaDebitoGastos,
+        },
+      };
     },
     setDatosCuentas(state, action: PayloadAction<Cuenta>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cuentaDebito: action.payload } };

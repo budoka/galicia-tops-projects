@@ -100,6 +100,7 @@ export enum Texts {
   CORRESPONDENT_BANK = 'Banco Corresponsal',
   AMOUNT = 'Importe',
   ACCOUNT = 'Cuenta',
+  ACCOUNT_EXPENSE = 'Cuenta para Gastos',
   CONCEPT = 'Concepto',
   FEE_TYPE = 'Tipo de Comisión',
   DATE_BIRTH = 'Fecha de Nacimiento',

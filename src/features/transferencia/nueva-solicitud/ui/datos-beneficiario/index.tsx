@@ -172,7 +172,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
   };
 
   const setData = () => {
-    const { tipoPersona, fechaNacimiento, pais, ...beneficiario } = form.getFieldsValue();
+    const { tipoPersona, fechaNacimiento, pais, ...beneficiario } = form.getFieldsValue() || {};
     dispatch(
       setDatosBeneficiario({
         ...beneficiario,
@@ -218,8 +218,6 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
         form={form}
         layout="vertical"
         initialValues={{ tipoPersona: DEFAULT_PERSON_TYPE }}
-        //  onFieldsChange={handleOnFieldsChange}
-
         onFinish={handleOnFinish}>
         <Form.Item>{renderFormTitle(title)}</Form.Item>
 
@@ -277,7 +275,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
             <Col style={{ width: width }}>
               <Form.Item label={Texts.DATE_BIRTH} name={'fechaNacimiento'} rules={getRule(reglas, 'fechaNacimiento')}>
-                <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={Texts.SELECT_DATE} showToday />
+                <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={Texts.SELECT_DATE} />
               </Form.Item>
             </Col>
 

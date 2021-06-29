@@ -8,7 +8,7 @@ import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
 import { ClienteForm, DatosOperacion, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { fetchDatosClientes } from 'src/features/transferencia/shared/logic';
+import { fetchCuentas, fetchDatosClientes } from 'src/features/transferencia/shared/logic';
 import { Rules } from 'src/types';
 import { interpolateString } from 'src/utils/string';
 import { getRule, renderFormTitle } from '../../../../shared/ui/utils';
@@ -83,14 +83,17 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
 
   const setData = () => {
     const cliente = nuevaSolicitud.info.clientes?.value[0];
-    if (cliente) dispatch(setDatosCliente({ ...cliente, cuit: form.getFieldsValue().cuitCliente }));
+    if (cliente) {
+      dispatch(setDatosCliente({ ...cliente, cuit: form.getFieldsValue().cuitCliente }));
+      const { hostId } = cliente;
+      dispatch(fetchCuentas({ query: { hostId, productos: 'CA,CC' } }));
+    }
   };
 
   // renders
 
   const renderDatosCliente = () => {
     const cliente = nuevaSolicitud.info.clientes?.value[0];
-    console.log(cliente);
 
     if (!cliente) return undefined;
 
