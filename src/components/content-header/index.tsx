@@ -1,7 +1,7 @@
 import { Breadcrumb, Divider } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { matchPath } from 'react-router';
 import { RootState } from 'src/app/store';
 import { STICKY, UNSELECTABLE } from 'src/constants';
@@ -32,7 +32,7 @@ export const ContentHeader: React.FC<ContentHeaderProps> = React.memo((props) =>
   const wrapperContentClassName = classNames(styles.wrapperContent, pin ? styles.wrapperContentPinned : undefined);
   const className = classNames(UNSELECTABLE, props.className, styles.contentHeader);
 
-  const router = useSelector((state: RootState) => state.router);
+  const router = useAppSelector((state: RootState) => state.router);
 
   const getItem = (path: string, items: SiderItem[]): SiderChildItem | undefined => {
     for (let i = 0; i < items.length; i++) {

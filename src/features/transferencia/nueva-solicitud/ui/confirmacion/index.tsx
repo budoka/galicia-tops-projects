@@ -1,29 +1,18 @@
-import { Button, Col, DatePicker, Descriptions, Form, Input, Row, Select, Space, Tabs, Typography } from 'antd';
-import { FormInstance, useForm } from 'antd/lib/form/Form';
+import { Button, Descriptions, Form, Row, Space, Typography } from 'antd';
 import { ArgsProps } from 'antd/lib/message';
-import _ from 'lodash';
-import React, { useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { StateContext } from 'src/app';
+import { addLeadingSlash } from 'history/PathUtils';
+import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
-import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants';
-import { Texts } from 'src/constants/texts';
-import { DetalleGasto } from 'src/features/shared/data/types';
-import { NuevaSolicitudFormState } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
-import { getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
-import { setActiveForm, setEstadoForm } from '../../logic';
-import styles from './style.module.less';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
+import { getCurrencyAmount } from 'src/utils/number';
+import { tiposPersona } from '..';
+import { renderFormTitle } from '../../../../shared/ui/utils';
+import { NuevaSolicitudDataState } from '../../data/types';
+import { addSolicitud } from '../../logic';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-const { TabPane } = Tabs;
+const { Text } = Typography;
 
 const width = 250;
-
-const reglas: Rules = {};
 
 const loadingMessage: ArgsProps = {
   key: 'loading',
@@ -34,7 +23,6 @@ const loadingMessage: ArgsProps = {
 
 interface ConfirmacionPanelProps {
   title: string;
-  //form: FormInstance<NuevaSolicitudFormState>;
 }
 
 export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
@@ -42,7 +30,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
 
   const { title } = props;
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -51,9 +39,14 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   // handlers
 
   const handleOnFinish = () => {
-    if (nuevaSolicitud.data.form?.datosOperacion?.cliente && !nuevaSolicitud.ui.form.status.datosClientes) {
-      // ok
-    }
+    if (isConfirmationEnabled()) dispatch(addSolicitud({ data: nuevaSolicitud.data as NuevaSolicitudDataState }));
+  };
+
+  const isConfirmationEnabled = () => {
+    const status = nuevaSolicitud.ui.form.status;
+    return Object.values(status).every((s) => {
+      return s === true;
+    });
   };
 
   // renders
@@ -62,20 +55,23 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
 
   const renderDatosCliente = () => {
     const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente!;
+    const vinculadoConBeneficiario = nuevaSolicitud.data.form?.datosOperacion?.vinculadoConBeneficiario;
 
     const nombreCliente = {
-      fisica: `${cliente.apellido}, ${cliente.nombre}`,
-      juridica: `${cliente.razonSocial}`,
+      fisica: `${cliente?.apellido}, ${cliente?.nombre}`,
+      juridica: `${cliente?.razonSocial}`,
     };
 
     // const documentoCliente = _.first(cliente.documentos.filter((d) => d.tipo === 'CUIT' || d.tipo === 'DU'));
 
     return (
       <Descriptions title="Datos del Cliente" size="small" bordered>
-        <Descriptions.Item label="Nombre / Razón Social" span={2}>
-          {nombreCliente[cliente.tipo]}
+        <Descriptions.Item label="Nombre / Razón Social" span={3}>
+          {nombreCliente[cliente?.tipo]}
         </Descriptions.Item>
-        <Descriptions.Item label="CUIT">{cliente.cuit}</Descriptions.Item>
+        <Descriptions.Item label="CUIT">{cliente?.cuit}</Descriptions.Item>
+        <Descriptions.Item label="Tipo de Persona">{tiposPersona.find((t) => t.id === cliente?.tipo)?.descripcion}</Descriptions.Item>
+        <Descriptions.Item label="Vinculo con Beneficiario">{vinculadoConBeneficiario ? 'Sí' : ' No'}</Descriptions.Item>
         {/*      <Descriptions.Item label={documentoCliente?.descripcion}>{+documentoCliente?.numero!}</Descriptions.Item> */}
       </Descriptions>
     );
@@ -86,10 +82,56 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
 
     return (
       <Descriptions title="Datos del Beneficiario" size="small" bordered>
-        <Descriptions.Item label="Tipo de Persona">{beneficiario?.tipoPersona}</Descriptions.Item>
-        <Descriptions.Item label="Nombre / Razón Social" span={2}>
+        <Descriptions.Item label="Nombre / Razón Social" span={3}>
           {beneficiario?.razonSocial ?? `${beneficiario?.apellido}, ${beneficiario?.nombre}`}
         </Descriptions.Item>
+        <Descriptions.Item label="NIF">{beneficiario?.nif}</Descriptions.Item>
+        <Descriptions.Item label="Tipo de Persona">{beneficiario?.tipoPersona?.descripcion}</Descriptions.Item>
+        <Descriptions.Item label="Pais">{beneficiario?.pais?.nombre}</Descriptions.Item>
+        <Descriptions.Item label="Banco">{beneficiario?.banco?.nombre}</Descriptions.Item>
+        <Descriptions.Item label="Código Banco">{beneficiario?.banco?.codigoBanco}</Descriptions.Item>
+        <Descriptions.Item label="País Banco">{beneficiario?.banco?.pais}</Descriptions.Item>
+      </Descriptions>
+    );
+  };
+
+  const renderDatosVarios = () => {
+    const { cuentaDebito, cuentaDebitoGastos, beneficiario, bancoIntermediario, gastos } = nuevaSolicitud.data.form?.datosOperacion || {};
+
+    return (
+      <Descriptions title="Varios" size="small" /* layout="vertical" */ column={4} bordered>
+        <Descriptions.Item label="Banco Intermediario">{bancoIntermediario?.nombre}</Descriptions.Item>
+        <Descriptions.Item label="Código Banco Intermediario">{bancoIntermediario?.codigoBanco}</Descriptions.Item>
+        <Descriptions.Item label="País Banco Intermediario">{bancoIntermediario?.pais}</Descriptions.Item>
+        <Descriptions.Item label="Swift Corresponsal">{gastos?.swiftCorresponsal}</Descriptions.Item>
+      </Descriptions>
+    );
+  };
+
+  const renderDatosCuentas = () => {
+    const { cuentaDebito, cuentaDebitoGastos, beneficiario } = nuevaSolicitud.data.form?.datosOperacion || {};
+
+    return (
+      <Descriptions title="Cuentas" size="small" layout="vertical" bordered>
+        <Descriptions.Item label="Cuenta Origen de Fondos">{cuentaDebito?.valor}</Descriptions.Item>
+        <Descriptions.Item label="Cuenta Destino de Fondos">{beneficiario?.banco?.cuenta}</Descriptions.Item>
+        <Descriptions.Item label="Cuenta Gastos">{cuentaDebitoGastos?.valor ?? 'N/A'}</Descriptions.Item>
+      </Descriptions>
+    );
+  };
+
+  const renderDatosImportes = () => {
+    const { importes, moneda } = nuevaSolicitud.data.form?.datosOperacion || {};
+
+    return (
+      <Descriptions title="Importes" size="small" layout="vertical" bordered>
+        {importes?.map((i, index) => (
+          <Descriptions.Item key={index} label={`Importe N°${index + 1}`}>
+            <span>
+              {getCurrencyAmount(+i?.importe)} {moneda?.id} ({i?.concepto.id})
+            </span>
+          </Descriptions.Item>
+        ))}
       </Descriptions>
     );
   };
@@ -102,15 +144,15 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         </Row>
         <Row>{renderDatosCliente()}</Row>
         <Row>{renderDatosBeneficiario()}</Row>
-      </Space>
-
-      <Form.Item style={{ position: 'sticky', top: 550 }} /* {...tailLayout} */>
-        <Space>
-          <Button type="primary" htmlType="submit">
+        <Row>{renderDatosCuentas()}</Row>
+        <Row>{renderDatosImportes()}</Row>
+        <Row>{renderDatosVarios()}</Row>
+        <Row>
+          <Button type="primary" htmlType="button" onChange={handleOnFinish}>
             Confirmar
           </Button>
-        </Space>
-      </Form.Item>
+        </Row>
+      </Space>
     </>
   );
 };

@@ -2,11 +2,11 @@ import { Col, DatePicker, Divider, Row, Select, Typography } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
 import React, { useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { StateContext } from 'src/app';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
-import { clearState } from 'src/features/transferencia/nueva-solicitud/logic';
+import { cleanState } from 'src/features/transferencia/nueva-solicitud/logic';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
@@ -102,7 +102,7 @@ export const NuevaTransferencia: React.FC = (props) => {
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
-  const nuevaTransferencia = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaTransferencia = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -135,7 +135,7 @@ export const NuevaTransferencia: React.FC = (props) => {
       );
 
       return () => {
-        dispatch(clearState());
+        dispatch(cleanState());
       };
     };
 

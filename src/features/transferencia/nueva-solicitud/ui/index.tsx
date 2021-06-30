@@ -4,12 +4,12 @@ import { DatePicker, message, Select, Tabs, Typography } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
 import React, { useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { LoadingContent } from 'src/components/loading';
 import { Wrapper } from 'src/components/wrapper';
+import { SHADOW } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { DetalleGasto, TipoPersona } from 'src/features/shared/data/types';
 import {
@@ -17,10 +17,10 @@ import {
   ClienteForm,
   CuentasForm,
   GastosForm,
-  NuevaSolicitudFormState,
+  ImportesForm,
   TransferenciaTabsNames,
 } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { addSolicitud, clearState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
+import { addSolicitud, cleanState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
 import { Rules } from 'src/types';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
@@ -29,8 +29,8 @@ import { ConfirmacionPanel } from './confirmacion';
 import { CuentasFormPanel } from './cuentas';
 import { BeneficiarioFormPanel } from './datos-beneficiario';
 import { ClienteFormPanel } from './datos-cliente';
-import { IntermediariosFormPanel } from './datos-intermediario';
 import { GastosFormPanel } from './gastos';
+import { ImportesFormPanel } from './importes';
 import styles from './style.module.less';
 import { VariosFormPanel } from './varios';
 
@@ -145,15 +145,16 @@ export const detallesGastos = [
 ];
 
 export const NuevaSolicitud: React.FC = (props) => {
-  const [transferenciaForm] = useForm<NuevaSolicitudFormState>();
+  /*  const [transferenciaForm] = useForm<NuevaSolicitudFormState>(); */
   const [clienteForm] = useForm<ClienteForm>();
   const [beneficiarioForm] = useForm<BeneficiarioForm>();
   const [gastosForm] = useForm<GastosForm>();
   const [cuentasForm] = useForm<CuentasForm>();
+  const [importesForm] = useForm<ImportesForm>();
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -194,11 +195,9 @@ export const NuevaSolicitud: React.FC = (props) => {
       );
 
       return () => {
-        dispatch(clearState());
+        dispatch(cleanState());
       };
     };
-
-    //
 
     fetchData();
   }, []);
@@ -234,8 +233,8 @@ export const NuevaSolicitud: React.FC = (props) => {
   };
 
   const handleReset = () => {
-    clienteForm.resetFields();
-    transferenciaForm.resetFields();
+    //   clienteForm.resetFields();
+    //  transferenciaForm.resetFields();
     /*     dispatch(clearUI());
     dispatch(clearForm()); */
   };
@@ -267,7 +266,12 @@ export const NuevaSolicitud: React.FC = (props) => {
           </span>
         }
         key={TransferenciaTabsNames.DATOS_CLIENTE}>
-        <ClienteFormPanel title={TransferenciaTabsNames.DATOS_CLIENTE} form={clienteForm} />
+        <ClienteFormPanel
+          title={TransferenciaTabsNames.DATOS_CLIENTE}
+          form={clienteForm}
+          gastosForm={gastosForm}
+          cuentasForm={cuentasForm}
+        />
       </TabPane>
     ),
     beneficiario: (
@@ -306,7 +310,19 @@ export const NuevaSolicitud: React.FC = (props) => {
         <CuentasFormPanel title={TransferenciaTabsNames.CUENTAS} form={cuentasForm} />
       </TabPane>
     ),
-    varios: (
+    importes: (
+      <TabPane
+        tab={
+          <span className={styles.tabWrapper}>
+            <span className={styles.tabLabel}>{TransferenciaTabsNames.IMPORTES}</span>
+            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.importes} />
+          </span>
+        }
+        key={TransferenciaTabsNames.IMPORTES}>
+        <ImportesFormPanel title={TransferenciaTabsNames.IMPORTES} form={importesForm} />
+      </TabPane>
+    ),
+    /*     varios: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
@@ -317,7 +333,7 @@ export const NuevaSolicitud: React.FC = (props) => {
         key={TransferenciaTabsNames.VARIOS}>
         <VariosFormPanel title={TransferenciaTabsNames.VARIOS} form={transferenciaForm} />
       </TabPane>
-    ),
+    ), */
     /*     intermediarios: (
       <TabPane
         tab={
@@ -344,10 +360,14 @@ export const NuevaSolicitud: React.FC = (props) => {
     ),
   };
 
-  const Form = () => {
+  const renderForm = () => {
     return (
       <>
-        <Tabs className={styles.tabs} activeKey={nuevaSolicitud.ui.form.active} tabPosition={'left'} onTabClick={handleTabClick}>
+        <Tabs
+          className={`${styles.tabs} ${SHADOW}`}
+          activeKey={nuevaSolicitud.ui.form.active}
+          tabPosition={'left'}
+          onTabClick={handleTabClick}>
           {Object.values(transferenciaTabs).map((tab) => tab)}
         </Tabs>
       </>
@@ -362,9 +382,9 @@ export const NuevaSolicitud: React.FC = (props) => {
       unselectable
       direction="column"
       vertical="top"
-      horizontal="left"
-      style={{ width: getViewWidth(loadingContent) }}>
-      {loadingContent ? <LoadingContent /> : <Form />}
+      horizontal="center"
+      style={{ minWidth: getViewWidth(loadingContent) }}>
+      {loadingContent ? <LoadingContent /> : renderForm()}
     </Wrapper>
   );
 };

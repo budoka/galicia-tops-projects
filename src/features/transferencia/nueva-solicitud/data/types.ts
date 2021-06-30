@@ -11,6 +11,7 @@ export enum TransferenciaTabsNames {
   DATOS_BENEFICIARIO = 'Datos del Beneficiario',
   GASTOS = 'Gastos',
   CUENTAS = 'Cuentas',
+  IMPORTES = 'Importes',
   INTERMEDIARIO = 'Intermediario',
   VARIOS = 'Varios',
   CONFIRMACION = 'Confirmación',
@@ -51,6 +52,7 @@ export interface NuevaSolicitudExtraState {}
 
 export interface ClienteForm {
   cuitCliente: string;
+  vinculadoConBeneficiario: boolean;
 }
 
 export interface BeneficiarioForm extends Omit<Beneficiario, 'fechaNacimiento' | 'tipoPersona' | 'pais'> {
@@ -62,16 +64,23 @@ export interface BeneficiarioForm extends Omit<Beneficiario, 'fechaNacimiento' |
 export interface GastosForm {
   gastos: {
     detalle: LabeledValue;
-    importe?: number;
+    // TODO lo de abajo se debe habilitar para detalles tipo BEN ?
+    /*     importe?: number;
     moneda?: Moneda;
     swiftCorresponsal?: string;
-    cuentaCorresponsal?: string;
+    cuentaCorresponsal?: string; */
   };
   cuentaDebitoGastos?: LabeledValue;
 }
 
 export interface CuentasForm {
   cuentaDebito: LabeledValue;
+}
+
+export interface ImportesForm {
+  importes: { importe: number; concepto: LabeledValue }[];
+  moneda: LabeledValue;
+  // concepto: LabeledValue;
 }
 
 export interface VariosForm {}
@@ -81,15 +90,15 @@ export interface VariosForm {}
 export interface StatusForm {
   datosClientes?: boolean;
   datosBeneficiario?: boolean;
-  datosIntermediarios?: boolean;
   cuentas?: boolean;
   gastos?: boolean;
-  varios?: boolean;
+  importes?: boolean;
+  //  varios?: boolean;
 }
 
 export interface DatosOperacion {
   fechaEntrada: string;
-  cliente: Cliente;
+  cliente?: Cliente;
   beneficiario: Beneficiario;
   bancoIntermediario: Banco;
   cuentaDebito: Cuenta;
@@ -97,7 +106,7 @@ export interface DatosOperacion {
   gastos: Gastos;
   importes: Importe[];
   moneda: Moneda;
-  vinculadoConBeneficiario: boolean;
+  vinculadoConBeneficiario?: boolean;
 }
 
 export interface Beneficiario {

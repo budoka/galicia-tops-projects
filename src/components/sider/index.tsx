@@ -5,9 +5,9 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from 'src/app/store';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { setOpenMenu } from 'src/features/menu/menu.slice';
 import { ObjectLiteral } from 'src/types';
@@ -28,9 +28,9 @@ interface SiderProps extends SiderPropsAnt {
 export const Sider: React.FC<SiderProps> = React.memo((props) => {
   const siderClassNames = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.sider);
 
-  const dispatch = useDispatch();
-  const menu = useSelector((state: RootState) => state.menu);
-  const router = useSelector((state: RootState) => state.router);
+  const dispatch = useAppDispatch();
+  const menu = useAppSelector((state: RootState) => state.menu);
+  const router = useAppSelector((state: RootState) => state.router);
 
   useEffect(() => {
     const pathname = window.location.pathname;

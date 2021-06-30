@@ -4,7 +4,7 @@ import { ArgsProps } from 'antd/lib/message';
 import { LabeledValue } from 'antd/lib/select';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { DATE_DD_MM_YYYY_FORMAT, Pattern } from 'src/constants';
@@ -136,7 +136,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   const [currentTipoPersona, setCurrentTipoPersona] = useState<LabeledValue>(DEFAULT_PERSON_TYPE);
 
@@ -181,11 +181,6 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
         pais: { id: pais.value, nombre: pais.label } as Pais,
       }),
     );
-  };
-
-  const test = () => {
-    dispatch(setEstadoForm({ datosBeneficiario: true, datosClientes: true, datosIntermediarios: true }));
-    //  dispatch(setActiveForm('3'));
   };
 
   const handleFill = () => {
@@ -363,19 +358,9 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
             <Button type="primary" htmlType="submit">
               Confirmar
             </Button>
-            <Button type="default" htmlType="button" onClick={test}>
-              Test
-            </Button>
             <Button type="link" htmlType="button" onClick={handleFill}>
               Completar
             </Button>
-            {/*   <Button type="default" htmlType="button" onClick={handleReset}>
-              Limpiar
-            </Button>
-
-            <Button type="link" htmlType="button" onClick={handleFill}>
-              Completar
-            </Button> */}
           </Space>
         </Form.Item>
       </Form>

@@ -3,7 +3,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
 import { LabeledValue } from 'antd/lib/select';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
@@ -58,7 +58,7 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   const [currentDetalleGastos, setCurrentDetalleGastos] = useState<LabeledValue>(DEFAULT_EXPENSE_DETAIL);
 

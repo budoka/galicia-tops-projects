@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { UserAgentApplication, Account } from 'msal';
 import React, { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { matchPath } from 'react-router-dom';
 import { useAzureAuth } from 'src/auth/hook/useAzureAuth';
 import { ContentWrapper } from 'src/components/content-wrapper';
@@ -57,8 +57,8 @@ export const siderItems: SiderItem[] = [
 export const App = () => {
   const dispatch = useAppDispatch();
   const auth = useAzureAuth();
-  const router = useSelector((state: RootState) => state.router);
-  const sesion = useSelector((state: RootState) => state.sesion.data);
+  const router = useAppSelector((state: RootState) => state.router);
+  const sesion = useAppSelector((state: RootState) => state.sesion.data);
   const contentRef = React.createRef();
 
   useEffect(() => {

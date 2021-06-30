@@ -2,9 +2,17 @@
 
 @import '~src/styles/antd/antd.less';
 
-input:-webkit-autofill {
-  -webkit-background-clip: text;
-  background-clip: text;
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  background-color: #fff !important;
+}
+
+input:-internal-autofill-selected {
+  background-color: #fff !important;
 }
 
 .fixed {

@@ -4,7 +4,7 @@ import { apis } from 'src/api/setup/setup-apis';
 import { RequestConfig } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { RootState } from 'src/app/store';
-import { Cliente } from 'src/features/shared/data/types';
+import { Cliente, DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/shared/data/types';
 import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas, fetchPaises } from '../../shared/logic';
 import { AddSolicitudDTO } from '../data/dto';
 import {
@@ -15,6 +15,8 @@ import {
   Beneficiario,
   Gastos,
   Cuenta,
+  Importe,
+  Moneda,
 } from '../data/types';
 import { TransferenciaTabsNames } from '../data/types';
 
@@ -32,13 +34,14 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
 
     console.log(data);
 
-    /*   const requestData: AddSolicitudDTO = {
+    const requestData: AddSolicitudDTO = {
       datosOperacion: {
         ...data.form.datosOperacion!,
-        cuitCliente: data.form.datosOperacion?.cliente.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
+        cuitCliente: data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
         monedaId: data.form.datosOperacion!.moneda.id!,
         beneficiario: {
           ...data.form.datosOperacion!.beneficiario!,
+          tipoPersona: data.form.datosOperacion?.beneficiario.tipoPersona.id as TipoPersona,
           paisId: data.form.datosOperacion!.beneficiario.pais.id!,
           razonSocial:
             data.form.datosOperacion!.beneficiario.razonSocial ??
@@ -55,15 +58,22 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
           paisId: data.form.datosOperacion!.bancoIntermediario.pais.id!,
         },
         cuentaDebito: {
-          ...data.form.datosOperacion!.cuentaDebito!,
-          monedaId: data.form.datosOperacion!.cuentaDebito.moneda.id!,
+          tipoCuenta: data.form.datosOperacion?.cuentaDebito?.codigo as TipoCuenta,
+          monedaId: data.form.datosOperacion?.cuentaDebito?.monedaIso!,
+          numero: data.form.datosOperacion?.cuentaDebito?.numero?.toString()!,
         },
         cuentaDebitoGastos: {
-          ...data.form.datosOperacion!.cuentaDebitoGastos!,
-          monedaId: data.form.datosOperacion!.cuentaDebitoGastos.moneda.id!,
+          tipoCuenta: data.form.datosOperacion?.cuentaDebitoGastos?.codigo as TipoCuenta,
+          monedaId: data.form.datosOperacion?.cuentaDebitoGastos?.monedaIso!,
+          numero: data.form.datosOperacion?.cuentaDebitoGastos?.numero?.toString()!,
         },
+        gasto: {
+          ...data.form.datosOperacion?.gastos,
+          detalle: data.form.datosOperacion?.gastos.detalle.id as DetalleGasto,
+        },
+        vinculadoConBeneficiario: data.form.datosOperacion?.vinculadoConBeneficiario!,
       },
-    }; */
+    };
 
     // Configuracion del servicio
     const api = apis['TRANSFERENCIA'];
@@ -88,7 +98,7 @@ const initialState: NuevaSolicitudState = {
   ui: {
     form: {
       active: TransferenciaTabsNames.DATOS_CLIENTE,
-      status: { datosClientes: false, datosBeneficiario: false, datosIntermediarios: false, cuentas: false, gastos: false },
+      status: { datosClientes: false, datosBeneficiario: false, cuentas: false, gastos: false, importes: false },
     },
   },
   error: null,
@@ -101,8 +111,15 @@ const slice = createSlice({
     /*    setForm(state, action: PayloadAction<NuevaSolicitudFormState>) {
       state.data.form = action.payload;
     }, */
-    setDatosCliente(state, action: PayloadAction<Cliente>) {
-      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cliente: action.payload } };
+    setDatosCliente(state, action: PayloadAction<{ cliente: Cliente; vinculadoConBeneficiario: boolean }>) {
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: {
+          ...state.data.form?.datosOperacion!,
+          cliente: action.payload.cliente,
+          vinculadoConBeneficiario: action.payload.vinculadoConBeneficiario,
+        },
+      };
     },
     setDatosBeneficiario(state, action: PayloadAction<Beneficiario>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, beneficiario: action.payload } };
@@ -120,13 +137,31 @@ const slice = createSlice({
     setDatosCuentas(state, action: PayloadAction<Cuenta>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cuentaDebito: action.payload } };
     },
+    setDatosImportes(state, action: PayloadAction<{ importes: Importe[]; moneda: Moneda }>) {
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: { ...state.data.form?.datosOperacion!, importes: action.payload.importes, moneda: action.payload.moneda },
+      };
+    },
     setActiveForm(state, action: PayloadAction<string>) {
       state.ui.form.active = action.payload;
     },
     setEstadoForm(state, action: PayloadAction<StatusForm>) {
       state.ui.form.status = { ...state.ui.form.status, ...action.payload };
     },
-    clearState() {
+    resetCliente(state) {
+      state.info.clientes = { value: [], loading: false };
+      // state.info.clientes = undefined;
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: {
+          ...state.data.form?.datosOperacion!,
+          cliente: undefined,
+          vinculadoConBeneficiario: undefined,
+        },
+      };
+    },
+    cleanState() {
       return initialState;
     },
   },
@@ -218,8 +253,28 @@ const slice = createSlice({
   },
 });
 
-const { setDatosCliente, setDatosBeneficiario, setDatosGastos, setDatosCuentas, setActiveForm, setEstadoForm, clearState } = slice.actions;
+const {
+  setDatosCliente,
+  setDatosBeneficiario,
+  setDatosGastos,
+  setDatosCuentas,
+  setDatosImportes,
+  setActiveForm,
+  setEstadoForm,
+  resetCliente,
+  cleanState,
+} = slice.actions;
 
-export { setDatosCliente, setDatosBeneficiario, setDatosGastos, setDatosCuentas, setActiveForm, setEstadoForm, clearState };
+export {
+  setDatosCliente,
+  setDatosBeneficiario,
+  setDatosGastos,
+  setDatosCuentas,
+  setDatosImportes,
+  setActiveForm,
+  setEstadoForm,
+  resetCliente,
+  cleanState,
+};
 
 export default slice.reducer;

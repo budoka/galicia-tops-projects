@@ -100,6 +100,8 @@ export enum Texts {
   CORRESPONDENT_BANK = 'Banco Corresponsal',
   AMOUNT = 'Importe',
   ACCOUNT = 'Cuenta',
+  ACCOUNT_SOURCE = 'Cuenta Origen de Fondos',
+  ACCOUNT_TARGET = 'Cuenta Destino de Fondos',
   ACCOUNT_EXPENSE = 'Cuenta para Gastos',
   CONCEPT = 'Concepto',
   FEE_TYPE = 'Tipo de Comisión',
@@ -110,7 +112,8 @@ export enum Texts {
   DEPARTMENT = 'Departamento',
   LOCALITY = 'Localidad',
   ZIP_CODE = 'Código Postal',
-  EXPENSE_DETAIL = 'Detalle de Gasto',
+  EXPENSE_DETAIL = 'Detalle de Gastos',
+  LINKED_BENEFICIARY = 'Vinculado con Beneficiario',
   // PLACEHOLDERS
   SELECT_PERSON_TYPE = 'Seleccione un tipo de persona',
   SELECT_COUNTRY = 'Seleccione un país',

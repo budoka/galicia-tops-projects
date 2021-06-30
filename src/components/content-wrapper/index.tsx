@@ -2,7 +2,7 @@ import { Breadcrumb, Divider } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { matchPath } from 'react-router';
 import { Router } from 'react-router-dom';
 import { RootState } from 'src/app/store';
@@ -23,7 +23,7 @@ interface ContentWrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 
 export const ContentWrapper: React.FC<ContentWrapperProps> = React.memo((props) => {
   const { className, children } = props;
 
-  const router = useSelector((state: RootState) => state.router);
+  const router = useAppSelector((state: RootState) => state.router);
 
   const [scroll, setScroll] = useState<Scroll>({ x: 0, y: 0 });
 

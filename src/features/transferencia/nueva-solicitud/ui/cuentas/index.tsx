@@ -3,7 +3,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
 import { LabeledValue } from 'antd/lib/select';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
@@ -48,7 +48,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -75,7 +75,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ cuentas: true }));
-    dispatch(setActiveForm(TransferenciaTabsNames.VARIOS));
+    dispatch(setActiveForm(TransferenciaTabsNames.IMPORTES));
   };
 
   const setData = () => {
@@ -93,7 +93,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.ACCOUNT} name={'cuentaDebito'} rules={getRule(reglas, 'cuentaDebito')} required>
+              <Form.Item label={Texts.ACCOUNT_SOURCE} name={'cuentaDebito'} rules={getRule(reglas, 'cuentaDebito')} required>
                 <Select
                   labelInValue
                   placeholder={Texts.SELECT_ACCOUNT}

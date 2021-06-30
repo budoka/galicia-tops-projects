@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, Row, Select, Space, Tabs, Typogra
 import { FormInstance, useForm } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
 import React, { useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/app/store/hooks';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
 import { useAppDispatch } from 'src/app/store/hooks';
@@ -41,7 +41,7 @@ export const IntermediariosFormPanel: React.FC<IntermediariosFormPanelProps> = (
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
 
   // useEffects
 
@@ -50,7 +50,7 @@ export const IntermediariosFormPanel: React.FC<IntermediariosFormPanelProps> = (
   // handlers
 
   const handleOnFinish = () => {
-    dispatch(setEstadoForm({ datosIntermediarios: true }));
+    /*  dispatch(setEstadoForm({ intermediarios: true })); */
     dispatch(setActiveForm(TransferenciaTabsNames.VARIOS));
   };
 

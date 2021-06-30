@@ -3,13 +3,12 @@ import { Button, Layout } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/app/store';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { APP_TITLE, SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
 import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
-
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
 import { getScreenOrientation } from 'src/utils/screen';
@@ -22,10 +21,10 @@ interface HeaderProps extends LayoutProps {
 }
 
 export const Header: React.FC<HeaderProps> = (props) => {
-  const sesion = useSelector((state: RootState) => state.sesion);
-  const settings = useSelector((state: RootState) => state.configuracion);
-  const menu = useSelector((state: RootState) => state.menu);
-  const dispatch = useDispatch();
+  const sesion = useAppSelector((state: RootState) => state.sesion);
+  const settings = useAppSelector((state: RootState) => state.configuracion);
+  const menu = useAppSelector((state: RootState) => state.menu);
+  const dispatch = useAppDispatch();
   const size = useWindowSize();
 
   const [rotate, setRotate] = useState(false);
