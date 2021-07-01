@@ -1,33 +1,32 @@
 import { ContainerOutlined, FileAddOutlined, HomeOutlined, RetweetOutlined } from '@ant-design/icons';
 import { Layout } from 'antd';
 import _ from 'lodash';
-import { UserAgentApplication, Account } from 'msal';
+import { Account, UserAgentApplication } from 'msal';
 import React, { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useAppSelector } from 'src/app/store/hooks';
 import { matchPath } from 'react-router-dom';
+import 'src/api/setup/setup-axios';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { useAzureAuth } from 'src/auth/hook/useAzureAuth';
 import { ContentWrapper } from 'src/components/content-wrapper';
 import { Header } from 'src/components/header';
-import { LoadingContent } from 'src/components/loading';
 import 'src/components/message/setup-message';
 import { Router } from 'src/components/router';
-import { Sider } from 'src/components/sider';
-import { SiderChildItem, SiderItem } from 'src/components/sider/types';
+import { NavigatorMenu } from 'src/components/navigator-menu';
+import { MenuChildItem, MenuItem } from 'src/components/navigator-menu/types';
 import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import 'src/api/setup/setup-axios';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { setUsuario } from 'src/features/sesion/sesion.slice';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
-import styles from './style.module.less';
 import { RootState } from './store';
-import { setUsuario } from 'src/features/sesion/sesion.slice';
+import styles from './style.module.less';
 
 /**
  * Configuración de context para hacer funcionar la autenticacion con msal.
- * TODO: Se debe reemplazar por la library de msal nueva.
+ * TODO: Se debe reemplazar el por la library de msal nueva (requiere sacar el context 'StateContext' y las referencias #REF-MSAL.
+ *       A su vez se requiere cambiar la configuracion de Azure para que acepte
  */
 
 export type State = {
@@ -41,16 +40,20 @@ export const StateContext = createContext<State>({});
  * Inicio de App
  */
 
-export const siderItems: SiderItem[] = [
-  { view: views['Inicio'], icon: <HomeOutlined /> },
+export const menuItems: MenuItem[] = [
+  // { view: views['Inicio'], icon: <HomeOutlined /> },
   { view: views['Mensajes'], icon: <ContainerOutlined /> },
-  { title: Texts.REQUESTS, icon: <FileAddOutlined />, children: [{ view: views['Solicitudes'] }, { view: views['Crear_Solicitud'] }] },
-  { title: Texts.TRANSFERS, icon: <RetweetOutlined />, children: [{ view: views['Crear_Transferencia'] }] },
+  {
+    title: Texts.PAY_ORDER,
+    icon: <FileAddOutlined />,
+    children: [{ view: views['Crear_Solicitud_Orden_De_Pago'] }, { view: views['Crear_Instruccion_Orden_De_Pago'] }],
+  },
+  { title: Texts.TRANSFER, icon: <RetweetOutlined />, children: [{ view: views['Crear_Solicitud_Transferencia'] }] },
 ].map((parent) => {
   if (!parent.children) return parent;
   return {
     ...parent,
-    children: (parent.children as SiderChildItem[]).map((item) => ({ ...item, parent: parent.title })),
+    children: (parent.children as MenuChildItem[]).map((item) => ({ ...item, parent: parent.title })),
   };
 });
 
@@ -84,6 +87,7 @@ export const App = () => {
   };
 
   // TODO: Eliminar
+  // #REF-MSAL
   const [gS, setGS] = useState<State>({
     msalInstance: new UserAgentApplication({
       auth: {
@@ -94,6 +98,8 @@ export const App = () => {
     }),
   });
 
+  // TODO: Eliminar
+  // #REF-MSAL
   /* if (gS && gS.msalInstance) {
     gS.msalInstance.handleRedirectCallback((error, response) => {
       // console.log("REDIRECT CALLED BACK");
@@ -106,6 +112,7 @@ export const App = () => {
   } */
 
   // TODO: Eliminar
+  // #REF-MSAL
   if (gS && gS.msalInstance && !gS.msalInstance.getAccount() && !gS.msalInstance.getLoginInProgress()) {
     gS.msalInstance.loginRedirect({ scopes: ['user.read'] });
   } else if (gS && gS.msalInstance && !gS.account) {
@@ -138,6 +145,7 @@ export const App = () => {
  */
 
   // TODO: Reemplazar por la autenticacion con msal 2.
+  // #REF-MSAL
   return (
     <StateContext.Provider value={gS}>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
@@ -146,7 +154,7 @@ export const App = () => {
       <Layout style={{ height: '100vh' }}>
         <Header className={styles.header} />
         <Layout className={styles.main}>
-          <Sider items={siderItems} />
+          <NavigatorMenu items={menuItems} />
           <ContentWrapper className={styles.content}>
             <Router views={views} />
           </ContentWrapper>

@@ -1,5 +1,5 @@
 import { LabeledValue } from 'antd/lib/select';
-import { Cliente, DetalleGasto, Keyable, TipoCodigo, TipoComision, TipoPersona } from 'src/features/shared/data/types';
+import { Cliente, DetalleGasto, Keyable, TipoCodigo, TipoPersona } from 'src/features/shared/data/types';
 import { BaseState, InfoState } from 'src/features/types';
 
 /**
@@ -28,7 +28,6 @@ export interface NuevaSolicitudInfoState {
   cuentas: InfoState<Cuenta[]>;
   conceptos: InfoState<Concepto[]>;
   corresponsales: InfoState<BancoCorresponsal[]>;
-  tiposComisiones: InfoState<TipoComision[]>;
   monedas: InfoState<Moneda[]>;
   paises: InfoState<Pais[]>;
 }

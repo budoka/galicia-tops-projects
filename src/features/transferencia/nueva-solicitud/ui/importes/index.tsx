@@ -98,7 +98,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
 
   const isConfirmationEnabled = () => {
     const status = nuevaSolicitud.ui.form.status;
-    console.log(status);
+
     return Object.values(status).every((s) => {
       return s === true;
     });

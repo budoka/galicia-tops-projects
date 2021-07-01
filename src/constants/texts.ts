@@ -83,8 +83,11 @@ export enum Texts {
   REQUESTS = 'Solicitudes',
   REQUEST = 'Solicitud',
   NEW_REQUEST = 'Nueva Solicitud',
+  NEW_INSTRUCTION = 'Nueva Instrucción',
   TRANSFERS = 'Transferencias',
   TRANSFER = 'Transferencia',
+  PAY_ORDER = 'Orden de Pago',
+  PAY_ORDERS = 'Ordenes de Pago',
   NEW_TRANSFER = 'Nueva Transferencia',
   // FIELDS
   PERSON_TYPE = 'Tipo de Persona',

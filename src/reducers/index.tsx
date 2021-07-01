@@ -19,5 +19,3 @@ export const createRootReducer = (history: History) => {
     router: connectRouter(history),
   });
 };
-
-// export type RootState = ReturnType<ReturnType<typeof createRootReducer>>;

@@ -9,20 +9,35 @@ import { View } from 'src/views/types';
 /* Definición de las vistas de la aplicación */
 
 export interface Views {
-  Inicio: View;
+  //Inicio: View;
   Mensajes: View;
-  Solicitudes: View;
-  Crear_Solicitud: View;
-  Crear_Transferencia: View;
+  Crear_Solicitud_Orden_De_Pago: View;
+  Crear_Instruccion_Orden_De_Pago: View;
+  Crear_Solicitud_Transferencia: View;
   Not_Found: View;
 }
 
 const views: Views = {
-  Inicio: { title: Texts.HOME, path: '/', component: <Inicio />, scope: 'user.read' },
-  Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <Unavailable />, scope: 'user.read' },
-  Solicitudes: { title: Texts.REQUESTS, path: '/solicitudes', component: <Unavailable />, scope: 'user.read' },
-  Crear_Solicitud: { title: Texts.NEW_REQUEST, path: '/nueva-solicitud', component: <Unavailable />, scope: 'user.read' },
-  Crear_Transferencia: { title: Texts.NEW_TRANSFER, path: '/nueva-transferencia', component: <NuevaSolicitud />, scope: 'user.read' },
+  //Inicio: { title: Texts.HOME, path: '/', component: <Inicio />, scope: 'user.read' },
+  Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <Unavailable />, scope: 'user.read', homePage: true },
+  Crear_Solicitud_Orden_De_Pago: {
+    title: Texts.NEW_REQUEST,
+    path: '/orden-de-pago/nueva-solicitud',
+    component: <Unavailable />,
+    scope: 'user.read',
+  },
+  Crear_Instruccion_Orden_De_Pago: {
+    title: Texts.NEW_INSTRUCTION,
+    path: '/orden-de-pago/nueva-instruccion',
+    component: <Unavailable />,
+    scope: 'user.read',
+  },
+  Crear_Solicitud_Transferencia: {
+    title: Texts.NEW_REQUEST,
+    path: '/transferencia/nueva-solicitud',
+    component: <NuevaSolicitud />,
+    scope: 'user.read',
+  },
   // Not Found
   Not_Found: { title: Texts.NOT_FOUND, path: undefined, component: <NotFound /> },
 };

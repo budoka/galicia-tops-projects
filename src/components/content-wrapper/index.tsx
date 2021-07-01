@@ -1,22 +1,10 @@
-import { Breadcrumb, Divider } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
-import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
-import { matchPath } from 'react-router';
-import { Router } from 'react-router-dom';
 import { RootState } from 'src/app/store';
-import { STICKY, UNSELECTABLE } from 'src/constants';
+import { useAppSelector } from 'src/app/store/hooks';
 import { BasicComponentProps } from 'src/types';
-import { useScroll } from 'src/utils/hooks';
-import { views } from 'src/views';
-import { siderItems } from '../../app';
-import { Cart } from '../cart';
 import { ContentHeader } from '../content-header';
-import { SiderChildItem, SiderItem, SiderParentItem } from '../sider/types';
-import { Wrapper } from '../wrapper';
 import { Scroll } from './interface';
-import styles from './style.module.less';
 
 interface ContentWrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {}
 

@@ -1,4 +1,4 @@
-import { OpcionEx } from 'src/types';
+import { LabeledValue } from 'antd/lib/select';
 
 export interface Keyable {
   id: string | number;
@@ -6,31 +6,6 @@ export interface Keyable {
 }
 
 export type KeysMatching<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never }[keyof T];
-
-export interface MonedaOpt extends Omit<OpcionEx, 'value'> {
-  value: string;
-}
-
-export interface PaisOpt extends Omit<OpcionEx, 'value'> {
-  value: number;
-}
-
-export interface ConceptoOpt extends Omit<OpcionEx, 'value'> {
-  value: string;
-}
-
-export interface TipoComision extends Omit<OpcionEx, 'value'> {
-  value: string;
-}
-
-export interface BancoOpt extends Omit<OpcionEx, 'value'> {
-  value: string;
-  pais: PaisOpt;
-}
-
-export interface CuentaOpt extends Omit<OpcionEx, 'value'> {
-  value: string;
-}
 
 export type TipoPersona = 'fisica' | 'juridica';
 export type TipoCuenta = 'ca' | 'cc';

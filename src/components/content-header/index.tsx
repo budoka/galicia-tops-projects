@@ -7,10 +7,10 @@ import { RootState } from 'src/app/store';
 import { STICKY, UNSELECTABLE } from 'src/constants';
 import { BasicComponentProps } from 'src/types';
 import { useScroll } from 'src/utils/hooks';
-import { siderItems } from '../../app';
+import { menuItems } from '../../app';
 import { Cart } from '../cart';
 import { Scroll } from '../content-wrapper/interface';
-import { SiderChildItem, SiderItem, SiderParentItem } from '../sider/types';
+import { MenuChildItem, MenuItem, MenuParentItem } from '../navigator-menu/types';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 
@@ -34,10 +34,10 @@ export const ContentHeader: React.FC<ContentHeaderProps> = React.memo((props) =>
 
   const router = useAppSelector((state: RootState) => state.router);
 
-  const getItem = (path: string, items: SiderItem[]): SiderChildItem | undefined => {
+  const getItem = (path: string, items: MenuItem[]): MenuChildItem | undefined => {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const child = item as SiderChildItem;
+      const child = item as MenuChildItem;
 
       const isEq =
         child.view &&
@@ -51,7 +51,7 @@ export const ContentHeader: React.FC<ContentHeaderProps> = React.memo((props) =>
         //  console.log(child);
         return child;
       }
-      const parent = item as SiderParentItem;
+      const parent = item as MenuParentItem;
 
       if (parent.children) {
         const item = getItem(path, parent.children);
@@ -61,11 +61,11 @@ export const ContentHeader: React.FC<ContentHeaderProps> = React.memo((props) =>
   };
 
   const renderItem = () => {
-    const item = getItem(router.location.pathname, siderItems)!;
+    const item = getItem(router.location.pathname, menuItems)!;
     return (
       <>
-        <Breadcrumb.Item>{item.parent}</Breadcrumb.Item>
-        <Breadcrumb.Item>{item.view.title}</Breadcrumb.Item>
+        <Breadcrumb.Item>{item?.parent}</Breadcrumb.Item>
+        <Breadcrumb.Item>{item?.view?.title}</Breadcrumb.Item>
       </>
     );
   };

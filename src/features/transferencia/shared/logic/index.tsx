@@ -14,6 +14,7 @@ import {
   GetPaisDTO,
 } from 'src/features/shared/data/dto/common.dto';
 import { Cliente, CuentaProducto } from 'src/features/shared/data/types';
+import { getAccountFormat } from 'src/utils/galicia';
 import { BancoCorresponsal, Concepto, Cuenta, Moneda, Pais } from '../../nueva-solicitud/data/types';
 
 const FEATURE_NAME = 'shared';
@@ -164,7 +165,7 @@ export const fetchCuentas = createAsyncThunk<Cuenta[], RequestConfig | undefined
     let infoProductos: GetInfoProductosDTO = responseData;
 
     const cuentas = infoProductos.productos.cuentas.map((cuenta) => {
-      const valor = `${cuenta.codigo} | ${cuenta.monedaIso} | ${cuenta.numero}`;
+      const valor = getAccountFormat(cuenta.monedaIso, cuenta.codigo, cuenta.numero);
       return {
         ...cuenta,
         id: valor,

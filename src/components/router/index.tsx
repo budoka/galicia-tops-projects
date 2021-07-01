@@ -10,27 +10,47 @@ type RouterProps = {
 export const Router: React.FC<RouterProps> = React.memo((props) => {
   useEffect(() => console.log('router'));
 
-  const renderViews = (views: Views) => {
-    const viewsArray = Object.values(views) as View[];
-    return (
-      viewsArray
-        // .filter((view) => !view.scope)
-        .map((view) => {
-          const key = view.title;
+  const views = Object.values(props.views) as View[];
+  const homePage = views.find((v) => v.homePage)?.path ?? '/aaa';
 
-          return (
-            <Route key={key} exact path={view.path}>
-              {view.component}
-            </Route>
-          );
-        })
+  const removeTrailingSlashes = () => {
+    const path = window.location.pathname;
+    let trailingSlashes = 0;
+
+    // Count the latest trailing slashes then remove them.
+    Array.from(path)
+      .reverse()
+      .some((c) => {
+        if (c === '/') trailingSlashes++;
+        return c !== '/';
+      });
+
+    const fixedPath = path.slice(0, -1 * trailingSlashes);
+
+    return <Redirect from="/:url*(/+)" to={fixedPath} />;
+  };
+
+  const setRoutes = (views: View[]) => {
+    return (
+      views
+        // .filter((view) => !view.scope)
+        .map((view) => (
+          <Route key={view.title} exact path={view.path}>
+            {view.component}
+          </Route>
+        ))
     );
+  };
+
+  const redirectHome = () => {
+    return <Redirect from="/" to={homePage} exact />;
   };
 
   return (
     <Switch>
-      <Redirect from="/:url*(/+)" to={window.location.pathname.slice(0, -1)} />
-      {renderViews(props.views)}
+      {removeTrailingSlashes()}
+      {redirectHome()}
+      {setRoutes(views)}
     </Switch>
   );
 });

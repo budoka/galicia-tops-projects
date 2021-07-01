@@ -33,5 +33,4 @@ const slice = createSlice({
 
 export const { setOpenMenu, toggleCollapse, toggleForcedCollapse, toggleButtonVisible } = slice.actions;
 
-//export default slice.reducer;
-export default slice.reducer as Reducer<typeof initialState>;
+export default slice.reducer;

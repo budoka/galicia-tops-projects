@@ -1,16 +1,16 @@
 import { View } from 'src/views';
 
-export interface SiderParentItem {
+export interface MenuParentItem {
   title: string;
-  children: SiderChildItem[];
+  children: MenuChildItem[];
   icon?: React.ReactNode;
 }
 
-export interface SiderChildItem {
+export interface MenuChildItem {
   view: View;
   parent?: string;
   icon?: React.ReactNode;
   hidden?: boolean;
 }
 
-export type SiderItem = SiderParentItem | SiderChildItem;
+export type MenuItem = MenuParentItem | MenuChildItem;
