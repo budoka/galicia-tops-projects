@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import styles from './style.module.less';
 
 type Direction = 'row' | 'column';
@@ -22,20 +22,7 @@ interface WrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'classN
 }
 
 export const Wrapper: React.FC<WrapperProps> = (props) => {
-  const {
-    contentWrapper,
-    contentBody,
-    className,
-    unselectable,
-    direction,
-    horizontal,
-    vertical,
-    scroll,
-    shadow,
-    fixed,
-    sticky,
-    ...restProps
-  } = props;
+  const { contentWrapper, contentBody, className, unselectable, direction, horizontal, vertical, scroll, shadow, fixed, sticky, ...restProps } = props;
 
   const wrapperClassName = classNames(
     contentWrapper && styles.wrapper,

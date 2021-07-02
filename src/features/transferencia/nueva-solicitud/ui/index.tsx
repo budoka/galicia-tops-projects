@@ -1,30 +1,23 @@
 import { CheckCircleFilled } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { DatePicker, message, Select, Tabs, Typography } from 'antd';
+import { message, Tabs } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
 import React, { useContext, useEffect } from 'react';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { LoadingContent } from 'src/components/loading';
+import { ServiceError } from 'src/components/service-error';
 import { Wrapper } from 'src/components/wrapper';
 import { SHADOW } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { DetalleGasto, TipoPersona } from 'src/features/shared/data/types';
-import {
-  BeneficiarioForm,
-  ClienteForm,
-  CuentasForm,
-  GastosForm,
-  ImportesForm,
-  TransferenciaTabsNames,
-} from 'src/features/transferencia/nueva-solicitud/data/types';
 import { addSolicitud, cleanState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
-import { Rules } from 'src/types';
+import { DetalleGasto, TipoPersona } from 'src/features/_shared/data/types';
+import { fetchMonedas, fetchPaises, fetchCorresponsales, fetchConceptos } from 'src/features/_shared/logic';
+import { Rules } from 'src/types/interfaces';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
-import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchPaises } from '../../shared/logic';
+import { ClienteForm, BeneficiarioForm, GastosForm, CuentasForm, ImportesForm, FormNames } from '../data/forms';
 import { ConfirmacionPanel } from './confirmacion';
 import { CuentasFormPanel } from './cuentas';
 import { BeneficiarioFormPanel } from './datos-beneficiario';
@@ -32,111 +25,17 @@ import { ClienteFormPanel } from './datos-cliente';
 import { GastosFormPanel } from './gastos';
 import { ImportesFormPanel } from './importes';
 import styles from './style.module.less';
-import { VariosFormPanel } from './varios';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
 const { TabPane } = Tabs;
 
-const width = 250;
-
-/* export enum TransferenciaTabsNames {
-  DATOS_CLIENTE = 'Datos del Cliente',
-  DATOS_BENEFICIARIO = 'Datos del Beneficiario',
-  GASTOS = 'Gastos',
-  CUENTAS = 'Cuentas',
-  INTERMEDIARIO = 'Intermediario',
-  VARIOS = 'Varios',
-  CONFIRMACION = 'Confirmación',
-} */
-
-const reglas: Rules = {
-  cuit: [
-    {
-      required: true,
-      message: 'CUIT no válido',
-    },
-  ],
-  banco: [
-    {
-      required: true,
-      message: 'Banco no válido',
-    },
-  ],
-  cuentaBeneficiario: [
-    {
-      required: true,
-      message: 'Cuenta no válida',
-    },
-  ],
-  nombre: [
-    {
-      required: true,
-      message: 'Nombre o Razón Social no válida',
-    },
-  ],
-  fecha: [
-    {
-      required: true,
-      message: 'Fecha no válida',
-    },
-  ],
-  cuentaOrdenante: [
-    {
-      required: true,
-      message: 'Cuenta no válida',
-    },
-  ],
-  concepto: [
-    {
-      required: true,
-      message: 'Concepto no válido',
-    },
-  ],
-  corresponsal: [
-    {
-      required: true,
-      message: 'Banco Corresponsal no válido',
-    },
-  ],
-  tipoComision: [
-    {
-      required: true,
-      message: 'Tipo de Comisión no válido',
-    },
-  ],
-  moneda: [
-    {
-      required: true,
-      message: 'Moneda no válida',
-    },
-  ],
-  importe: [
-    {
-      required: true,
-      pattern: /^[0-9]+(,[0-9]{1,2})?$/,
-      message: 'Importe no válido',
-    },
-  ],
-};
-
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
+interface TransferenciaTabs {
+  [tab: string]: JSX.Element;
+}
 
 export const tiposPersona = [
   { id: 'fisica', descripcion: 'Física' } as { id: TipoPersona; descripcion: string },
   { id: 'juridica', descripcion: 'Jurídica' } as { id: TipoPersona; descripcion: string },
 ];
-
-/* export const tiposPersona = [
-  { value: 'fisica', label: 'Física' } as { value: TipoPersona; label: string },
-  { value: 'juridica', label: 'Jurídica' } as { value: TipoPersona; label: string },
-]; */
 
 export const detallesGastos = [
   { id: 'ben', descripcion: 'BEN' } as { id: DetalleGasto; descripcion: string },
@@ -145,7 +44,6 @@ export const detallesGastos = [
 ];
 
 export const NuevaSolicitud: React.FC = (props) => {
-  /*  const [transferenciaForm] = useForm<NuevaSolicitudFormState>(); */
   const [clienteForm] = useForm<ClienteForm>();
   const [beneficiarioForm] = useForm<BeneficiarioForm>();
   const [gastosForm] = useForm<GastosForm>();
@@ -154,7 +52,7 @@ export const NuevaSolicitud: React.FC = (props) => {
   const state = useContext(StateContext);
   const dispatch = useAppDispatch();
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   // useEffects
 
@@ -202,6 +100,10 @@ export const NuevaSolicitud: React.FC = (props) => {
     fetchData();
   }, []);
 
+  /*   useEffect(() => {
+
+  }, [nuevaSolicitud.info]); */
+
   // handlers
 
   /*   useEffect(() => {
@@ -222,7 +124,7 @@ export const NuevaSolicitud: React.FC = (props) => {
   }, [nuevaSolicitud.data.form?.datosOperacion?.cliente]); */
 
   const handleNuevaTransferenciaForm = (values: any) => {
-    dispatch(addSolicitud({ data: values }))
+    dispatch(addSolicitud({ body: values }))
       .then(unwrapResult)
       .then(() => {
         message.success({ key: 'loading', content: Texts.TRANSFER_CREATION_OK, duration: 3 });
@@ -250,76 +152,93 @@ export const NuevaSolicitud: React.FC = (props) => {
     });
   };
 
-  // renders
+  const isFetchingData = () => {
+    const info = nuevaSolicitud.info;
 
-  interface TransferenciaTabs {
-    [tab: string]: JSX.Element;
-  }
+    return Object.entries(info)
+      .filter((entry) => !['clientes', 'cuentas'].includes(entry[0]))
+      .some((entry) => {
+        return entry[1]?.loading;
+      });
+  };
+
+  const hasError = () => {
+    const info = nuevaSolicitud.info;
+
+    return Object.entries(info)
+      .filter((entry) => !['clientes', 'cuentas'].includes(entry[0]))
+      .some((entry) => {
+        return entry[1]?.error;
+      });
+  };
+
+  const isContentLoading = isFetchingData();
+
+  const hasContentError = hasError();
+
+  // renders
 
   const transferenciaTabs: TransferenciaTabs = {
     cliente: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.DATOS_CLIENTE}</span>
+            <span className={styles.tabLabel}>{FormNames.DATOS_CLIENTE}</span>
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosClientes} />
           </span>
         }
-        key={TransferenciaTabsNames.DATOS_CLIENTE}>
-        <ClienteFormPanel
-          title={TransferenciaTabsNames.DATOS_CLIENTE}
-          form={clienteForm}
-          gastosForm={gastosForm}
-          cuentasForm={cuentasForm}
-        />
+        key={FormNames.DATOS_CLIENTE}>
+        <ClienteFormPanel title={FormNames.DATOS_CLIENTE} clienteForm={clienteForm} gastosForm={gastosForm} cuentasForm={cuentasForm} />
       </TabPane>
     ),
     beneficiario: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.DATOS_BENEFICIARIO}</span>
+            <span className={styles.tabLabel}>{FormNames.DATOS_BENEFICIARIO}</span>
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosBeneficiario} />
           </span>
         }
-        key={TransferenciaTabsNames.DATOS_BENEFICIARIO}>
-        <BeneficiarioFormPanel title={TransferenciaTabsNames.DATOS_BENEFICIARIO} form={beneficiarioForm} />
+        key={FormNames.DATOS_BENEFICIARIO}>
+        <BeneficiarioFormPanel title={FormNames.DATOS_BENEFICIARIO} form={beneficiarioForm} />
       </TabPane>
     ),
     gastos: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.GASTOS}</span>
+            <span className={styles.tabLabel}>{FormNames.GASTOS}</span>
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.gastos} />
           </span>
         }
-        key={TransferenciaTabsNames.GASTOS}>
-        <GastosFormPanel title={TransferenciaTabsNames.GASTOS} form={gastosForm} />
+        key={FormNames.GASTOS}
+        disabled={!nuevaSolicitud.ui.form.status.datosClientes}>
+        <GastosFormPanel title={FormNames.GASTOS} form={gastosForm} />
       </TabPane>
     ),
     cuentas: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.CUENTAS}</span>
+            <span className={styles.tabLabel}>{FormNames.CUENTAS}</span>
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.cuentas} />
           </span>
         }
-        key={TransferenciaTabsNames.CUENTAS}>
-        <CuentasFormPanel title={TransferenciaTabsNames.CUENTAS} form={cuentasForm} />
+        key={FormNames.CUENTAS}
+        disabled={!nuevaSolicitud.ui.form.status.datosClientes}>
+        <CuentasFormPanel title={FormNames.CUENTAS} form={cuentasForm} />
       </TabPane>
     ),
     importes: (
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.IMPORTES}</span>
+            <span className={styles.tabLabel}>{FormNames.IMPORTES}</span>
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.importes} />
           </span>
         }
-        key={TransferenciaTabsNames.IMPORTES}>
-        <ImportesFormPanel title={TransferenciaTabsNames.IMPORTES} form={importesForm} />
+        key={FormNames.IMPORTES}>
+        <ImportesFormPanel title={FormNames.IMPORTES} form={importesForm} />
       </TabPane>
     ),
     /*     varios: (
@@ -350,12 +269,12 @@ export const NuevaSolicitud: React.FC = (props) => {
       <TabPane
         tab={
           <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.CONFIRMACION}</span>
+            <span className={styles.tabLabel}>{FormNames.CONFIRMACION}</span>
           </span>
         }
         disabled={!isConfirmationEnabled()}
-        key={TransferenciaTabsNames.CONFIRMACION}>
-        <ConfirmacionPanel title={TransferenciaTabsNames.CONFIRMACION} />
+        key={FormNames.CONFIRMACION}>
+        <ConfirmacionPanel title={FormNames.CONFIRMACION} />
       </TabPane>
     ),
   };
@@ -363,18 +282,12 @@ export const NuevaSolicitud: React.FC = (props) => {
   const renderForm = () => {
     return (
       <>
-        <Tabs
-          className={`${styles.tabs} ${SHADOW}`}
-          activeKey={nuevaSolicitud.ui.form.active}
-          tabPosition={'left'}
-          onTabClick={handleTabClick}>
+        <Tabs className={`${styles.tabs} ${SHADOW}`} activeKey={nuevaSolicitud.ui.form.active} tabPosition={'left'} onTabClick={handleTabClick}>
           {Object.values(transferenciaTabs).map((tab) => tab)}
         </Tabs>
       </>
     );
   };
-
-  const loadingContent = false;
 
   return (
     <Wrapper
@@ -383,8 +296,8 @@ export const NuevaSolicitud: React.FC = (props) => {
       direction="column"
       vertical="top"
       horizontal="center"
-      style={{ minWidth: getViewWidth(loadingContent) }}>
-      {loadingContent ? <LoadingContent /> : renderForm()}
+      style={{ minWidth: getViewWidth(isContentLoading || hasContentError) }}>
+      {isContentLoading ? <LoadingContent /> : hasContentError ? <ServiceError /> : renderForm()}
     </Wrapper>
   );
 };

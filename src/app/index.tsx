@@ -1,26 +1,26 @@
-import { ContainerOutlined, FileAddOutlined, HomeOutlined, RetweetOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FileAddOutlined, RetweetOutlined } from '@ant-design/icons';
 import { Layout } from 'antd';
 import _ from 'lodash';
 import { Account, UserAgentApplication } from 'msal';
 import React, { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchPath } from 'react-router-dom';
-import 'src/api/setup/setup-axios';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { useAzureAuth } from 'src/auth/hook/useAzureAuth';
 import { ContentWrapper } from 'src/components/content-wrapper';
 import { Header } from 'src/components/header';
 import 'src/components/message/setup-message';
 import { Router } from 'src/components/router';
-import { NavigatorMenu } from 'src/components/navigator-menu';
-import { MenuChildItem, MenuItem } from 'src/components/navigator-menu/types';
 import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
+import { NavigatorMenu } from 'src/features/navigator-menu/ui';
+import { MenuChildItem, MenuItem } from 'src/features/navigator-menu/ui/types';
 import { setUsuario } from 'src/features/sesion/sesion.slice';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
 import { RootState } from './store';
+import 'src/api/setup/setup-axios';
 import styles from './style.module.less';
 
 /**
@@ -113,13 +113,13 @@ export const App = () => {
 
   // TODO: Eliminar
   // #REF-MSAL
-  if (gS && gS.msalInstance && !gS.msalInstance.getAccount() && !gS.msalInstance.getLoginInProgress()) {
-    gS.msalInstance.loginRedirect({ scopes: ['user.read'] });
-  } else if (gS && gS.msalInstance && !gS.account) {
-    setGS({ ...gS, account: gS.msalInstance.getAccount() });
+  if (gS && gS.msalInstance && !gS.msalInstance?.getAccount() && !gS.msalInstance?.getLoginInProgress()) {
+    gS?.msalInstance.loginRedirect({ scopes: ['user.read'] });
+  } else if (gS && gS?.msalInstance && !gS.account) {
+    setGS({ ...gS, account: gS?.msalInstance?.getAccount() });
 
-    const nombreUsuario = gS.msalInstance.getAccount().name;
-    const legajo = getLegajoFromEmail(gS.msalInstance.getAccount().userName)!;
+    const nombreUsuario = gS?.msalInstance?.getAccount()?.name;
+    const legajo = getLegajoFromEmail(gS?.msalInstance?.getAccount()?.userName)!;
     dispatch(setUsuario({ nombreUsuario, legajo }));
   }
 

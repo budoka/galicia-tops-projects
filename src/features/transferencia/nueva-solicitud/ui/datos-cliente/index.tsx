@@ -1,20 +1,21 @@
 import { ClearOutlined } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Alert, Button, Checkbox, Form, Input, message, Space } from 'antd';
+import { Alert, Button, Checkbox, Form, Input, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import { ClienteForm, CuentasForm, GastosForm, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { fetchCuentas, fetchDatosClientes } from 'src/features/transferencia/shared/logic';
-import { Rules } from 'src/types';
-import { getRule, renderFormTitle } from '../../../../shared/ui/utils';
+import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
+import { Rules } from 'src/types/interfaces';
+import { Message } from 'src/utils/messages';
+import { getRule, renderFormTitle } from '../../../../_shared/ui/utils';
+import { ClienteForm, CuentasForm, FormNames, GastosForm } from '../../data/forms';
 import { resetCliente, setActiveForm, setDatosCliente, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
-const reglas: Rules = {
+const rules: Rules = {
   cuit: [
     {
       required: true,
@@ -31,7 +32,7 @@ const reglas: Rules = {
 
 interface ClienteFormPanelProps {
   title: string;
-  form: FormInstance<ClienteForm>;
+  clienteForm: FormInstance<ClienteForm>;
   gastosForm: FormInstance<GastosForm>;
   cuentasForm: FormInstance<CuentasForm>;
 }
@@ -39,9 +40,9 @@ interface ClienteFormPanelProps {
 export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   const dispatch = useAppDispatch();
 
-  const { title, form, gastosForm, cuentasForm } = props;
+  const { title, clienteForm, gastosForm, cuentasForm } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   // useEffects
 
@@ -49,12 +50,12 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.datosClientes;
 
-    if (currentActiveForm === TransferenciaTabsNames.DATOS_CLIENTE && currentStatus) {
+    if (currentActiveForm === FormNames.DATOS_CLIENTE && currentStatus) {
       const cuit = nuevaSolicitud.data.form?.datosOperacion?.cliente?.cuit;
       const vinculadoConBeneficiario = nuevaSolicitud.data.form?.datosOperacion?.vinculadoConBeneficiario;
-      console.log(cuit, vinculadoConBeneficiario);
-      form.resetFields();
-      form.setFieldsValue({
+
+      clienteForm.resetFields();
+      clienteForm.setFieldsValue({
         cuitCliente: cuit,
         vinculadoConBeneficiario,
       });
@@ -64,26 +65,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   // handlers
 
   const handleCuitCliente = () => {
-    dispatch(fetchDatosClientes({ query: { filtro: 'CUIT', valor: form.getFieldsValue().cuitCliente } }))
-      .then(unwrapResult)
-      .then((clientes) => {
-        const count = clientes.length;
-        console.log('clientes encontrados: ', count);
-        message.success({ key: 'loading', content: Texts.SEARCH_PERSON_OK, duration: 3 });
-        /*         if (count === 1) {
-          dispatch(setCliente(clientes[0]));
-          message.success({ key: 'loading', content: Texts.SEARCH_PERSON_OK, duration: 3 });
-        } else {
-          message.success({
-            key: 'loading',
-            content: interpolateString(Texts.SEARCH_PERSON_OK_MULTIPLE_RESULTS, [count]),
-            duration: 3,
-          });
-        } */
-      })
-      .catch((err) => {
-        message.error({ key: 'loading', content: Texts.SEARCH_PERSON_ERROR, duration: 3 });
-      });
+    fetchCliente();
   };
 
   const handleCleanCuitCliente = () => {
@@ -91,45 +73,85 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   };
 
   const handleOnFinish = () => {
-    setData();
-    if (nuevaSolicitud.ui.form.status.gastos) gastosForm.resetFields();
-    if (nuevaSolicitud.ui.form.status.cuentas) cuentasForm.resetFields();
-    dispatch(setEstadoForm({ datosClientes: true, gastos: false, cuentas: false }));
-    dispatch(setActiveForm(TransferenciaTabsNames.DATOS_BENEFICIARIO));
+    setClientData();
   };
 
-  const setData = () => {
-    const cliente = nuevaSolicitud.info.clientes?.value[0];
-    const vinculadoConBeneficiario = form.getFieldsValue().vinculadoConBeneficiario ?? false;
+  // other functions
+
+  const fetchCliente = () => {
+    clienteForm
+      .validateFields()
+      .then(() => {
+        Message.loading(Texts.SEARCH_CLIENT_LOADING);
+
+        dispatch(fetchDatosClientes({ query: { filtro: 'CUIT', valor: clienteForm.getFieldsValue().cuitCliente } }))
+          .then(unwrapResult)
+          .then((a) => Message.success(Texts.SEARCH_CLIENT_OK))
+          .catch((err) => Message.error(Texts.SEARCH_CLIENT_ERROR));
+      })
+      .catch(() => {});
+  };
+
+  const fetchCuentasCliente = async (hostId: string, productos: string = 'CA,CC') =>
+    new Promise<void>(async (resolve, reject) => {
+      Message.loading(Texts.SEARCH_ACCOUNTS_LOADING);
+
+      const result = await dispatch(fetchCuentas({ query: { hostId, productos } }));
+
+      if (fetchCuentas.fulfilled.match(result)) {
+        Message.success(Texts.SEARCH_ACCOUNTS_OK);
+        resolve();
+      } else {
+        Message.error(Texts.SEARCH_ACCOUNTS_ERROR);
+        reject();
+      }
+    });
+
+  const setClientData = async () => {
+    const cliente = nuevaSolicitud.info.clientes?.value![0];
+    const vinculadoConBeneficiario = clienteForm.getFieldsValue().vinculadoConBeneficiario ?? false;
 
     if (cliente) {
-      dispatch(
-        setDatosCliente({
-          cliente: { ...cliente, cuit: form.getFieldsValue().cuitCliente },
-          vinculadoConBeneficiario: vinculadoConBeneficiario,
-        }),
-      );
-      const { hostId } = cliente;
-      dispatch(fetchCuentas({ query: { hostId, productos: 'CA,CC' } }));
+      await fetchCuentasCliente(cliente.hostId)
+        .then(() => {
+          console.log('ok');
+          dispatch(
+            setDatosCliente({
+              cliente: { ...cliente, cuit: clienteForm.getFieldsValue().cuitCliente },
+              vinculadoConBeneficiario: vinculadoConBeneficiario,
+            }),
+          );
+
+          if (nuevaSolicitud.ui.form.status.gastos) gastosForm.resetFields();
+          if (nuevaSolicitud.ui.form.status.cuentas) cuentasForm.resetFields();
+
+          dispatch(setEstadoForm({ datosClientes: true, gastos: false, cuentas: false }));
+          dispatch(setActiveForm(FormNames.DATOS_BENEFICIARIO));
+        })
+        .catch((err) => {
+          console.log('error');
+        });
     }
   };
 
   const resetData = () => {
     dispatch(resetCliente());
-    form.setFieldsValue({
+
+    clienteForm.setFieldsValue({
       cuitCliente: '',
       vinculadoConBeneficiario: undefined,
     });
 
     if (nuevaSolicitud.ui.form.status.gastos) gastosForm.resetFields();
     if (nuevaSolicitud.ui.form.status.cuentas) cuentasForm.resetFields();
+
     dispatch(setEstadoForm({ datosClientes: false, gastos: false, cuentas: false }));
   };
 
   // renders
 
   const renderDatosCliente = () => {
-    const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente || nuevaSolicitud.info.clientes?.value[0];
+    const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente || nuevaSolicitud.info.clientes?.value![0];
 
     if (!cliente) return undefined;
 
@@ -156,11 +178,11 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
 
   const renderFormularioCliente = () => {
     return (
-      <Form className={styles.form} form={form} layout="vertical" onFinish={handleOnFinish}>
+      <Form className={styles.form} form={clienteForm} layout="vertical" onFinish={handleOnFinish}>
         <Form.Item> {renderFormTitle(title)} </Form.Item>
         <Form.Item style={{ marginBottom: 0 }}>
           <Space size={'middle'}>
-            <Form.Item label={Texts.CUIT} name={'cuitCliente'} rules={getRule(reglas, 'cuit')} required>
+            <Form.Item label={Texts.CUIT} name={'cuitCliente'} rules={getRule(rules, 'cuit')} required>
               <Input disabled={nuevaSolicitud.info.clientes?.loading || nuevaSolicitud.info.clientes?.value?.length! > 0} />
             </Form.Item>
             <Button
@@ -168,28 +190,23 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
               type="primary"
               htmlType="button"
               disabled={nuevaSolicitud.info.clientes?.loading || nuevaSolicitud.info.clientes?.value?.length! > 0}
-              loading={nuevaSolicitud.info.clientes?.loading}
+              //loading={nuevaSolicitud.info.clientes?.loading}
               style={{ marginTop: 5 }}>
-              {nuevaSolicitud.info.clientes?.loading ? 'Buscando' : 'Buscar'}
+              Buscar
             </Button>
-            <Button
-              onClick={handleCleanCuitCliente}
-              type="default"
-              htmlType="button"
-              disabled={nuevaSolicitud.info.clientes?.loading}
-              style={{ marginTop: 5 }}>
+            <Button onClick={handleCleanCuitCliente} type="default" htmlType="button" disabled={nuevaSolicitud.info.clientes?.loading} style={{ marginTop: 5 }}>
               <ClearOutlined />
             </Button>
           </Space>
         </Form.Item>
 
-        {nuevaSolicitud.info.clientes?.value.length! > 0 && (
+        {nuevaSolicitud.info.clientes?.value?.length! > 0 && (
           <>
             <Form.Item style={{ width: 323 }}>{renderDatosCliente()}</Form.Item>
             <Form.Item
               /*   label={Texts.LINKED_BENEFICIARY} */
               name={'vinculadoConBeneficiario'}
-              rules={getRule(reglas, 'vinculadoConBeneficiario')}
+              rules={getRule(rules, 'vinculadoConBeneficiario')}
               valuePropName="checked">
               <Checkbox>{Texts.LINKED_BENEFICIARY}</Checkbox>
             </Form.Item>

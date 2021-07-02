@@ -2,6 +2,7 @@ import React from 'react';
 import { NotFound } from 'src/components/not-found';
 import { Unavailable } from 'src/components/unavailable';
 import { Texts } from 'src/constants/texts';
+import { ListaMensajes } from 'src/features/mensaje/lista-mensajes/ui';
 import { NuevaSolicitud } from 'src/features/transferencia/nueva-solicitud/ui';
 import { Inicio } from 'src/views/inicio';
 import { View } from 'src/views/types';
@@ -19,7 +20,7 @@ export interface Views {
 
 const views: Views = {
   //Inicio: { title: Texts.HOME, path: '/', component: <Inicio />, scope: 'user.read' },
-  Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <Unavailable />, scope: 'user.read', homePage: true },
+  Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <ListaMensajes />, scope: 'user.read', homePage: true },
   Crear_Solicitud_Orden_De_Pago: {
     title: Texts.NEW_REQUEST,
     path: '/orden-de-pago/nueva-solicitud',

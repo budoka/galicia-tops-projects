@@ -1,0 +1,61 @@
+import { TipoPersona } from './types';
+
+//#region State
+
+export interface InfoState<T> {
+  value?: T;
+  loading: boolean;
+  error?: unknown;
+}
+
+//#endregion
+
+//#region Select
+
+/**
+ * Cada opción del select debe tener una propiedad 'id',
+ * la idea de esta propiedad es permitir mapear las propiedades 'key' y 'value'
+ * de cada opción del select (LabeledValue).
+ */
+export interface Keyable {
+  id: string | number;
+  [key: string]: any;
+}
+
+//#endregion
+
+export interface BancoCorresponsal extends Keyable {
+  id: string;
+  nombre: string;
+}
+
+export interface Cliente {
+  hostId: string;
+  tipo: TipoPersona;
+  nombre?: string;
+  apellido?: string;
+  razonSocial?: string;
+  documentos: Documento[];
+  cuit?: string;
+}
+
+export interface Concepto extends Keyable {
+  id: string;
+  descripcion: string;
+}
+
+export interface Documento {
+  tipo: string;
+  descripcion: string;
+  numero: string;
+}
+
+export interface Moneda extends Keyable {
+  id: string;
+  descripcion: string;
+}
+
+export interface Pais extends Keyable {
+  id: number;
+  nombre: string;
+}

@@ -7,16 +7,17 @@ import { FilterValue, SorterResult, TableCurrentDataSource, TablePaginationConfi
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
-import { AddButton } from 'src/components/buttons/add-button';
-import { DeleteButton } from 'src/components/buttons/delete-button';
-import { RefreshButton } from 'src/components/buttons/refresh-button';
-import { SHADOW, UNSELECTABLE } from 'src/constants';
+import { SHADOW, UNSELECTABLE } from '../../constants';
 import { Texts } from '../../constants/texts';
-import { IElement } from '../../types';
+import { IElement } from '../../types/interfaces';
 import { compare } from '../../utils/string';
 import { Wrapper } from '../wrapper';
 import { Cell, CellProps } from './cell';
+import { Column } from './column';
+import { AddButton } from './extra/add-button';
+import { DeleteButton } from './extra/delete-button';
 import { RecordsCounter } from './extra/record-counter-tag';
+import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
 
 export type InputType = 'text' | 'date' | 'select' | 'checkbox';
@@ -200,10 +201,7 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
           const { forceEditing, editable, inputType, options, rules } = col;
 
           // Change focus to next empty field on select element has been selected.
-          const value =
-            inputType === 'select' && options && options.length === 1
-              ? options[0].value
-              : record[dataIndex] ?? form.getFieldValue(dataIndex);
+          const value = inputType === 'select' && options && options.length === 1 ? options[0].value : record[dataIndex] ?? form.getFieldValue(dataIndex);
           const shouldFocusInput = !isInputFocused && !!editable && isEditing(record) && (value === '' || value === undefined);
 
           if (shouldFocusInput) isInputFocused = true;
@@ -264,14 +262,7 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
             const addDisabled = !isEditable;
             return {
               key,
-              component: (
-                <AddButton
-                  disabled={addDisabled}
-                  editing={!!state.editingRow.current}
-                  onAdd={handleAddRecord}
-                  onCancel={handleCancelRecord}
-                />
-              ),
+              component: <AddButton disabled={addDisabled} editing={!!state.editingRow.current} onAdd={handleAddRecord} onCancel={handleCancelRecord} />,
               style,
             };
 
@@ -603,9 +594,9 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
           loading={loading ? { indicator: <Loading />, tip: Texts.LOADING } : loading}
           className={tableClassName}
           components={{
-            /*  header: {
+            header: {
               cell: Column,
-            }, */
+            },
             body: {
               cell: Cell,
             },

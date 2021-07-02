@@ -1,28 +1,21 @@
-import { Button, Col, DatePicker, Form, Row, Select, Space, Tabs, Typography } from 'antd';
+import { Button, Col, Form, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { ArgsProps } from 'antd/lib/message';
-import { LabeledValue } from 'antd/lib/select';
-import React, { useEffect, useState } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
+import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import { DetalleGastosObj, GastosForm, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
+import { Rules } from 'src/types/interfaces';
 import { detallesGastos } from '..';
-
-import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
+import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { FormNames, GastosForm } from '../../data/forms';
+import { DetalleGastos } from '../../data/interfaces';
 import { setActiveForm, setDatosGastos, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-const { TabPane } = Tabs;
-
 const width = 250;
 
-const reglas: Rules = {
+const rules: Rules = {
   gastos: {
     detalle: [
       {
@@ -41,13 +34,6 @@ const reglas: Rules = {
 
 const DEFAULT_EXPENSE_DETAIL = getOption({ id: 'ben', label: 'BEN' }, 'label');
 
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
-
 interface GastosFormPanelProps {
   title: string;
   form: FormInstance<GastosForm>;
@@ -58,16 +44,16 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
-  const [currentDetalleGastos, setCurrentDetalleGastos] = useState<LabeledValue>(DEFAULT_EXPENSE_DETAIL);
+  //const [currentDetalleGastos, setCurrentDetalleGastos] = useState<LabeledValue>(DEFAULT_EXPENSE_DETAIL);
 
   // useEffects
 
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.gastos;
-    if (currentActiveForm === TransferenciaTabsNames.GASTOS && currentStatus) {
+    if (currentActiveForm === FormNames.GASTOS && currentStatus) {
       const gastos = nuevaSolicitud.data.form?.datosOperacion?.gastos;
       const cuentaDebitoGastos = nuevaSolicitud.data.form?.datosOperacion?.cuentaDebitoGastos;
       form.resetFields();
@@ -86,20 +72,20 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
         ),
       });
 
-      setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
+      // setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
     }
   }, [nuevaSolicitud.ui.form.active]);
 
   // handlers
 
-  const handleOnDetalleGastosChange = () => {
+  /*   const handleOnDetalleGastosChange = () => {
     setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
-  };
+  }; */
 
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ gastos: true }));
-    dispatch(setActiveForm(TransferenciaTabsNames.CUENTAS));
+    dispatch(setActiveForm(FormNames.CUENTAS));
   };
 
   const setData = () => {
@@ -108,7 +94,7 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
       setDatosGastos({
         gastos: {
           ...gastos,
-          detalle: { id: gastos.detalle.value, descripcion: gastos.detalle.label } as DetalleGastosObj,
+          detalle: { id: gastos.detalle.value, descripcion: gastos.detalle.label } as DetalleGastos,
         },
         cuentaDebitoGastos: nuevaSolicitud.info.cuentas?.value?.find((c) => c.id === cuentaDebitoGastos?.value)!,
       }),
@@ -119,27 +105,22 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
 
   return (
     <>
-      <Form
-        className={styles.form}
-        form={form}
-        layout="vertical"
-        onFinish={handleOnFinish}
-        initialValues={{ gasto: { detalle: DEFAULT_EXPENSE_DETAIL } }}>
+      <Form className={styles.form} form={form} layout="vertical" onFinish={handleOnFinish} initialValues={{ gasto: { detalle: DEFAULT_EXPENSE_DETAIL } }}>
         <Form.Item>{renderFormTitle(title)}</Form.Item>
 
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.EXPENSE_DETAIL} name={['gastos', 'detalle']} rules={getRule(reglas, ['gastos', 'detalle'])} required>
-                <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL} onChange={handleOnDetalleGastosChange}>
+              <Form.Item label={Texts.EXPENSE_DETAIL} name={['gastos', 'detalle']} rules={getRule(rules, ['gastos', 'detalle'])} required>
+                <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL} /* onChange={handleOnDetalleGastosChange} */>
                   {renderOptions(detallesGastos, 'descripcion')}
                 </Select>
               </Form.Item>
             </Col>
 
-            {'ben' !== currentDetalleGastos.value && (
-              <Col style={{ width: width }}>
-                <Form.Item label={Texts.ACCOUNT} name={'cuentaDebitoGastos'} rules={getRule(reglas, 'cuentaDebitoGastos')} required>
+            {
+              /* 'ben' !== currentDetalleGastos.value && */ <Col style={{ width: width }}>
+                <Form.Item label={Texts.ACCOUNT} name={'cuentaDebitoGastos'} rules={getRule(rules, 'cuentaDebitoGastos')} required>
                   <Select
                     labelInValue
                     placeholder={Texts.SELECT_ACCOUNT}
@@ -149,7 +130,7 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
                   </Select>
                 </Form.Item>
               </Col>
-            )}
+            }
           </Space>
         </Row>
 

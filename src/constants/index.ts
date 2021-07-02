@@ -31,3 +31,5 @@ export class Pattern {
 export const PATTERN_ONLY_NUMBERS = /^\\d+$/;
 export const PATTERN_ONLY_WORDS = /^([a-záéíóúäëïöü]+( ?[a-záéíóúäëïöü])+ ?)$/i;
  */
+
+export const LOCALE_ES = 'es-AR';

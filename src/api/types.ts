@@ -19,14 +19,19 @@ export interface Query extends BasicDictionary {}
 export interface Placeholders extends PlaceholdersDictionary {}
 export type Data<T> = T;
 
-export interface RequestConfig<T = DataDictionary | void> {
+export interface HttpRequest<RequestBody = DataDictionary | void> {
   verb?: HttpVerb;
   headers?: Headers;
   placeholders?: Placeholders;
   query?: Query;
-  data?: Data<T>;
+  body?: Data<RequestBody>;
   timeout?: number;
   cancelToken?: CancelToken;
+}
+
+export interface HttpResponse<ResponseBody = DataDictionary | void> {
+  status: number;
+  data?: Data<ResponseBody>;
 }
 
 // export type RequestOptions<T = void> = Request<T> | undefined;
@@ -38,5 +43,5 @@ export interface API<ResourcesType> {
 
 export interface Resource {
   path: string;
-  config?: RequestConfig;
+  config?: HttpRequest;
 }

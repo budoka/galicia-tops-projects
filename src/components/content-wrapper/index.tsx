@@ -2,7 +2,7 @@ import { Content } from 'antd/lib/layout/layout';
 import React, { useEffect, useState } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppSelector } from 'src/app/store/hooks';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import { ContentHeader } from '../content-header';
 import { Scroll } from './interface';
 

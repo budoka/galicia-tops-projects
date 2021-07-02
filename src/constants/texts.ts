@@ -1,15 +1,5 @@
 export enum Texts {
   HOME = 'Inicio',
-  GET_DATA_FAILURE = 'Error al recuperar datos',
-  SAVE_DATA_FAILURE = 'Error al guardar datos',
-  GET_BOX_FAILURE = 'Error al buscar caja',
-  SAVE_BOX_SUCCESS = 'Caja guardada correctamente',
-  SAVE_BOX_FAILURE = 'Error al guardar caja',
-  UPDATE_BOX_SUCCESS = 'Caja modificada correctamente',
-  UPDATE_BOX_FAILURE = 'Error al modificar la caja',
-  GET_BOXES_FAILURE = 'Error al buscar cajas',
-  EXPORT_DATA_SUCCESS = 'Datos exportados correctamente',
-  EXPORT_DATA_FAILURE = 'Error al exportar cajas',
   EXPORT = 'Exportar',
   EXPORTING = 'Exportando',
   FILTER = 'Filtrar',
@@ -90,6 +80,10 @@ export enum Texts {
   PAY_ORDERS = 'Ordenes de Pago',
   NEW_TRANSFER = 'Nueva Transferencia',
   // FIELDS
+  ID = 'ID',
+  TYPE = 'Tipo',
+  ORIGINATOR = 'Ordenante',
+  BENEFICIARY = 'Beneficiario',
   PERSON_TYPE = 'Tipo de Persona',
   CURRENCY = 'Moneda',
   CUIT = 'CUIT',
@@ -131,7 +125,13 @@ export enum Texts {
   // MESSAGES
   TRANSFER_CREATION_OK = 'Transferencia creada correctamente',
   TRANSFER_CREATION_ERROR = 'Error al crear transferencia',
-  SEARCH_PERSON_OK = 'Cliente encontrado',
-  SEARCH_PERSON_OK_MULTIPLE_RESULTS = 'Se ha encontrado %0% clientes',
-  SEARCH_PERSON_ERROR = 'Error al encontrar cliente',
+  // SEARCH CLIENT
+  SEARCH_CLIENT_LOADING = 'Buscando cliente',
+  SEARCH_CLIENT_OK = 'Cliente encontrado',
+  SEARCH_CLIENT_OK_MULTIPLE_RESULTS = 'Se ha encontrado %0% clientes',
+  SEARCH_CLIENT_ERROR = 'Error al encontrar cliente',
+  // SEARCH ACCOUNTS
+  SEARCH_ACCOUNTS_LOADING = 'Buscando cuentas del cliente',
+  SEARCH_ACCOUNTS_OK = 'Cuentas encontradas',
+  SEARCH_ACCOUNTS_ERROR = 'Error al encontrar cuentas del cliente',
 }

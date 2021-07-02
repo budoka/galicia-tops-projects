@@ -1,42 +1,44 @@
-import { DetalleGasto, TipoCodigo, TipoCuenta, TipoPersona } from 'src/features/shared/data/types';
+import { DetalleGasto, TipoCodigo, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 
 export interface AddSolicitudDTO {
-  datosOperacion: DatosOperacionDTO;
+  datosOperacion: DatosOperacion;
 }
 
-export interface DatosOperacionDTO {
+//#region Internal
+
+interface DatosOperacion {
   fechaEntrada: string;
   cuitCliente: string;
-  beneficiario: BeneficiarioDTO;
-  bancoIntermediario?: BancoDTO;
-  cuentaDebito: CuentaDTO;
-  cuentaDebitoGastos?: CuentaDTO;
-  gasto: GastoDTO;
-  importes: ImporteDTO[];
+  beneficiario: Beneficiario;
+  bancoIntermediario?: Banco;
+  cuentaDebito: Cuenta;
+  cuentaDebitoGastos?: Cuenta;
+  gasto: Gasto;
+  importes: Importe[];
   monedaId: string;
   vinculadoConBeneficiario: boolean;
 }
 
-export interface BeneficiarioDTO {
+interface Beneficiario {
   razonSocial: string;
   nif?: string;
   tipoPersona: TipoPersona;
   fechaNacimiento?: string;
-  domicilio: DireccionDTO;
+  domicilio: Direccion;
   localidad: string;
   codigoPostal: string;
   paisId: number;
-  banco: BancoDTO;
+  banco: Banco;
 }
 
-export interface DireccionDTO {
+interface Direccion {
   calle: string;
   numero: number;
   piso?: number;
   departamento?: string;
 }
 
-export interface BancoDTO {
+interface Banco {
   nombre: string;
   localidad: string;
   paisId: number;
@@ -46,26 +48,28 @@ export interface BancoDTO {
   codigoBanco?: string;
 }
 
-export interface CuentaDTO {
+interface Cuenta {
   tipoCuenta: TipoCuenta;
   monedaId: string;
   numero: string;
 }
 
-export interface GastoDTO {
+interface Gasto {
   detalle: DetalleGasto;
   importe?: number;
   monedaId?: string;
   swiftCorresponsal?: string;
-  cuentaCorresponsal?: string; // TODO: Por alguna razon se saco del dto del back. Revisar.
+  cuentaCorresponsal?: string;
 }
 
-export interface ImporteDTO {
+interface Importe {
   importe: number;
-  concepto: ConceptoDTO;
+  concepto: Concepto;
 }
 
-export interface ConceptoDTO {
+interface Concepto {
   id: string;
   descripcion: string;
 }
+
+//#endregion

@@ -2,7 +2,7 @@ import { DownloadOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React from 'react';
 import { Texts } from 'src/constants/texts';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import styles from './style.module.less';
 
 interface ExportButtonProps extends BasicComponentProps<HTMLButtonElement> {

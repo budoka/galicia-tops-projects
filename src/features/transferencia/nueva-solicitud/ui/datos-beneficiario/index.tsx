@@ -1,29 +1,24 @@
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space, Tabs, Typography } from 'antd';
+import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
 import { LabeledValue } from 'antd/lib/select';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { DATE_DD_MM_YYYY_FORMAT, Pattern } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { BeneficiarioForm, Pais, TipoPersonaObj, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
+import { Pais } from 'src/features/_shared/data/interfaces';
+import { Rules } from 'src/types/interfaces';
 import { tiposPersona } from '..';
-import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
+import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { BeneficiarioForm, FormNames } from '../../data/forms';
+import { TipoPersona } from '../../data/interfaces';
 import { setActiveForm, setDatosBeneficiario, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-const { TabPane } = Tabs;
-
 const width = 250;
 
-const reglas: Rules = {
+const rules: Rules = {
   tipoPersona: [
     {
       required: true,
@@ -116,13 +111,6 @@ const reglas: Rules = {
   ],
 };
 
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
-
 interface BeneficiarioFormPanelProps {
   title: string;
   form: FormInstance<BeneficiarioForm>;
@@ -136,7 +124,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   const [currentTipoPersona, setCurrentTipoPersona] = useState<LabeledValue>(DEFAULT_PERSON_TYPE);
 
@@ -145,7 +133,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.datosBeneficiario;
-    if (currentActiveForm === TransferenciaTabsNames.DATOS_BENEFICIARIO && currentStatus) {
+    if (currentActiveForm === FormNames.DATOS_BENEFICIARIO && currentStatus) {
       const { tipoPersona, pais, fechaNacimiento, ...rest } = nuevaSolicitud.data.form?.datosOperacion?.beneficiario! || {};
       form.resetFields();
       form.setFieldsValue({
@@ -168,7 +156,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ datosBeneficiario: true }));
-    dispatch(setActiveForm(TransferenciaTabsNames.GASTOS));
+    dispatch(setActiveForm(FormNames.GASTOS));
   };
 
   const setData = () => {
@@ -176,7 +164,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
     dispatch(
       setDatosBeneficiario({
         ...beneficiario,
-        tipoPersona: { id: tipoPersona.value, descripcion: tipoPersona.label } as TipoPersonaObj,
+        tipoPersona: { id: tipoPersona.value, descripcion: tipoPersona.label } as TipoPersona,
         fechaNacimiento: fechaNacimiento.toISOString(),
         pais: { id: pais.value, nombre: pais.label } as Pais,
       }),
@@ -208,18 +196,13 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
   return (
     <>
-      <Form
-        className={styles.form}
-        form={form}
-        layout="vertical"
-        initialValues={{ tipoPersona: DEFAULT_PERSON_TYPE }}
-        onFinish={handleOnFinish}>
+      <Form className={styles.form} form={form} layout="vertical" initialValues={{ tipoPersona: DEFAULT_PERSON_TYPE }} onFinish={handleOnFinish}>
         <Form.Item>{renderFormTitle(title)}</Form.Item>
 
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.PERSON_TYPE} name={'tipoPersona'} rules={getRule(reglas, 'tipoPersona')} required>
+              <Form.Item label={Texts.PERSON_TYPE} name={'tipoPersona'} rules={getRule(rules, 'tipoPersona')} required>
                 <Select labelInValue placeholder={Texts.SELECT_PERSON_TYPE} onChange={handleOnTipoPersonaChange}>
                   {renderOptions(tiposPersona, 'descripcion')}
                 </Select>
@@ -228,19 +211,19 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
             {'juridica' === currentTipoPersona.value ? (
               <Col style={{ width: width * 2 + 16 }}>
-                <Form.Item label={Texts.NAME_BUSINESS_NAME} name={'razonSocial'} rules={getRule(reglas, 'razonSocial')} required>
+                <Form.Item label={Texts.NAME_BUSINESS_NAME} name={'razonSocial'} rules={getRule(rules, 'razonSocial')} required>
                   <Input />
                 </Form.Item>
               </Col>
             ) : (
               <>
                 <Col style={{ width: width }}>
-                  <Form.Item label={Texts.FIRST_NAME} name={'nombre'} rules={getRule(reglas, 'nombre')} required>
+                  <Form.Item label={Texts.FIRST_NAME} name={'nombre'} rules={getRule(rules, 'nombre')} required>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col style={{ width: width }}>
-                  <Form.Item label={Texts.LAST_NAME} name={'apellido'} rules={getRule(reglas, 'apellido')} required>
+                  <Form.Item label={Texts.LAST_NAME} name={'apellido'} rules={getRule(rules, 'apellido')} required>
                     <Input />
                   </Form.Item>
                 </Col>
@@ -263,19 +246,19 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.NIF} name={'nif'} rules={getRule(reglas, 'nif')}>
+              <Form.Item label={Texts.NIF} name={'nif'} rules={getRule(rules, 'nif')}>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.DATE_BIRTH} name={'fechaNacimiento'} rules={getRule(reglas, 'fechaNacimiento')}>
+              <Form.Item label={Texts.DATE_BIRTH} name={'fechaNacimiento'} rules={getRule(rules, 'fechaNacimiento')}>
                 <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={Texts.SELECT_DATE} />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.COUNTRY} name={'pais'} rules={getRule(reglas, 'pais')} required>
+              <Form.Item label={Texts.COUNTRY} name={'pais'} rules={getRule(rules, 'pais')} required>
                 <Select
                   labelInValue
                   showSearch
@@ -293,28 +276,25 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.STREET} name={['domicilio', 'calle']} rules={getRule(reglas, ['domicilio', 'calle'])} required>
+              <Form.Item label={Texts.STREET} name={['domicilio', 'calle']} rules={getRule(rules, ['domicilio', 'calle'])} required>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width / 1.5 }}>
-              <Form.Item label={Texts.NUMBER} name={['domicilio', 'numero']} rules={getRule(reglas, ['domicilio', 'numero'])} required>
+              <Form.Item label={Texts.NUMBER} name={['domicilio', 'numero']} rules={getRule(rules, ['domicilio', 'numero'])} required>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width / 1.5 - 8 }}>
-              <Form.Item label={Texts.FLOOR} name={['domicilio', 'piso']} rules={getRule(reglas, ['domicilio', 'piso'])}>
+              <Form.Item label={Texts.FLOOR} name={['domicilio', 'piso']} rules={getRule(rules, ['domicilio', 'piso'])}>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width / 1.5 - 8 }}>
-              <Form.Item
-                label={Texts.DEPARTMENT}
-                name={['domicilio', 'departamento']}
-                rules={getRule(reglas, ['domicilio', 'departamento'])}>
+              <Form.Item label={Texts.DEPARTMENT} name={['domicilio', 'departamento']} rules={getRule(rules, ['domicilio', 'departamento'])}>
                 <Input />
               </Form.Item>
             </Col>
@@ -340,13 +320,13 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
             </Col> */}
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.LOCALITY} name={'localidad'} rules={getRule(reglas, 'localidad')} required>
+              <Form.Item label={Texts.LOCALITY} name={'localidad'} rules={getRule(rules, 'localidad')} required>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.ZIP_CODE} name={'codigoPostal'} rules={getRule(reglas, 'codigoPostal')} required>
+              <Form.Item label={Texts.ZIP_CODE} name={'codigoPostal'} rules={getRule(rules, 'codigoPostal')} required>
                 <Input />
               </Form.Item>
             </Col>

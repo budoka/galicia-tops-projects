@@ -1,38 +1,33 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { apis } from 'src/api/setup/setup-apis';
-import { RequestConfig } from 'src/api/types';
+import { HttpResponse } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { RootState } from 'src/app/store';
-import { Cliente, DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/shared/data/types';
-import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas, fetchPaises } from '../../shared/logic';
+import { rejectRequest } from 'src/api/utils/axios';
+import { createHttpAsyncThunk, RootState } from 'src/app/store';
+import { Cliente, Moneda } from 'src/features/_shared/data/interfaces';
+import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
+import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
 import { AddSolicitudDTO } from '../data/dto';
-import {
-  StatusForm,
-  NuevaSolicitudDataState,
-  NuevaSolicitudFormState,
-  NuevaSolicitudState,
-  Beneficiario,
-  Gastos,
-  Cuenta,
-  Importe,
-  Moneda,
-} from '../data/types';
-import { TransferenciaTabsNames } from '../data/types';
+import { FormNames } from '../data/forms';
+import { Beneficiario, Cuenta, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
 
 const FEATURE_NAME = 'nuevaSolicitud';
 
 //#region Async actions
 
-export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudDataState>, { state: RootState }>(
+export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, { state: RootState; rejectValue: HttpResponse }>(
   FEATURE_NAME + '/addSolicitud',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
-    const data = options?.data;
+    const data = options?.body;
 
     if (!data) throw new Error('No se ha incluido datos para crear una nueva solicitud transferencia.');
 
-    console.log(data);
+    // Configuracion del servicio
+    const api = apis['TRANSFERENCIA'];
+    const resource = api.resources['AGREGAR_SOLICITUD'];
+    const config = buildAxiosRequestConfig(api, resource, { ...options /*  data: requestData  */ });
 
     const requestData: AddSolicitudDTO = {
       datosOperacion: {
@@ -75,18 +70,23 @@ export const addSolicitud = createAsyncThunk<void, RequestConfig<NuevaSolicitudD
       },
     };
 
-    // Configuracion del servicio
-    const api = apis['TRANSFERENCIA'];
-    const resource = api.resources['AGREGAR_SOLICITUD'];
-    const config = buildAxiosRequestConfig(api, resource, { ...options /*  data: requestData  */ });
-
     console.log(config);
 
-    // Respuesta del servicio
-    const response = await axios.request<void>(config);
+    // Llamado del servicio
+    let response;
+
+    try {
+      response = await axios.request<void>(config);
+    } catch (err) {
+      return rejectRequest(err, thunkApi);
+    }
+
+    // Mapeo de la respuesta
     const responseData = response.data;
 
     console.log(responseData);
+
+    return { status: response.status, data: responseData } as HttpResponse<void>;
   },
 );
 
@@ -97,11 +97,10 @@ const initialState: NuevaSolicitudState = {
   data: {},
   ui: {
     form: {
-      active: TransferenciaTabsNames.DATOS_CLIENTE,
+      active: FormNames.DATOS_CLIENTE,
       status: { datosClientes: false, datosBeneficiario: false, cuentas: false, gastos: false, importes: false },
     },
   },
-  error: null,
 };
 
 const slice = createSlice({
@@ -146,12 +145,14 @@ const slice = createSlice({
     setActiveForm(state, action: PayloadAction<string>) {
       state.ui.form.active = action.payload;
     },
-    setEstadoForm(state, action: PayloadAction<StatusForm>) {
+    setEstadoForm(state, action: PayloadAction<StatusForms>) {
       state.ui.form.status = { ...state.ui.form.status, ...action.payload };
+    },
+    setForm(state, action: PayloadAction<{ active?: string; status?: StatusForms }>) {
+      state.ui.form = { ...state.ui.form, ...action.payload };
     },
     resetCliente(state) {
       state.info.clientes = { value: [], loading: false };
-      // state.info.clientes = undefined;
       state.data.form = {
         ...state.data.form,
         datosOperacion: {
@@ -169,74 +170,62 @@ const slice = createSlice({
     builder
       .addCase(fetchMonedas.pending, (state) => {
         state.info.monedas = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchMonedas.fulfilled, (state, action) => {
-        state.info.monedas = { value: action.payload, loading: false };
+        state.info.monedas = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchMonedas.rejected, (state, action) => {
-        state.info.monedas = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.monedas = { value: [], loading: false, error: action.payload };
       });
     builder
       .addCase(fetchPaises.pending, (state) => {
         state.info.paises = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchPaises.fulfilled, (state, action) => {
-        state.info.paises = { value: action.payload, loading: false };
+        state.info.paises = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchPaises.rejected, (state, action) => {
-        state.info.paises = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.paises = { value: [], loading: false, error: action.payload };
       });
     builder
       .addCase(fetchCorresponsales.pending, (state) => {
         state.info.corresponsales = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchCorresponsales.fulfilled, (state, action) => {
-        state.info.corresponsales = { value: action.payload, loading: false };
+        state.info.corresponsales = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchCorresponsales.rejected, (state, action) => {
-        state.info.corresponsales = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.corresponsales = { value: [], loading: false, error: action.payload };
       });
     builder
       .addCase(fetchConceptos.pending, (state) => {
         state.info.conceptos = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchConceptos.fulfilled, (state, action) => {
-        state.info.conceptos = { value: action.payload, loading: false };
+        state.info.conceptos = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchConceptos.rejected, (state, action) => {
-        state.info.conceptos = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.conceptos = { value: [], loading: false, error: action.payload };
       });
     builder
       .addCase(fetchDatosClientes.pending, (state) => {
         state.info.clientes = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchDatosClientes.fulfilled, (state, action) => {
-        state.info.clientes = { value: action.payload, loading: false };
+        state.info.clientes = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchDatosClientes.rejected, (state, action) => {
-        state.info.clientes = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.clientes = { value: [], loading: false, error: action.payload };
       });
     builder
       .addCase(fetchCuentas.pending, (state) => {
         state.info.cuentas = { value: [], loading: true };
-        state.error = null;
       })
       .addCase(fetchCuentas.fulfilled, (state, action) => {
-        state.info.cuentas = { value: action.payload, loading: false };
+        state.info.cuentas = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchCuentas.rejected, (state, action) => {
-        state.info.cuentas = { value: [], loading: false };
-        state.error = action.error.message ?? null;
+        state.info.cuentas = { value: [], loading: false, error: action.payload };
       });
     /*  builder
       .addCase(addSolicitud.pending, (state) => {
@@ -261,6 +250,7 @@ const {
   setDatosImportes,
   setActiveForm,
   setEstadoForm,
+  setForm,
   resetCliente,
   cleanState,
 } = slice.actions;
@@ -273,6 +263,7 @@ export {
   setDatosImportes,
   setActiveForm,
   setEstadoForm,
+  setForm,
   resetCliente,
   cleanState,
 };

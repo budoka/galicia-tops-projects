@@ -1,35 +1,18 @@
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space, Tabs, Typography } from 'antd';
-import { FormInstance, useForm } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
-import React, { useContext, useEffect } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
-import { StateContext } from 'src/app';
+import { Button, Col, Form, Row, Space } from 'antd';
+import { FormInstance } from 'antd/lib/form/Form';
+import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
-import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants';
-import { Texts } from 'src/constants/texts';
-import { DetalleGasto } from 'src/features/shared/data/types';
-import { NuevaSolicitudFormState, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
-import { getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
-import { setActiveForm, setEstadoForm } from '../../logic';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
+import { NuevaSolicitudFormState } from 'src/features/transferencia/nueva-solicitud/data/interfaces';
+import { Rules } from 'src/types/interfaces';
+import { renderFormTitle } from '../../../../_shared/ui/utils';
+import { FormNames } from '../../data/forms';
+import { setActiveForm } from '../../logic';
 import styles from './style.module.less';
-
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-const { TabPane } = Tabs;
 
 const width = 250;
 
-const reglas: Rules = {};
-
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
+const rules: Rules = {};
 
 interface IntermediariosFormPanelProps {
   title: string;
@@ -41,7 +24,7 @@ export const IntermediariosFormPanel: React.FC<IntermediariosFormPanelProps> = (
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   // useEffects
 
@@ -51,7 +34,7 @@ export const IntermediariosFormPanel: React.FC<IntermediariosFormPanelProps> = (
 
   const handleOnFinish = () => {
     /*  dispatch(setEstadoForm({ intermediarios: true })); */
-    dispatch(setActiveForm(TransferenciaTabsNames.VARIOS));
+    dispatch(setActiveForm(FormNames.VARIOS));
   };
 
   // renders

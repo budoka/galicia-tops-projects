@@ -1,6 +1,6 @@
 import { Tag } from 'antd';
 import React from 'react';
-import { Texts } from 'src/constants/texts';
+import { Texts } from '../../../../constants/texts';
 import styles from './style.module.less';
 
 interface RecordsCounterProps {

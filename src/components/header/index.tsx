@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { APP_TITLE, SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
-import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
+import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/navigator-menu/logic';
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
 import { getScreenOrientation } from 'src/utils/screen';

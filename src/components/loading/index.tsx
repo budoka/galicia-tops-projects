@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { Texts } from 'src/constants/texts';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import { Wrapper } from '../wrapper';
 
 interface LoadingProps extends Pick<BasicComponentProps<HTMLDivElement>, 'style'> {
@@ -30,4 +30,6 @@ export const Loading: React.FC<LoadingProps> = (props) => {
   );
 };
 
-export const LoadingContent = () => <Loading style={{ height: '100vh' }} size={26} text={Texts.LOADING} />;
+export const LoadingContent = () => <Loading style={{ height: '100%' }} size={26} text={Texts.LOADING} />;
+
+// export const LoadingContent = () => <Loading style={{ height: '100vh' }} size={26} text={Texts.LOADING} />;

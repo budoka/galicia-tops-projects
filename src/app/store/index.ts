@@ -1,8 +1,10 @@
-import { Action, AnyAction, configureStore, Dispatch, Middleware, ThunkAction } from '@reduxjs/toolkit';
+import { Action, AnyAction, AsyncThunk, AsyncThunkPayloadCreator, configureStore, Dispatch, Middleware, ThunkAction } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { createRootReducer } from 'src/reducers';
 import { config } from './config';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { HttpResponse, HttpRequest } from 'src/api/types';
 
 export const history = createBrowserHistory();
 
@@ -25,6 +27,12 @@ export const store = configureStore({
 export const persistor = persistStore(store);
 
 export type AppDispatch = typeof store.dispatch;
-//export type RootState = ReturnType<typeof store.getState>;
 export type RootState = ReturnType<ReturnType<typeof createRootReducer>>;
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
+
+export function createHttpAsyncThunk<RequestBody, ResponseBody, ThunkApiConfig>(
+  typePrefix: string,
+  payloadCreator: AsyncThunkPayloadCreator<HttpResponse<ResponseBody>, HttpRequest<RequestBody>, ThunkApiConfig>,
+): AsyncThunk<HttpResponse<ResponseBody>, HttpRequest<RequestBody>, ThunkApiConfig> {
+  return createAsyncThunk<HttpResponse<ResponseBody>, HttpRequest<RequestBody>, ThunkApiConfig>(typePrefix, payloadCreator);
+}

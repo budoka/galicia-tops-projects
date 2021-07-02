@@ -1,4 +1,4 @@
-import { ObjectLiteral } from 'src/types';
+import { ObjectLiteral } from 'src/types/interfaces';
 
 /**
  * Get the parsed value with the expected type.

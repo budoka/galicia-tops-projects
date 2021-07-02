@@ -4,22 +4,15 @@ import { addLeadingSlash } from 'history/PathUtils';
 import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
-import { getCurrencyAmount } from 'src/utils/number';
+import { formatCurrencyAmount } from 'src/utils/formatters';
 import { tiposPersona } from '..';
-import { renderFormTitle } from '../../../../shared/ui/utils';
-import { NuevaSolicitudDataState } from '../../data/types';
+import { renderFormTitle } from '../../../../_shared/ui/utils';
+import { NuevaSolicitudDataState } from '../../data/interfaces';
 import { addSolicitud } from '../../logic';
 
 const { Text } = Typography;
 
 const width = 250;
-
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
 
 interface ConfirmacionPanelProps {
   title: string;
@@ -30,7 +23,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
 
   const { title } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   // useEffects
 
@@ -39,7 +32,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   // handlers
 
   const handleOnFinish = () => {
-    if (isConfirmationEnabled()) dispatch(addSolicitud({ data: nuevaSolicitud.data as NuevaSolicitudDataState }));
+    if (isConfirmationEnabled()) dispatch(addSolicitud({ body: nuevaSolicitud.data as NuevaSolicitudDataState }));
   };
 
   const isConfirmationEnabled = () => {
@@ -50,8 +43,6 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   };
 
   // renders
-
-  const loadingContent = false; //ingresarCajas.loading.tiposCaja;
 
   const renderDatosCliente = () => {
     const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente!;
@@ -128,7 +119,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         {importes?.map((i, index) => (
           <Descriptions.Item key={index} label={`Importe N°${index + 1}`}>
             <span>
-              {getCurrencyAmount(+i?.importe)} {moneda?.id} ({i?.concepto.id})
+              {formatCurrencyAmount(+i?.importe, moneda?.id)} ({i?.concepto.id})
             </span>
           </Descriptions.Item>
         ))}

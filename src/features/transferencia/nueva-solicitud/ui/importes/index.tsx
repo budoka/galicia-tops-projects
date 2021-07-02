@@ -7,15 +7,16 @@ import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { Pattern } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { Concepto, ImportesForm, TransferenciaTabsNames } from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
-import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
+import { Concepto } from 'src/features/_shared/data/interfaces';
+import { Rules } from 'src/types/interfaces';
+import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { FormNames, ImportesForm } from '../../data/forms';
 import { setActiveForm, setDatosImportes, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
 const width = 250;
 
-const reglas: Rules = {
+const rules: Rules = {
   importes: {
     importe: [
       {
@@ -39,13 +40,6 @@ const reglas: Rules = {
   ],
 };
 
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
-};
-
 interface ImportesFormPanelProps {
   title: string;
   form: FormInstance<ImportesForm>;
@@ -56,7 +50,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   const monedaRef = useRef<HTMLSelectElement>(null);
   const addAmountRef = useRef<HTMLButtonElement>(null);
@@ -71,7 +65,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.importes;
-    if (currentActiveForm === TransferenciaTabsNames.IMPORTES && currentStatus) {
+    if (currentActiveForm === FormNames.IMPORTES && currentStatus) {
       const { importes, moneda } = nuevaSolicitud.data.form?.datosOperacion! || {};
       form.resetFields();
       form.setFieldsValue({
@@ -96,23 +90,22 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
     }
   }, [nuevaSolicitud.ui.form.active]);
 
-  const isConfirmationEnabled = () => {
-    const status = nuevaSolicitud.ui.form.status;
-
-    return Object.values(status).every((s) => {
-      return s === true;
-    });
-  };
-
-  useEffect(() => {
-    if (isConfirmationEnabled()) dispatch(setActiveForm(TransferenciaTabsNames.CONFIRMACION));
-  }, [nuevaSolicitud.ui.form.status.importes, isConfirmationEnabled()]);
-
   // handlers
 
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ importes: true }));
+    if (isConfirmationEnabled('importes')) dispatch(setActiveForm(FormNames.CONFIRMACION));
+  };
+
+  const isConfirmationEnabled = (omittedStatus: string) => {
+    const status = nuevaSolicitud.ui.form.status;
+
+    return Object.values(status)
+      .filter((s) => s !== omittedStatus)
+      .every((s) => {
+        return s === true;
+      });
   };
 
   const setData = () => {
@@ -140,7 +133,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
         <Form.Item>{renderFormTitle(title)}</Form.Item>
 
         <Col style={{ width: width }}>
-          <Form.Item label={Texts.CURRENCY} name={'moneda'} rules={getRule(reglas, 'moneda')} required>
+          <Form.Item label={Texts.CURRENCY} name={'moneda'} rules={getRule(rules, 'moneda')} required>
             <Select
               ref={monedaRef}
               labelInValue
@@ -175,7 +168,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
                               name={[field.name, 'importe']}
                               key={field.fieldKey}
                               //fieldKey={[field.fieldKey, 'importe']}
-                              rules={getRule(reglas, ['importes', 'importe'])}
+                              rules={getRule(rules, ['importes', 'importe'])}
                               required>
                               <Input />
                             </Form.Item>
@@ -186,7 +179,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
                               name={[field.name, 'concepto']}
                               key={field.fieldKey}
                               // fieldKey={[field.fieldKey, 'concepto']}
-                              rules={getRule(reglas, ['importes', 'concepto'])}
+                              rules={getRule(rules, ['importes', 'concepto'])}
                               required>
                               <Select
                                 labelInValue

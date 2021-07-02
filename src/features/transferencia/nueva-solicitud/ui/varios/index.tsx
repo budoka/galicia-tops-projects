@@ -1,47 +1,24 @@
-import { Button, Col, DatePicker, Form, Row, Select, Space, Tabs, Typography } from 'antd';
+import { Button, Col, Form, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
-import { LabeledValue } from 'antd/lib/select';
-import React, { useEffect, useState } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
+import React, { useEffect } from 'react';
 import { RootState } from 'src/app/store';
-import { useAppDispatch } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
-import {
-  CuentasForm,
-  DetalleGastosObj,
-  GastosForm,
-  TransferenciaTabsNames,
-  VariosForm,
-} from 'src/features/transferencia/nueva-solicitud/data/types';
-import { Rules } from 'src/types';
-import { detallesGastos } from '..';
-
-import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../shared/ui/utils';
-import { setActiveForm, setDatosCuentas, setDatosGastos, setEstadoForm } from '../../logic';
+import { Rules } from 'src/types/interfaces';
+import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { FormNames, VariosForm } from '../../data/forms';
+import { setActiveForm, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
-
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-const { TabPane } = Tabs;
 
 const width = 250;
 
-const reglas: Rules = {
+const rules: Rules = {
   cuentaDebito: [
     {
       required: true,
       message: 'Cuenta no válida',
     },
   ],
-};
-
-const loadingMessage: ArgsProps = {
-  key: 'loading',
-  type: 'loading',
-  content: 'Cargando...',
-  duration: 0,
 };
 
 interface VariosFormPanelProps {
@@ -54,14 +31,14 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
 
   const { title, form } = props;
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencias.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
   // useEffects
 
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.cuentas;
-    if (currentActiveForm === TransferenciaTabsNames.VARIOS && currentStatus) {
+    if (currentActiveForm === FormNames.VARIOS && currentStatus) {
       const cuentaDebito = nuevaSolicitud.data.form?.datosOperacion?.cuentaDebito;
       form.resetFields();
       form.setFieldsValue({
@@ -81,7 +58,7 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ cuentas: true }));
-    dispatch(setActiveForm(TransferenciaTabsNames.CONFIRMACION));
+    dispatch(setActiveForm(FormNames.CONFIRMACION));
   };
 
   const setData = () => {
@@ -99,7 +76,7 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.ACCOUNT} name={'cuentaDebito'} rules={getRule(reglas, 'cuentaDebito')} required>
+              <Form.Item label={Texts.ACCOUNT} name={'cuentaDebito'} rules={getRule(rules, 'cuentaDebito')} required>
                 <Select
                   labelInValue
                   placeholder={Texts.SELECT_ACCOUNT}

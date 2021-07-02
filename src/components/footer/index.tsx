@@ -2,7 +2,7 @@ import { Layout } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { SHADOW, UNSELECTABLE } from 'src/constants';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 

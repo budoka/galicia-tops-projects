@@ -4,10 +4,12 @@ import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import { SelectValue } from 'antd/lib/tree-select';
 import classNames from 'classnames';
-import { isMoment, Moment } from 'moment';
+import moment from 'moment';
+import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
-import { DATE_DD_MM_YYYY_FORMAT, ELLIPSIS } from 'src/constants';
-import { BasicComponentProps } from 'src/types';
+
+import { DATE_DD_MM_YYYY_FORMAT, ELLIPSIS } from '../../../constants';
+import { BasicComponentProps } from '../../../types/interfaces';
 import { InputType } from '..';
 import styles from './style.module.less';
 
@@ -26,20 +28,7 @@ export interface CellProps extends BasicComponentProps<HTMLTableDataCellElement>
 }
 
 export const Cell = React.memo((props: CellProps) => {
-  const {
-    dataIndex,
-    value,
-    title,
-    editing,
-    inputType,
-    options,
-    hasFocus,
-    hasFeedback,
-    rules,
-    children,
-    onSelectChange,
-    ...restProps
-  } = props;
+  const { dataIndex, value, title, editing, inputType, options, hasFocus, hasFeedback, rules, children, onSelectChange, ...restProps } = props;
 
   const cellRef = useRef<HTMLTableDataCellElement>(null);
 
@@ -108,6 +97,8 @@ export const Cell = React.memo((props: CellProps) => {
         {label}
       </span>
     );
+
+    // return <>{options?.find((option) => option.value === React.Children.toArray(children)[0])?.label ?? 'children'}</>;
   };
 
   const renderCheckbox = () => {
@@ -119,10 +110,12 @@ export const Cell = React.memo((props: CellProps) => {
     if (editing) return <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={''} allowClear />;
     const date = isMoment(value) ? (value as Moment).format(DATE_DD_MM_YYYY_FORMAT) : value;
     return <span title={date as string}>{date}</span>;
+    //return <>{children}</>;
   };
 
   const renderText = () => {
     if (editing) return <Input />;
+    //  return <span title={value as string}>{value}</span>;
     return children;
   };
 
@@ -150,6 +143,7 @@ export const Cell = React.memo((props: CellProps) => {
     <td {...restProps} className={className} title={title} ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
         <Form.Item
+          // normalize={(value, prevValue, allValues) => normalizeValue(value)}
           initialValue={getInitialValue()}
           name={dataIndex}
           style={{ margin: 0, padding: 0 }}

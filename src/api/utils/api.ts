@@ -1,6 +1,6 @@
-import { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
-import { API, Placeholders, RequestConfig, Resource } from 'src/api/types';
+import { API, HttpRequest, Placeholders, Resource } from 'src/api/types';
 import { getVar } from 'src/utils/environment';
 
 /**
@@ -35,7 +35,7 @@ export function buildEndpoint(baseURL: string, path: string, placeholders?: Plac
  * @param resource request's resource
  * @param config request's configuration
  */
-export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceType>, resource: Resource, config: RequestConfig<Data> = {}) {
+export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceType>, resource: Resource, config: HttpRequest<Data> = {}) {
   const { baseURL } = api;
   const { path, config: defaultOptions } = resource;
   const { placeholders, cancelToken } = config!;
@@ -43,10 +43,18 @@ export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceTyp
   const verb = config?.verb ?? defaultOptions?.verb;
   const headers = { ...defaultOptions?.headers, ...config?.headers };
   const query = { ...defaultOptions?.query, ...config?.query };
-  const data = { ...defaultOptions?.data, ...config?.data };
+  const body = { ...defaultOptions?.body, ...config?.body };
   const timeout = config?.timeout ?? defaultOptions?.timeout;
 
-  const axiosConfig: AxiosRequestConfig = { method: verb, url: endpoint, headers, params: query, data, cancelToken, timeout };
+  const axiosConfig: AxiosRequestConfig = {
+    method: verb,
+    url: endpoint,
+    headers,
+    params: query,
+    data: body,
+    cancelToken,
+    timeout,
+  };
 
   return axiosConfig;
 }

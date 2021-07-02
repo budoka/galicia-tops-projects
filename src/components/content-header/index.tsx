@@ -1,16 +1,14 @@
 import { Breadcrumb, Divider } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useAppSelector } from 'src/app/store/hooks';
 import { matchPath } from 'react-router';
 import { RootState } from 'src/app/store';
+import { useAppSelector } from 'src/app/store/hooks';
 import { STICKY, UNSELECTABLE } from 'src/constants';
-import { BasicComponentProps } from 'src/types';
-import { useScroll } from 'src/utils/hooks';
+import { MenuChildItem, MenuItem, MenuParentItem } from 'src/features/navigator-menu/ui/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import { menuItems } from '../../app';
-import { Cart } from '../cart';
 import { Scroll } from '../content-wrapper/interface';
-import { MenuChildItem, MenuItem, MenuParentItem } from '../navigator-menu/types';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 
