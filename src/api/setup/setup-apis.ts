@@ -19,7 +19,7 @@ export const apis: APIList = {
   GATEWAY: {
     baseURL: buildBaseURL('GATEWAY'),
     resources: {
-      MENSAJE: { path: 'api/v1/Mensaje', config: { verb: 'GET' } },
+      MENSAJE: { path: 'api/v1/Mensaje/:id', config: { verb: 'GET' } },
       MENSAJES: { path: 'api/v1/Mensaje/GetByFilter', config: { verb: 'POST' } },
     },
   },

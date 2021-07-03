@@ -1,11 +1,18 @@
 import { TipoPersona } from './types';
 
-//#region State
-
 export interface InfoState<T> {
   value?: T;
   loading: boolean;
   error?: unknown;
+}
+
+//#region State
+
+export interface SharedState {
+  conceptos?: InfoState<Concepto[]>;
+  corresponsales?: InfoState<BancoCorresponsal[]>;
+  monedas?: InfoState<Moneda[]>;
+  paises?: InfoState<Pais[]>;
 }
 
 //#endregion
@@ -20,6 +27,12 @@ export interface InfoState<T> {
 export interface Keyable {
   id: string | number;
   [key: string]: any;
+}
+
+export interface Paginator {
+  pageSize?: number;
+  current?: number;
+  total?: number;
 }
 
 //#endregion

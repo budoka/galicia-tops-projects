@@ -4,8 +4,22 @@ export interface GetMensajesDTO {
   divisa: string;
   estadoCompliance: string;
   fecha: string;
-  idMt: string;
+  idMt: number;
   importe: string;
   tipoMT: string;
   uetr: string;
+}
+
+export interface GetMensajesPayload {
+  beneficiario?: string;
+  ordenante?: string;
+  fechaInicial?: string;
+  fechaFinal?: string;
+  importeDesde?: number;
+  importeHasta?: number;
+  tipoMT?: string;
+  uetr?: string;
+  divisa?: string;
+  referencia?: string;
+  pageSize: number;
 }

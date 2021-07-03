@@ -17,7 +17,7 @@ export const config = {
   persistence: {
     key: 'AppStore',
     storage,
-    whitelist: ['menu', 'sesion', 'transferencias'],
+    whitelist: ['menu', 'sesion' /* , 'transferencias' */],
   },
   middlewares: [
     {

@@ -120,7 +120,7 @@ export const Cell = React.memo((props: CellProps) => {
   };
 
   const renderField = (inputType?: InputType) => {
-    if (dataIndex && dataIndex !== 'key' && dataIndex !== 'actions' && !value && value !== 0 && !editing) return <MinusOutlined />;
+    if (dataIndex && dataIndex !== 'key' && dataIndex !== 'actions' && !value && value !== 0 && !editing && inputType !== 'button') return <MinusOutlined />;
 
     switch (inputType) {
       case 'select':

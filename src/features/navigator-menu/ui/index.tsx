@@ -12,7 +12,7 @@ import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { setOpenMenu } from 'src/features/navigator-menu/logic';
 import { ObjectLiteral } from 'src/types/interfaces';
 import { getMatchedPathname } from 'src/utils/history';
-import { View } from 'src/views';
+import { View } from 'src/views/types';
 import styles from './style.module.less';
 import { MenuChildItem, MenuItem, MenuParentItem } from './types';
 

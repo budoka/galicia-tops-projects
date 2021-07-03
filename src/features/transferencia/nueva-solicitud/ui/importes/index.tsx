@@ -51,6 +51,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
   const { title, form } = props;
 
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
+  const shared = useAppSelector((state: RootState) => state.shared);
 
   const monedaRef = useRef<HTMLSelectElement>(null);
   const addAmountRef = useRef<HTMLButtonElement>(null);
@@ -120,7 +121,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
           importe: i.importe,
           concepto: { id: i.concepto.value, descripcion: i.concepto.label } as Concepto,
         })),
-        moneda: nuevaSolicitud.info.monedas?.value?.find((c) => c.id === moneda?.value)!,
+        moneda: shared.monedas?.value?.find((c) => c.id === moneda?.value)!,
       }),
     );
   };
@@ -140,9 +141,9 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
               showSearch
               optionFilterProp="children"
               placeholder={Texts.SELECT_CURRENCY}
-              loading={nuevaSolicitud.info.monedas?.loading}
-              disabled={nuevaSolicitud.info.monedas?.loading}>
-              {renderOptions(nuevaSolicitud.info.monedas?.value!, 'descripcion')}
+              loading={shared.monedas?.loading}
+              disabled={shared.monedas?.loading}>
+              {renderOptions(shared.monedas?.value!, 'descripcion')}
             </Select>
           </Form.Item>
         </Col>
@@ -186,9 +187,9 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
                                 showSearch
                                 optionFilterProp="children"
                                 placeholder={Texts.SELECT_CONCEPT}
-                                loading={nuevaSolicitud.info.conceptos?.loading}
-                                disabled={nuevaSolicitud.info.conceptos?.loading}>
-                                {renderOptions(nuevaSolicitud.info.conceptos?.value!, 'descripcion')}
+                                loading={shared.conceptos?.loading}
+                                disabled={shared.conceptos?.loading}>
+                                {renderOptions(shared.conceptos?.value!, 'descripcion')}
                               </Select>
                             </Form.Item>
                           </Col>

@@ -20,6 +20,8 @@ interface HeaderProps extends LayoutProps {
   hideSiderButton?: boolean;
 }
 
+const WIDTH = 800;
+
 export const Header: React.FC<HeaderProps> = (props) => {
   const sesion = useAppSelector((state: RootState) => state.sesion);
   const settings = useAppSelector((state: RootState) => state.configuracion);
@@ -45,7 +47,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
     const orientation = getScreenOrientation(size);
     if (orientation !== settings.orientation) dispatch(setOrientation(orientation));
 
-    const shouldCollapse = size.width <= 612;
+    const shouldCollapse = size.width <= WIDTH;
     if (shouldCollapse) {
       if (shouldCollapse !== menu.collapsed || shouldCollapse === menu.forcedCollapsed) {
         if (menu.buttonVisible) dispatch(toggleButtonVisible(false));
@@ -65,7 +67,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
   }, [menu.openMenu]);
 
   useEffect(() => {
-    const shouldIgnore = size.width <= 612;
+    const shouldIgnore = size.width <= WIDTH;
     if (shouldIgnore) return;
     else if (menu.forcedCollapsed) {
       if (menu.openMenu) dispatch(setOpenMenu(''));

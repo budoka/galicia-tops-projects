@@ -125,6 +125,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
   const { title, form } = props;
 
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
+  const shared = useAppSelector((state: RootState) => state.shared);
 
   const [currentTipoPersona, setCurrentTipoPersona] = useState<LabeledValue>(DEFAULT_PERSON_TYPE);
 
@@ -264,9 +265,9 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
                   showSearch
                   optionFilterProp="children"
                   placeholder={Texts.SELECT_COUNTRY}
-                  loading={nuevaSolicitud.info.paises?.loading}
-                  disabled={nuevaSolicitud.info.paises?.loading}>
-                  {renderOptions(nuevaSolicitud.info.paises?.value!, 'nombre')}
+                  loading={shared.paises?.loading}
+                  disabled={shared.paises?.loading}>
+                  {renderOptions(shared.paises?.value!, 'nombre')}
                 </Select>
               </Form.Item>
             </Col>

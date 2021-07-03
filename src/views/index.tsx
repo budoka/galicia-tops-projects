@@ -18,7 +18,7 @@ export interface Views {
   Not_Found: View;
 }
 
-const views: Views = {
+export const views: Views = {
   //Inicio: { title: Texts.HOME, path: '/', component: <Inicio />, scope: 'user.read' },
   Mensajes: { title: Texts.MESSAGES, path: '/mensajes', component: <ListaMensajes />, scope: 'user.read', homePage: true },
   Crear_Solicitud_Orden_De_Pago: {
@@ -43,5 +43,9 @@ const views: Views = {
   Not_Found: { title: Texts.NOT_FOUND, path: undefined, component: <NotFound /> },
 };
 
-export * from 'src/views/types';
-export { views };
+export const getHomePage = () => {
+  const viewsArray = Object.values(views) as View[];
+  const homePage = viewsArray.find((v) => v.homePage)?.path ?? '/';
+
+  return homePage;
+};

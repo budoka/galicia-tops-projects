@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router';
 import { Switch } from 'react-router-dom';
-import { View, Views } from 'src/views';
+import { getHomePage, Views } from 'src/views';
+import { View } from 'src/views/types';
 
 type RouterProps = {
   views: Views;
@@ -11,7 +12,7 @@ export const Router: React.FC<RouterProps> = React.memo((props) => {
   useEffect(() => console.log('router'));
 
   const views = Object.values(props.views) as View[];
-  const homePage = views.find((v) => v.homePage)?.path ?? '/aaa';
+  const homePage = getHomePage();
 
   const removeTrailingSlashes = () => {
     const path = window.location.pathname;

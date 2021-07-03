@@ -20,7 +20,7 @@ import { RecordsCounter } from './extra/record-counter-tag';
 import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
 
-export type InputType = 'text' | 'date' | 'select' | 'checkbox';
+export type InputType = 'text' | 'date' | 'select' | 'checkbox' | 'button';
 export type TableAction = 'idle' | 'adding' | 'editing' | 'deleting';
 export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count-tag';
 export type Position = 'top' | 'bottom' | 'both';
@@ -556,7 +556,7 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
     }
   };
 
-  const Loading = React.memo(() => <LoadingOutlined />);
+  const Loading = React.memo(() => <LoadingOutlined size={26} />);
 
   /*   const renderHeader = React.useMemo(() => {
     const regex = /top|both/;

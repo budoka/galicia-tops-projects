@@ -14,6 +14,7 @@ import { Texts } from 'src/constants/texts';
 import { addSolicitud, cleanState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
 import { DetalleGasto, TipoPersona } from 'src/features/_shared/data/types';
 import { fetchMonedas, fetchPaises, fetchCorresponsales, fetchConceptos } from 'src/features/_shared/logic';
+import { isFetchingData, hasError } from 'src/helpers/validations';
 import { Rules } from 'src/types/interfaces';
 import { getFreshToken } from 'src/utils/auth';
 import { getViewWidth } from 'src/utils/screen';
@@ -53,52 +54,7 @@ export const NuevaSolicitud: React.FC = (props) => {
   const dispatch = useAppDispatch();
 
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
-
-  // useEffects
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = await getFreshToken(state.msalInstance!);
-
-      dispatch(
-        fetchMonedas({
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        }),
-      );
-
-      dispatch(
-        fetchPaises({
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        }),
-      );
-
-      dispatch(
-        fetchCorresponsales({
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        }),
-      );
-
-      dispatch(
-        fetchConceptos({
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        }),
-      );
-
-      return () => {
-        dispatch(cleanState());
-      };
-    };
-
-    fetchData();
-  }, []);
+  const shared = useAppSelector((state: RootState) => state.shared);
 
   /*   useEffect(() => {
 
@@ -152,29 +108,9 @@ export const NuevaSolicitud: React.FC = (props) => {
     });
   };
 
-  const isFetchingData = () => {
-    const info = nuevaSolicitud.info;
+  const isContentLoading = isFetchingData(shared);
 
-    return Object.entries(info)
-      .filter((entry) => !['clientes', 'cuentas'].includes(entry[0]))
-      .some((entry) => {
-        return entry[1]?.loading;
-      });
-  };
-
-  const hasError = () => {
-    const info = nuevaSolicitud.info;
-
-    return Object.entries(info)
-      .filter((entry) => !['clientes', 'cuentas'].includes(entry[0]))
-      .some((entry) => {
-        return entry[1]?.error;
-      });
-  };
-
-  const isContentLoading = isFetchingData();
-
-  const hasContentError = hasError();
+  const hasContentError = hasError(shared);
 
   // renders
 

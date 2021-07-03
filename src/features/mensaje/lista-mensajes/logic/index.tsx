@@ -5,17 +5,20 @@ import { HttpResponse } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
-import { GetMensajesDTO } from '../data/dto';
-import { Filtros, ListaMensajesDataState, ListaMensajesState, Mensaje } from '../data/interfaces';
+import { Paginator } from 'src/features/_shared/data/interfaces';
+import { sleep } from 'src/utils/common';
+import { GetMensajesDTO, GetMensajesPayload } from '../data/dto';
+import { Filtros, ListaMensajesState, Mensaje } from '../data/interfaces';
 
 const FEATURE_NAME = 'listaMensajes';
 
 //#region Async actions
 
-export const fetchMensajes = createHttpAsyncThunk<ListaMensajesDataState, Mensaje[], { state: RootState; rejectValue: HttpResponse }>(
+export const fetchMensajes = createHttpAsyncThunk<GetMensajesPayload, Mensaje[], { state: RootState; rejectValue: HttpResponse }>(
   FEATURE_NAME + '/fetchMensajes',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
+    const data = options?.body;
 
     // Configuracion del servicio
     const api = apis['GATEWAY'];
@@ -54,7 +57,9 @@ export const fetchMensajes = createHttpAsyncThunk<ListaMensajesDataState, Mensaj
 
 const initialState: ListaMensajesState = {
   info: {},
-  data: {},
+  data: {
+    paginator: { pageSize: 10, current: 1 },
+  },
   ui: {
     list: {
       status: { mensajes: false },
@@ -66,8 +71,17 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
+    setMensaje(state, action: PayloadAction<number>) {
+      state.data.idMensaje = action.payload;
+    },
     setFiltros(state, action: PayloadAction<Filtros>) {
       state.data.form = { ...state.data.form, filtros: action.payload };
+    },
+    resetFiltros(state) {
+      state.data.form = { ...state.data.form, filtros: undefined };
+    },
+    setPaginator(state, action: PayloadAction<Paginator>) {
+      state.data.paginator = { ...state.data.paginator, current: action.payload.current, pageSize: action.payload.pageSize };
     },
     cleanState() {
       return initialState;
@@ -80,6 +94,7 @@ const slice = createSlice({
       })
       .addCase(fetchMensajes.fulfilled, (state, action) => {
         state.info.mensajes = { value: action.payload?.data, loading: false };
+        //  state.data.paginator = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchMensajes.rejected, (state, action) => {
         state.info.mensajes = { value: [], loading: false, error: action.payload };
@@ -87,8 +102,8 @@ const slice = createSlice({
   },
 });
 
-const { setFiltros, cleanState } = slice.actions;
+const { setMensaje, setFiltros, resetFiltros, setPaginator, cleanState } = slice.actions;
 
-export { setFiltros, cleanState };
+export { setMensaje, setFiltros, resetFiltros, setPaginator, cleanState };
 
 export default slice.reducer;

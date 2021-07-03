@@ -1,4 +1,4 @@
-import { View } from 'src/views';
+import { View } from 'src/views/types';
 
 export interface MenuParentItem {
   title: string;

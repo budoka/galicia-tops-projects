@@ -1,4 +1,4 @@
-import { InfoState, Keyable } from 'src/features/_shared/data/interfaces';
+import { InfoState, Keyable, Paginator } from 'src/features/_shared/data/interfaces';
 import { IElement } from 'src/types/interfaces';
 
 export interface ListaMensajesState {
@@ -13,19 +13,17 @@ export interface ListaMensajesInfoState {
 
 export interface ListaMensajesDataState {
   form: Partial<ListaMensajesFormState>;
+  paginator: Paginator;
+  idMensaje?: number;
 }
 
 export interface ListaMensajesUIState {
   // form: { status: StatusForms; active: string };
-  list: { status: StatusList };
+  // list: { status: StatusList };
 }
 
 export interface ListaMensajesFormState {
   filtros: Filtros;
-}
-
-export interface StatusList {
-  mensajes: boolean;
 }
 
 export interface Filtros {
@@ -34,13 +32,15 @@ export interface Filtros {
   ordenante: string;
   beneficiario: string;
   moneda: string;
-  rangoImporte: number[];
+  importeMinimo: number;
+  importeMaximo: number;
   estado: string;
+  referencia: string;
   rangoFecha: string[];
 }
 
 export interface Mensaje extends IElement {
-  id: string;
+  id: number;
   tipo: string;
   uetr: string;
   ordenante: string;

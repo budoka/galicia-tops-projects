@@ -7,7 +7,7 @@ import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
 import { Cliente, Moneda } from 'src/features/_shared/data/interfaces';
 import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
-import { fetchConceptos, fetchCorresponsales, fetchCuentas, fetchDatosClientes, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
+import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
 import { AddSolicitudDTO } from '../data/dto';
 import { FormNames } from '../data/forms';
 import { Beneficiario, Cuenta, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
@@ -107,9 +107,6 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
-    /*    setForm(state, action: PayloadAction<NuevaSolicitudFormState>) {
-      state.data.form = action.payload;
-    }, */
     setDatosCliente(state, action: PayloadAction<{ cliente: Cliente; vinculadoConBeneficiario: boolean }>) {
       state.data.form = {
         ...state.data.form,
@@ -167,46 +164,6 @@ const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchMonedas.pending, (state) => {
-        state.info.monedas = { value: [], loading: true };
-      })
-      .addCase(fetchMonedas.fulfilled, (state, action) => {
-        state.info.monedas = { value: action.payload?.data, loading: false };
-      })
-      .addCase(fetchMonedas.rejected, (state, action) => {
-        state.info.monedas = { value: [], loading: false, error: action.payload };
-      });
-    builder
-      .addCase(fetchPaises.pending, (state) => {
-        state.info.paises = { value: [], loading: true };
-      })
-      .addCase(fetchPaises.fulfilled, (state, action) => {
-        state.info.paises = { value: action.payload?.data, loading: false };
-      })
-      .addCase(fetchPaises.rejected, (state, action) => {
-        state.info.paises = { value: [], loading: false, error: action.payload };
-      });
-    builder
-      .addCase(fetchCorresponsales.pending, (state) => {
-        state.info.corresponsales = { value: [], loading: true };
-      })
-      .addCase(fetchCorresponsales.fulfilled, (state, action) => {
-        state.info.corresponsales = { value: action.payload?.data, loading: false };
-      })
-      .addCase(fetchCorresponsales.rejected, (state, action) => {
-        state.info.corresponsales = { value: [], loading: false, error: action.payload };
-      });
-    builder
-      .addCase(fetchConceptos.pending, (state) => {
-        state.info.conceptos = { value: [], loading: true };
-      })
-      .addCase(fetchConceptos.fulfilled, (state, action) => {
-        state.info.conceptos = { value: action.payload?.data, loading: false };
-      })
-      .addCase(fetchConceptos.rejected, (state, action) => {
-        state.info.conceptos = { value: [], loading: false, error: action.payload };
-      });
     builder
       .addCase(fetchDatosClientes.pending, (state) => {
         state.info.clientes = { value: [], loading: true };

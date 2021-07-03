@@ -80,6 +80,7 @@ export enum Texts {
   PAY_ORDERS = 'Ordenes de Pago',
   NEW_TRANSFER = 'Nueva Transferencia',
   // FIELDS
+  WATCH = 'Ver',
   ID = 'ID',
   TYPE = 'Tipo',
   ORIGINATOR = 'Ordenante',

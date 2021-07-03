@@ -5,22 +5,27 @@ import { Account, UserAgentApplication } from 'msal';
 import React, { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchPath } from 'react-router-dom';
+import 'src/api/setup/setup-axios';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { useAzureAuth } from 'src/auth/hook/useAzureAuth';
 import { ContentWrapper } from 'src/components/content-wrapper';
 import { Header } from 'src/components/header';
+import { LoadingContent } from 'src/components/loading';
 import 'src/components/message/setup-message';
 import { Router } from 'src/components/router';
+import { ServiceError } from 'src/components/service-error';
 import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { NavigatorMenu } from 'src/features/navigator-menu/ui';
 import { MenuChildItem, MenuItem } from 'src/features/navigator-menu/ui/types';
 import { setUsuario } from 'src/features/sesion/sesion.slice';
+import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
+import { hasError, isFetchingData } from 'src/helpers/validations';
+import { getFreshToken } from 'src/utils/auth';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
 import { RootState } from './store';
-import 'src/api/setup/setup-axios';
 import styles from './style.module.less';
 
 /**
@@ -62,6 +67,7 @@ export const App = () => {
   const auth = useAzureAuth();
   const router = useAppSelector((state: RootState) => state.router);
   const sesion = useAppSelector((state: RootState) => state.sesion.data);
+  const shared = useAppSelector((state: RootState) => state.shared);
   const contentRef = React.createRef();
 
   useEffect(() => {
@@ -72,6 +78,60 @@ export const App = () => {
     const legajo = getLegajoFromEmail(auth.data.account?.username)!;
     dispatch(setUsuario({ nombreUsuario, legajo }));
   }, [auth.data]);
+
+  //#region UseEffect
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!hasError(shared)) fetchData();
+  }, [router.location.key]);
+
+  //#endregion
+
+  //#region Other functions
+
+  const fetchData = async () => {
+    const token = await getFreshToken(gS.msalInstance!);
+
+    dispatch(
+      fetchMonedas({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchPaises({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchCorresponsales({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchConceptos({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    /*  return () => {
+      dispatch(cleanState());
+    }; */
+  };
 
   const getTitle = () => {
     const view = Object.values(views).find((v) => {
@@ -85,6 +145,8 @@ export const App = () => {
     const title = view ? view.title : views.Not_Found.title;
     return title;
   };
+
+  //#endregion
 
   // TODO: Eliminar
   // #REF-MSAL
@@ -156,7 +218,7 @@ export const App = () => {
         <Layout className={styles.main}>
           <NavigatorMenu items={menuItems} />
           <ContentWrapper className={styles.content}>
-            <Router views={views} />
+            {isFetchingData(shared) ? <LoadingContent /> : hasError(shared) ? <ServiceError /> : <Router views={views} />}
           </ContentWrapper>
         </Layout>
       </Layout>

@@ -10,10 +10,6 @@ export interface NuevaSolicitudState {
 export interface NuevaSolicitudInfoState {
   clientes: InfoState<Cliente[]>;
   cuentas: InfoState<Cuenta[]>;
-  conceptos: InfoState<Concepto[]>;
-  corresponsales: InfoState<BancoCorresponsal[]>;
-  monedas: InfoState<Moneda[]>;
-  paises: InfoState<Pais[]>;
 }
 
 export interface NuevaSolicitudDataState {

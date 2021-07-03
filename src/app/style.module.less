@@ -19,10 +19,6 @@ body {
 
 .main {
   position: relative;
-  //  top: @header-height;
-  /*  min-height: calc(100vh - @header-height);
-  max-height: calc(100vh - @header-height);
-  height: calc(100vh - @header-height);*/
   min-height: calc(100vh - @header-height);
   max-height: calc(100vh - @header-height);
   height: calc(100vh- @header-height);
@@ -32,6 +28,7 @@ body {
   display: flex;
   flex-direction: column !important;
   overflow: auto scroll !important;
+  min-width: 600px;
 }
 
 ::-webkit-scrollbar {
