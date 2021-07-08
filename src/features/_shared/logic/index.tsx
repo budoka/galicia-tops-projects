@@ -66,7 +66,7 @@ export const fetchPaises = createHttpAsyncThunk<void, Pais[], { state: RootState
     const responseData = response.data;
 
     const pais = responseData.map((p) => ({
-      id: p.id,
+      id: p.swift_alfabetico,
       nombre: p.descripcion,
     })) as Pais[];
 

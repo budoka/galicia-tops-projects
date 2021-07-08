@@ -52,7 +52,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
 
     if (currentActiveForm === FormNames.DATOS_CLIENTE && currentStatus) {
       const cuit = nuevaSolicitud.data.form?.datosOperacion?.cliente?.cuit;
-      const vinculadoConBeneficiario = nuevaSolicitud.data.form?.datosOperacion?.vinculadoConBeneficiario;
+      const vinculadoConBeneficiario = nuevaSolicitud.data.form?.normativas?.vinculadoConBeneficiario;
 
       clienteForm.resetFields();
       clienteForm.setFieldsValue({

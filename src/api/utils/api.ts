@@ -1,19 +1,19 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
 import { API, HttpRequest, Placeholders, Resource } from 'src/api/types';
-import { getVar } from 'src/utils/environment';
+import { getVar, getVarOrNull } from 'src/utils/environment';
 
 /**
  * Build the url of an API.
  * @param apiId api's id
  */
-export function buildBaseURL(apiId: string) {
+export function buildBaseURL(apiId: string, extraSuffix?: string) {
   const PREFIX_API = 'API_';
   const prefix = getVar(PREFIX_API + 'PREFIX');
   const suffix = getVar(PREFIX_API + 'SUFFIX');
   apiId = getVar(PREFIX_API + apiId).toString();
 
-  return prefix + apiId + suffix;
+  return (getVarOrNull('API_URL_DEBUG')?.toString() ?? prefix + apiId + suffix) + extraSuffix;
 }
 
 /**
@@ -26,7 +26,7 @@ export function buildEndpoint(baseURL: string, path: string, placeholders?: Plac
   const _placeholders = placeholders ? Object.entries(placeholders) : undefined;
   let _path = path;
   if (_placeholders) _path = _placeholders.reduce((url, ph) => url.replace(`:${ph[0]}`, ph[1].toString()), _path);
-  return `${baseURL}/${_path}`;
+  return `${baseURL}/${_path}`.toLowerCase();
 }
 
 /**

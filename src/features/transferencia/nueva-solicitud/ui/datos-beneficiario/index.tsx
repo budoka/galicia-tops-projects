@@ -45,6 +45,18 @@ const rules: Rules = {
       message: 'Razón Social no válida',
     },
   ],
+  tipoDocumento: [
+    {
+      required: false,
+      message: 'Tipo de Documento no válido',
+    },
+  ],
+  numeroDocumento: [
+    {
+      required: false,
+      message: 'Número de Documento no válido',
+    },
+  ],
   nif: [
     {
       required: false,
@@ -87,13 +99,13 @@ const rules: Rules = {
   },
   localidad: [
     {
-      required: true,
+      required: false,
       message: 'Localidad no válida',
     },
   ],
   codigoPostal: [
     {
-      required: true,
+      required: false,
       message: 'Código Postal no válido',
     },
   ],
@@ -179,7 +191,9 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
       apellido: 'Gomez',
       nif: '12345',
       fechaNacimiento: moment('1993-06-11'),
-      pais: getOption({ id: '236', label: 'Argentina' }, 'label'),
+      pais: getOption({ id: 'ARS', label: 'Argentina' }, 'label'),
+      tipoDocumento: 'ASD',
+      numeroDocumento: '123XXX456',
       domicilio: {
         calle: 'Av. Test',
         numero: 1234,
@@ -230,45 +244,48 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
                 </Col>
               </>
             )}
-            {/*           <Col style={{ width: width }}>
-              <Form.Item label={Texts.DATE} name={'fecha'} rules={reglas['fecha']} required>
-                <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={Texts.SELECT_DATE} showToday />
-              </Form.Item>
-            </Col> */}
-            {/* 
-            <Col style={{ width: width }}>
-              <Form.Item label={Texts.ACCOUNT} name={['beneficiario', 'cuenta']} rules={reglas['cuentaBeneficiario']} required>
-                <Input />
-              </Form.Item>
-            </Col> */}
           </Space>
         </Row>
 
         <Row wrap={false}>
           <Space size={'middle'}>
+            <Col style={{ width: width }}>
+              <Form.Item label={Texts.DOCUMENT_TYPE} name={'tipoDocumento'} rules={getRule(rules, 'tipoDocumento')}>
+                <Input />
+              </Form.Item>
+            </Col>
+
+            <Col style={{ width: width }}>
+              <Form.Item label={Texts.DOCUMENT_NUMBER} name={'numeroDocumento'} rules={getRule(rules, 'numeroDocumento')}>
+                <Input />
+              </Form.Item>
+            </Col>
+
             <Col style={{ width: width }}>
               <Form.Item label={Texts.NIF} name={'nif'} rules={getRule(rules, 'nif')}>
                 <Input />
               </Form.Item>
             </Col>
+          </Space>
+        </Row>
 
-            <Col style={{ width: width }}>
+        <Row wrap={false}>
+          <Space size={'middle'}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.DATE_BIRTH} name={'fechaNacimiento'} rules={getRule(rules, 'fechaNacimiento')}>
                 <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={Texts.SELECT_DATE} />
               </Form.Item>
             </Col>
 
-            <Col style={{ width: width }}>
-              <Form.Item label={Texts.COUNTRY} name={'pais'} rules={getRule(rules, 'pais')} required>
-                <Select
-                  labelInValue
-                  showSearch
-                  optionFilterProp="children"
-                  placeholder={Texts.SELECT_COUNTRY}
-                  loading={shared.paises?.loading}
-                  disabled={shared.paises?.loading}>
-                  {renderOptions(shared.paises?.value!, 'nombre')}
-                </Select>
+            <Col style={{ width }}>
+              <Form.Item label={Texts.STREET} name={['domicilio', 'calle']} rules={getRule(rules, ['domicilio', 'calle'])} required>
+                <Input />
+              </Form.Item>
+            </Col>
+
+            <Col style={{ width }}>
+              <Form.Item label={Texts.NUMBER} name={['domicilio', 'numero']} rules={getRule(rules, ['domicilio', 'numero'])} required>
+                <Input />
               </Form.Item>
             </Col>
           </Space>
@@ -276,26 +293,20 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
         <Row wrap={false}>
           <Space size={'middle'}>
-            <Col style={{ width: width }}>
-              <Form.Item label={Texts.STREET} name={['domicilio', 'calle']} rules={getRule(rules, ['domicilio', 'calle'])} required>
-                <Input />
-              </Form.Item>
-            </Col>
-
-            <Col style={{ width: width / 1.5 }}>
-              <Form.Item label={Texts.NUMBER} name={['domicilio', 'numero']} rules={getRule(rules, ['domicilio', 'numero'])} required>
-                <Input />
-              </Form.Item>
-            </Col>
-
-            <Col style={{ width: width / 1.5 - 8 }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.FLOOR} name={['domicilio', 'piso']} rules={getRule(rules, ['domicilio', 'piso'])}>
                 <Input />
               </Form.Item>
             </Col>
 
-            <Col style={{ width: width / 1.5 - 8 }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.DEPARTMENT} name={['domicilio', 'departamento']} rules={getRule(rules, ['domicilio', 'departamento'])}>
+                <Input />
+              </Form.Item>
+            </Col>
+
+            <Col style={{ width: width }}>
+              <Form.Item label={Texts.LOCALITY} name={'localidad'} rules={getRule(rules, 'localidad')}>
                 <Input />
               </Form.Item>
             </Col>
@@ -321,14 +332,22 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
             </Col> */}
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.LOCALITY} name={'localidad'} rules={getRule(rules, 'localidad')} required>
+              <Form.Item label={Texts.ZIP_CODE} name={'codigoPostal'} rules={getRule(rules, 'codigoPostal')}>
                 <Input />
               </Form.Item>
             </Col>
 
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.ZIP_CODE} name={'codigoPostal'} rules={getRule(rules, 'codigoPostal')} required>
-                <Input />
+              <Form.Item label={Texts.COUNTRY} name={'pais'} rules={getRule(rules, 'pais')} required>
+                <Select
+                  labelInValue
+                  showSearch
+                  optionFilterProp="children"
+                  placeholder={Texts.SELECT_COUNTRY}
+                  loading={shared.paises?.loading}
+                  disabled={shared.paises?.loading}>
+                  {renderOptions(shared.paises?.value!, 'nombre')}
+                </Select>
               </Form.Item>
             </Col>
           </Space>

@@ -9,7 +9,7 @@ axios.defaults.headers = {
   'content-Type': 'application/json',
 };
 axios.defaults.raxConfig = {
-  retry: 4,
+  retry: 3,
   retryDelay: 1000,
   backoffType: 'static',
   httpMethodsToRetry: ['GET', 'POST', 'HEAD', 'OPTIONS', 'DELETE', 'PUT'],

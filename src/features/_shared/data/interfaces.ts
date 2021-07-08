@@ -69,6 +69,6 @@ export interface Moneda extends Keyable {
 }
 
 export interface Pais extends Keyable {
-  id: number;
+  id: string;
   nombre: string;
 }

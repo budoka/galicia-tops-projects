@@ -1,9 +1,12 @@
 import { Button, Result } from 'antd';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Wrapper } from 'src/components/wrapper';
 import { getRoute, goHome, goTo } from 'src/utils/history';
 
 export const ServiceError: React.FC = (props) => {
+  const history = useHistory();
+
   const renderSubtitle = () => {
     return (
       <div>
@@ -15,7 +18,8 @@ export const ServiceError: React.FC = (props) => {
   };
 
   const refresh = () => {
-    goTo(getRoute());
+    // goTo(getRoute());
+    window.location.reload();
   };
 
   return (

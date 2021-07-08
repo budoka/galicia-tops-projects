@@ -1,34 +1,41 @@
-import { DetalleGasto, TipoCodigo, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
+import { DetalleGasto, TipoCodigoBanco, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 
 export interface AddSolicitudDTO {
   datosOperacion: DatosOperacion;
+  normativas: Normativas;
 }
 
 //#region Internal
 
 interface DatosOperacion {
   fechaEntrada: string;
-  cuitCliente: string;
+  tipoDocumentoCliente: string;
+  documentoCliente: string;
   beneficiario: Beneficiario;
-  bancoIntermediario?: Banco;
   cuentaDebito: Cuenta;
   cuentaDebitoGastos?: Cuenta;
   gasto: Gasto;
-  importes: Importe[];
   monedaId: string;
+  importes: Importe[];
+}
+
+interface Normativas {
   vinculadoConBeneficiario: boolean;
 }
 
 interface Beneficiario {
   razonSocial: string;
+  tipoDeDocumento?: string;
+  numeroDeDocumento?: string;
   nif?: string;
   tipoPersona: TipoPersona;
   fechaNacimiento?: string;
   domicilio: Direccion;
   localidad: string;
   codigoPostal: string;
-  paisId: number;
-  banco: Banco;
+  isoAlfanumericoPais: string;
+  cuentaBancoDestino: Banco;
+  cuentaBancoIntermediario: Banco;
 }
 
 interface Direccion {
@@ -41,17 +48,19 @@ interface Direccion {
 interface Banco {
   nombre: string;
   localidad: string;
-  paisId: number;
+  isoAlfanumericoPais: string;
   nroCuenta: string;
-  tipoCodigo?: TipoCodigo;
-  codigo?: string;
+  tipoCodigoDelBanco?: TipoCodigoBanco;
   codigoBanco?: string;
+  tipoDeCodigoAdicional?: string;
+  codigoDelBancoAdicional?: string;
 }
 
 interface Cuenta {
   tipoCuenta: TipoCuenta;
   monedaId: string;
   numero: string;
+  sucursal: string;
 }
 
 interface Gasto {

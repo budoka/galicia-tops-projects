@@ -8,7 +8,7 @@ import { createHttpAsyncThunk, RootState } from 'src/app/store';
 import { Paginator } from 'src/features/_shared/data/interfaces';
 import { sleep } from 'src/utils/common';
 import { GetMensajeDTO } from '../data/dto';
-import { ListaMensajeState, Mensaje } from '../data/interfaces';
+import { InfoMensajeState, Mensaje } from '../data/interfaces';
 
 const FEATURE_NAME = 'infoMensaje';
 
@@ -20,7 +20,7 @@ export const fetchMensaje = createHttpAsyncThunk<void, Mensaje, { state: RootSta
     const { dispatch, getState } = thunkApi;
 
     // Configuracion del servicio
-    const api = apis['GATEWAY'];
+    const api = apis['MENSAJE'];
     const resource = api.resources['MENSAJE'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
@@ -60,9 +60,8 @@ export const fetchMensaje = createHttpAsyncThunk<void, Mensaje, { state: RootSta
 
 //#endregion
 
-const initialState: ListaMensajeState = {
+const initialState: InfoMensajeState = {
   info: {},
-  ui: {},
 };
 
 const slice = createSlice({
@@ -76,14 +75,14 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMensaje.pending, (state) => {
-        state.info.mensaje = { value: undefined, loading: true };
+        state.info.mensajes = { ...state.info.mensajes, loading: true };
       })
       .addCase(fetchMensaje.fulfilled, (state, action) => {
-        state.info.mensaje = { value: action.payload?.data, loading: false };
+        state.info.mensajes = { value: { ...state.info.mensajes?.value, [`${action.payload?.data?.id}`]: action.payload?.data! }, loading: false };
         //  state.data.paginator = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchMensaje.rejected, (state, action) => {
-        state.info.mensaje = { value: undefined, loading: false, error: action.payload };
+        state.info.mensajes = { ...state.info.mensajes, loading: false, error: action.payload };
       });
   },
 });

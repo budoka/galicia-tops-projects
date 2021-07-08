@@ -8,9 +8,9 @@ import { Keyable } from '../data/interfaces';
 const { Option } = Select;
 const { Text } = Typography;
 
-export const renderFormTitle = (title: string) => {
+export const renderFormTitle = (title: string, fontSize = 18) => {
   return (
-    <Text style={{ fontSize: 18 }} strong>
+    <Text style={{ fontSize }} strong>
       {title}
     </Text>
   );

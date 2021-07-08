@@ -10,7 +10,7 @@ import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data
 import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
 import { AddSolicitudDTO } from '../data/dto';
 import { FormNames } from '../data/forms';
-import { Beneficiario, Cuenta, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
+import { Beneficiario, Cuenta, CuentaExterior, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
 
 const FEATURE_NAME = 'nuevaSolicitud';
 
@@ -29,29 +29,32 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
     const resource = api.resources['AGREGAR_SOLICITUD'];
     const config = buildAxiosRequestConfig(api, resource, { ...options /*  data: requestData  */ });
 
-    const requestData: AddSolicitudDTO = {
+    // const requestData: AddSolicitudDTO = {
+    const requestData: any = {
       datosOperacion: {
         ...data.form.datosOperacion!,
-        cuitCliente: data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
+        tipoDocumentoCliente: 'CUIT',
+        documentoCliente: data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
         monedaId: data.form.datosOperacion!.moneda.id!,
         beneficiario: {
           ...data.form.datosOperacion!.beneficiario!,
           tipoPersona: data.form.datosOperacion?.beneficiario.tipoPersona.id as TipoPersona,
-          paisId: data.form.datosOperacion!.beneficiario.pais.id!,
+          isoAlfanumericoPais: data.form.datosOperacion!.beneficiario.pais.id!,
           razonSocial:
             data.form.datosOperacion!.beneficiario.razonSocial ??
             `${data.form.datosOperacion!.beneficiario.apellido}, ${data.form.datosOperacion!.beneficiario.nombre}`,
-          banco: {
-            ...data.form.datosOperacion!.beneficiario.banco!,
-            nroCuenta: data.form.datosOperacion!.beneficiario.banco.cuenta!,
-            paisId: data.form.datosOperacion!.beneficiario.banco.pais.id!,
+          cuentaBancoDestino: {
+            ...data.form.datosOperacion!.beneficiario.cuentaDestino!,
+            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaDestino?.cuenta!,
+            paisId: data.form.datosOperacion!.beneficiario.cuentaDestino?.pais.id!,
+          },
+          cuentaBancoIntermediario: {
+            ...data.form.datosOperacion!.beneficiario.cuentaIntermediario!,
+            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.cuenta!,
+            paisId: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.pais.id!,
           },
         },
-        bancoIntermediario: {
-          ...data.form.datosOperacion!.bancoIntermediario!,
-          nroCuenta: data.form.datosOperacion!.bancoIntermediario.cuenta!,
-          paisId: data.form.datosOperacion!.bancoIntermediario.pais.id!,
-        },
+
         cuentaDebito: {
           tipoCuenta: data.form.datosOperacion?.cuentaDebito?.codigo as TipoCuenta,
           monedaId: data.form.datosOperacion?.cuentaDebito?.monedaIso!,
@@ -66,7 +69,9 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
           ...data.form.datosOperacion?.gastos,
           detalle: data.form.datosOperacion?.gastos.detalle.id as DetalleGasto,
         },
-        vinculadoConBeneficiario: data.form.datosOperacion?.vinculadoConBeneficiario!,
+      },
+      normativas: {
+        vinculadoConBeneficiario: data.form.normativas?.vinculadoConBeneficiario!,
       },
     };
 
@@ -97,7 +102,7 @@ const initialState: NuevaSolicitudState = {
   data: {},
   ui: {
     form: {
-      active: FormNames.DATOS_CLIENTE,
+      active: FormNames.CUENTAS,
       status: { datosClientes: false, datosBeneficiario: false, cuentas: false, gastos: false, importes: false },
     },
   },
@@ -113,6 +118,8 @@ const slice = createSlice({
         datosOperacion: {
           ...state.data.form?.datosOperacion!,
           cliente: action.payload.cliente,
+        },
+        normativas: {
           vinculadoConBeneficiario: action.payload.vinculadoConBeneficiario,
         },
       };
@@ -120,18 +127,32 @@ const slice = createSlice({
     setDatosBeneficiario(state, action: PayloadAction<Beneficiario>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, beneficiario: action.payload } };
     },
-    setDatosGastos(state, action: PayloadAction<{ gastos: Gastos; cuentaDebitoGastos: Cuenta }>) {
+    setDatosGastos(state, action: PayloadAction<Gastos>) {
       state.data.form = {
         ...state.data.form,
         datosOperacion: {
           ...state.data.form?.datosOperacion!,
-          gastos: action.payload.gastos,
-          cuentaDebitoGastos: action.payload.cuentaDebitoGastos,
+          gastos: action.payload,
         },
       };
     },
-    setDatosCuentas(state, action: PayloadAction<Cuenta>) {
-      state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, cuentaDebito: action.payload } };
+    setDatosCuentas(
+      state,
+      action: PayloadAction<{ cuentaDebito: Cuenta; cuentaDebitoGastos: Cuenta; cuentaDestino: CuentaExterior; cuentaIntermediario: CuentaExterior }>,
+    ) {
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: {
+          ...state.data.form?.datosOperacion!,
+          cuentaDebito: action.payload.cuentaDebito,
+          cuentaDebitoGastos: action.payload.cuentaDebitoGastos,
+          beneficiario: {
+            ...state.data.form?.datosOperacion?.beneficiario!,
+            cuentaDestino: action.payload.cuentaDestino,
+            cuentaIntermediario: action.payload.cuentaIntermediario,
+          },
+        },
+      };
     },
     setDatosImportes(state, action: PayloadAction<{ importes: Importe[]; moneda: Moneda }>) {
       state.data.form = {
@@ -155,6 +176,8 @@ const slice = createSlice({
         datosOperacion: {
           ...state.data.form?.datosOperacion!,
           cliente: undefined,
+        },
+        normativas: {
           vinculadoConBeneficiario: undefined,
         },
       };

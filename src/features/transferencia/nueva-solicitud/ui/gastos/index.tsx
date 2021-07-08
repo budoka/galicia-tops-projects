@@ -16,18 +16,10 @@ import styles from './style.module.less';
 const width = 250;
 
 const rules: Rules = {
-  gastos: {
-    detalle: [
-      {
-        required: true,
-        message: 'Detalle no válido',
-      },
-    ],
-  },
-  cuentaDebitoGastos: [
+  detalle: [
     {
       required: true,
-      message: 'Cuenta no válida',
+      message: 'Detalle no válido',
     },
   ],
 };
@@ -58,18 +50,7 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
       const cuentaDebitoGastos = nuevaSolicitud.data.form?.datosOperacion?.cuentaDebitoGastos;
       form.resetFields();
       form.setFieldsValue({
-        gastos: {
-          ...gastos,
-          detalle: getOption({ id: gastos?.detalle.id!, descripcion: gastos?.detalle.descripcion }, 'descripcion'),
-        },
-        cuentaDebitoGastos: getOption(
-          {
-            id: cuentaDebitoGastos?.valor!,
-            descripcion: cuentaDebitoGastos?.valor,
-            //  descripcion: `${cuentaDebitoGastos?.codigo} | ${cuentaDebitoGastos?.monedaIso} | ${cuentaDebitoGastos?.numero}`,
-          },
-          'descripcion',
-        ),
+        detalle: getOption({ id: gastos?.detalle.id!, descripcion: gastos?.detalle.descripcion }, 'descripcion'),
       });
 
       // setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
@@ -89,14 +70,11 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
   };
 
   const setData = () => {
-    const { gastos, cuentaDebitoGastos } = form.getFieldsValue() || {};
+    const { detalle } = form.getFieldsValue() || {};
+    console.log(form.getFieldsValue());
     dispatch(
       setDatosGastos({
-        gastos: {
-          ...gastos,
-          detalle: { id: gastos.detalle.value, descripcion: gastos.detalle.label } as DetalleGastos,
-        },
-        cuentaDebitoGastos: nuevaSolicitud.info.cuentas?.value?.find((c) => c.id === cuentaDebitoGastos?.value)!,
+        detalle: { id: detalle.value, descripcion: detalle.label } as DetalleGastos,
       }),
     );
   };
@@ -111,26 +89,12 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
         <Row wrap={false}>
           <Space size={'middle'}>
             <Col style={{ width: width }}>
-              <Form.Item label={Texts.EXPENSE_DETAIL} name={['gastos', 'detalle']} rules={getRule(rules, ['gastos', 'detalle'])} required>
+              <Form.Item label={Texts.EXPENSE_DETAIL} name={['detalle']} rules={getRule(rules, 'detalle')} required>
                 <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL} /* onChange={handleOnDetalleGastosChange} */>
                   {renderOptions(detallesGastos, 'descripcion')}
                 </Select>
               </Form.Item>
             </Col>
-
-            {
-              /* 'ben' !== currentDetalleGastos.value && */ <Col style={{ width: width }}>
-                <Form.Item label={Texts.ACCOUNT} name={'cuentaDebitoGastos'} rules={getRule(rules, 'cuentaDebitoGastos')} required>
-                  <Select
-                    labelInValue
-                    placeholder={Texts.SELECT_ACCOUNT}
-                    loading={nuevaSolicitud.info.cuentas?.loading}
-                    disabled={nuevaSolicitud.info.cuentas?.loading}>
-                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'valor')}
-                  </Select>
-                </Form.Item>
-              </Col>
-            }
           </Space>
         </Row>
 

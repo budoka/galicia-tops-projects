@@ -1,33 +1,15 @@
-import { EyeOutlined } from '@ant-design/icons';
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd';
-import locale from 'antd/lib/date-picker/locale/es_ES';
-import { useForm } from 'antd/lib/form/Form';
-import { LabeledValue } from 'antd/lib/select';
-import _ from 'lodash';
-import moment from 'moment';
-import { ColumnsType } from 'rc-table/lib/interface';
-import React, { CSSProperties, useContext, useEffect } from 'react';
+import { List } from 'antd';
+import { ListItemMetaProps } from 'antd/lib/list';
+import React, { useContext, useEffect } from 'react';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { LoadingContent } from 'src/components/loading';
 import { ServiceError } from 'src/components/service-error';
-import { ColumnTypeEx, Table } from 'src/components/table';
-import { Wrapper } from 'src/components/wrapper';
-import { Texts } from 'src/constants/texts';
 import { cleanState } from 'src/features/transferencia/nueva-solicitud/logic';
-import { Paginator } from 'src/features/_shared/data/interfaces';
-import { getRule } from 'src/features/_shared/ui/utils';
 import { hasError, isFetchingData } from 'src/helpers/validations';
-import { Rules } from 'src/types/interfaces';
 import { getFreshToken } from 'src/utils/auth';
-import { formatCurrencyAmount, formatDate } from 'src/utils/formatters';
-import { getViewWidth } from 'src/utils/screen';
-import { compare } from 'src/utils/string';
-import { Mensaje } from '../data/interfaces';
 import { fetchMensaje } from '../logic';
-
-import styles from './style.module.less';
 
 interface InfoMensajeProps {
   id: number;
@@ -44,8 +26,8 @@ export const InfoMensaje: React.FC<InfoMensajeProps> = (props) => {
   //#region UseEffects
 
   useEffect(() => {
-    fetchData(id);
-  }, []);
+    if (!getMensaje(id)) fetchData(id);
+  }, [id]);
 
   //#endregion
 
@@ -53,6 +35,8 @@ export const InfoMensaje: React.FC<InfoMensajeProps> = (props) => {
 
   const fetchData = async (id: number) => {
     const token = await getFreshToken(state.msalInstance!);
+
+    console.log('fetchinbg..');
 
     dispatch(
       fetchMensaje({
@@ -68,6 +52,10 @@ export const InfoMensaje: React.FC<InfoMensajeProps> = (props) => {
     };
   };
 
+  const getMensaje = (id: number) => {
+    return Object.values(infoMensaje.info.mensajes?.value || {}).find((m) => m.id === id);
+  };
+
   //#endregion
 
   const isContentLoading = isFetchingData(infoMensaje.info);
@@ -77,25 +65,32 @@ export const InfoMensaje: React.FC<InfoMensajeProps> = (props) => {
   //#region Renders
 
   const renderInfo = () => {
+    const { canal, codigo, estados, detalles, fechaRecepcion, mensaje, tipo, uetr } = getMensaje(id) || {};
+
+    const data = detalles
+      ?.map(
+        (d) =>
+          ({
+            title: d.nombre,
+            description: d.valor,
+          } as ListItemMetaProps),
+      )
+      .sort((a, b) => Number(a.title) - Number(b.title));
+
     return (
-      <Wrapper contentBody direction="row" horizontal="center">
-        <span>MODAL</span>
-      </Wrapper>
+      <List
+        dataSource={data}
+        style={{ height: '70vh', overflowY: 'scroll' }}
+        renderItem={(item) => (
+          <List.Item>
+            <List.Item.Meta title={item.title} description={item.description} />
+          </List.Item>
+        )}
+      />
     );
   };
 
   //#endregion
 
-  return (
-    <Wrapper
-      contentWrapper
-      unselectable
-      direction="column"
-      vertical="top"
-      horizontal="center"
-      style={{ minWidth: getViewWidth(isContentLoading || hasContentError) }}>
-      {/*   {isContentLoading ? <LoadingContent /> : renderTable()} */}
-      {isContentLoading ? <LoadingContent /> : hasContentError ? <ServiceError /> : renderInfo()}
-    </Wrapper>
-  );
+  return isContentLoading ? <LoadingContent /> : hasContentError ? <ServiceError /> : renderInfo();
 };

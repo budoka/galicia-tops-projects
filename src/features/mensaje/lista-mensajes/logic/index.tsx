@@ -21,7 +21,7 @@ export const fetchMensajes = createHttpAsyncThunk<GetMensajesPayload, Mensaje[],
     const data = options?.body;
 
     // Configuracion del servicio
-    const api = apis['GATEWAY'];
+    const api = apis['MENSAJE'];
     const resource = api.resources['MENSAJES'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
@@ -60,11 +60,7 @@ const initialState: ListaMensajesState = {
   data: {
     paginator: { pageSize: 10, current: 1 },
   },
-  ui: {
-    list: {
-      status: { mensajes: false },
-    },
-  },
+  ui: {},
 };
 
 const slice = createSlice({
@@ -82,6 +78,9 @@ const slice = createSlice({
     },
     setPaginator(state, action: PayloadAction<Paginator>) {
       state.data.paginator = { ...state.data.paginator, current: action.payload.current, pageSize: action.payload.pageSize };
+    },
+    setModalVisible(state, action: PayloadAction<boolean>) {
+      state.ui.modal = action.payload;
     },
     cleanState() {
       return initialState;
@@ -102,8 +101,8 @@ const slice = createSlice({
   },
 });
 
-const { setMensaje, setFiltros, resetFiltros, setPaginator, cleanState } = slice.actions;
+const { setMensaje, setFiltros, resetFiltros, setPaginator, setModalVisible, cleanState } = slice.actions;
 
-export { setMensaje, setFiltros, resetFiltros, setPaginator, cleanState };
+export { setMensaje, setFiltros, resetFiltros, setPaginator, setModalVisible, cleanState };
 
 export default slice.reducer;

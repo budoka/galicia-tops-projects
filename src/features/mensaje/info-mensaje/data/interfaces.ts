@@ -1,15 +1,16 @@
 import { InfoState } from 'src/features/_shared/data/interfaces';
+import { Dictionary } from 'src/types/interfaces';
 
-export interface ListaMensajeState {
-  info: Partial<ListaMensajeInfoState>;
-  ui: Partial<ListaMensajeUIState>;
+export interface InfoMensajeState {
+  info: Partial<InfoMensajeInfoState>;
+  // ui: Partial<InfoMensajeUIState>;
 }
 
-export interface ListaMensajeInfoState {
-  mensaje: InfoState<Mensaje>;
+export interface InfoMensajeInfoState {
+  mensajes: InfoState<Dictionary<Mensaje>>;
 }
 
-export interface ListaMensajeUIState {
+export interface InfoMensajeUIState {
   // form: { status: StatusForms; active: string };
   // list: { status: StatusList };
 }

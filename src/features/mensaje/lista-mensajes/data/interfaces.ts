@@ -4,7 +4,7 @@ import { IElement } from 'src/types/interfaces';
 export interface ListaMensajesState {
   info: Partial<ListaMensajesInfoState>;
   data: Partial<ListaMensajesDataState>;
-  ui: ListaMensajesUIState;
+  ui: Partial<ListaMensajesUIState>;
 }
 
 export interface ListaMensajesInfoState {
@@ -20,6 +20,7 @@ export interface ListaMensajesDataState {
 export interface ListaMensajesUIState {
   // form: { status: StatusForms; active: string };
   // list: { status: StatusList };
+  modal: boolean;
 }
 
 export interface ListaMensajesFormState {

@@ -7,7 +7,7 @@ import { API, Resource } from '../types';
 
 export interface APIList {
   COMMON: API<ResourcesCommon>;
-  GATEWAY: API<ResourcesGateway>;
+  MENSAJE: API<ResourcesMensaje>;
   TRANSFERENCIA: API<ResourcesTransferencia>;
 }
 
@@ -22,7 +22,7 @@ export interface ResourcesCommon {
   PRODUCTOS: Resource;
 }
 
-export interface ResourcesGateway {
+export interface ResourcesMensaje {
   MENSAJE: Resource;
   MENSAJES: Resource;
 }

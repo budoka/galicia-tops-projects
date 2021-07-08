@@ -12,7 +12,7 @@ import { Wrapper } from 'src/components/wrapper';
 import { SHADOW } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { addSolicitud, cleanState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
-import { DetalleGasto, TipoPersona } from 'src/features/_shared/data/types';
+import { DetalleGasto, TipoCodigoBanco, TipoPersona } from 'src/features/_shared/data/types';
 import { fetchMonedas, fetchPaises, fetchCorresponsales, fetchConceptos } from 'src/features/_shared/logic';
 import { isFetchingData, hasError } from 'src/helpers/validations';
 import { Rules } from 'src/types/interfaces';
@@ -42,6 +42,11 @@ export const detallesGastos = [
   { id: 'ben', descripcion: 'BEN' } as { id: DetalleGasto; descripcion: string },
   { id: 'our', descripcion: 'OUR' } as { id: DetalleGasto; descripcion: string },
   { id: 'sha', descripcion: 'SHA' } as { id: DetalleGasto; descripcion: string },
+];
+
+export const tiposCodigoBanco = [
+  { id: 'aba', descripcion: 'ABA' } as { id: TipoCodigoBanco; descripcion: string },
+  { id: 'swift', descripcion: 'SWIFT' } as { id: TipoCodigoBanco; descripcion: string },
 ];
 
 export const NuevaSolicitud: React.FC = (props) => {

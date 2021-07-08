@@ -1,5 +1,5 @@
 import { EyeOutlined } from '@ant-design/icons';
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd';
+import { Button, Col, DatePicker, Form, Input, Modal, Row, Select, Space } from 'antd';
 import locale from 'antd/lib/date-picker/locale/es_ES';
 import { useForm } from 'antd/lib/form/Form';
 import { LabeledValue } from 'antd/lib/select';
@@ -7,6 +7,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { CSSProperties, useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
@@ -28,7 +29,7 @@ import { InfoMensaje } from '../../info-mensaje/ui';
 import { GetMensajesPayload } from '../data/dto';
 import { FiltrosForm } from '../data/forms';
 import { Mensaje } from '../data/interfaces';
-import { fetchMensajes, setMensaje, setPaginator } from '../logic';
+import { fetchMensajes, setMensaje, setModalVisible, setPaginator } from '../logic';
 import styles from './style.module.less';
 
 interface TableFilter {
@@ -221,6 +222,7 @@ export const ListaMensajes: React.FC = (props) => {
 
   const listaMensajes = useAppSelector((state: RootState) => state.mensaje.listaMensajes);
   const shared = useAppSelector((state: RootState) => state.shared);
+  const router = useAppSelector((state: RootState) => state.router);
 
   const mergedFilters = filters.map((f) =>
     f.key === 'moneda' ? ({ ...f, items: shared.monedas?.value?.map((m) => ({ value: m.id, label: m.descripcion } as LabeledValue)) } as TableFilter) : f,
@@ -235,7 +237,7 @@ export const ListaMensajes: React.FC = (props) => {
             type="primary"
             shape="circle"
             style={{ color: '#fa7923', backgroundColor: 'transparent', border: 'none' }}
-            onClick={() => handleOnViewMensaje(record.id)}
+            onClick={() => handleOnShowMensaje(record.id)}
             icon={<EyeOutlined />}></Button>
         ),
       };
@@ -285,8 +287,12 @@ export const ListaMensajes: React.FC = (props) => {
     dispatch(setPaginator(paginator));
   };
 
-  const handleOnViewMensaje = (id: number) => {
-    dispatch(setMensaje(id));
+  const handleOnShowMensaje = (id: number) => {
+    showMensaje(id);
+  };
+
+  const handleOnModalVisible = (visible: boolean) => {
+    setModal(visible);
   };
 
   //#endregion
@@ -312,6 +318,15 @@ export const ListaMensajes: React.FC = (props) => {
 
   const resetFilters = () => {
     busquedaForm.resetFields();
+  };
+
+  const showMensaje = (id: number) => {
+    dispatch(setMensaje(id));
+    setModal(true);
+  };
+
+  const setModal = (visible: boolean) => {
+    dispatch(setModalVisible(visible));
   };
 
   //#endregion
@@ -482,7 +497,17 @@ export const ListaMensajes: React.FC = (props) => {
       style={{ minWidth: getViewWidth(isContentLoading || hasContentError) }}>
       {/*   {isContentLoading ? <LoadingContent /> : renderTable()} */}
       {isContentLoading ? <LoadingContent /> : hasContentError ? <ServiceError /> : renderTable()}
-      {listaMensajes.data.idMensaje && <InfoMensaje id={listaMensajes.data.idMensaje} />}
+      <Modal
+        title={`Mensaje ${listaMensajes.data.idMensaje}`}
+        centered
+        visible={listaMensajes.ui.modal}
+        footer={null}
+        width="60%"
+        onCancel={() => handleOnModalVisible(false)}
+        /*afterClose={clearDetailModal}*/
+      >
+        {listaMensajes.data.idMensaje && <InfoMensaje id={listaMensajes.data.idMensaje} />}
+      </Modal>
     </Wrapper>
   );
 };
