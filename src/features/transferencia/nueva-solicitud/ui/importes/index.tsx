@@ -46,17 +46,16 @@ interface ImportesFormPanelProps {
 }
 
 export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
-  const dispatch = useAppDispatch();
-
   const { title, form } = props;
 
+  const dispatch = useAppDispatch();
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
   const shared = useAppSelector((state: RootState) => state.shared);
 
   const monedaRef = useRef<HTMLSelectElement>(null);
   const addAmountRef = useRef<HTMLButtonElement>(null);
 
-  // useEffects
+  //#region UseEffects
 
   useEffect(() => {
     addAmountRef.current?.click();
@@ -91,28 +90,31 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
     }
   }, [nuevaSolicitud.ui.form.active]);
 
-  // handlers
+  //#endregion
+
+  //#region Handlers
 
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ importes: true }));
-    if (isConfirmationEnabled('importes')) dispatch(setActiveForm(FormNames.CONFIRMACION));
+    if (canAdvance('importes')) dispatch(setActiveForm(FormNames.CONFIRMACION));
   };
 
-  const isConfirmationEnabled = (omittedStatus: string) => {
+  const canAdvance = (omittedStatus: string) => {
     const status = nuevaSolicitud.ui.form.status;
 
-    return Object.values(status)
-      .filter((s) => s !== omittedStatus)
-      .every((s) => {
-        return s === true;
+    return Object.keys(status)
+      .filter((key) => key !== omittedStatus)
+      .every((key) => {
+        return (status as any)[key] === true;
       });
   };
 
-  const setData = () => {
-    /*  const { cuentaDebito } = form.getFieldsValue() || {};
-    dispatch(setDatosCuentas(nuevaSolicitud.info.cuentas?.value?.find((c) => c.id === cuentaDebito?.value)!)); */
+  //#endregion
 
+  //#region Other functions
+
+  const setData = () => {
     const { importes, moneda } = form.getFieldsValue() || {};
 
     dispatch(
@@ -126,7 +128,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
     );
   };
 
-  // renders
+  //#endregion
 
   return (
     <>

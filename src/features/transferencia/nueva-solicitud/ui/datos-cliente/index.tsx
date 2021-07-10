@@ -38,13 +38,12 @@ interface ClienteFormPanelProps {
 }
 
 export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
-  const dispatch = useAppDispatch();
-
   const { title, clienteForm, gastosForm, cuentasForm } = props;
 
+  const dispatch = useAppDispatch();
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
-  // useEffects
+  //#region UseEffects
 
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
@@ -62,7 +61,9 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     }
   }, [nuevaSolicitud.ui.form.active]);
 
-  // handlers
+  //#endregion
+
+  //#region Handlers
 
   const handleCuitCliente = () => {
     fetchCliente();
@@ -76,20 +77,31 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     setClientData();
   };
 
-  // other functions
+  //#endregion
+
+  //#region Other functions
 
   const fetchCliente = () => {
     clienteForm
       .validateFields()
-      .then(() => {
-        Message.loading(Texts.SEARCH_CLIENT_LOADING);
+      .then(async () => {
+        new Promise<void>(async (resolve, reject) => {
+          Message.loading(Texts.SEARCH_CLIENT_LOADING);
 
-        dispatch(fetchDatosClientes({ query: { filtro: 'CUIT', valor: clienteForm.getFieldsValue().cuitCliente } }))
-          .then(unwrapResult)
-          .then((a) => Message.success(Texts.SEARCH_CLIENT_OK))
-          .catch((err) => Message.error(Texts.SEARCH_CLIENT_ERROR));
+          const result = await dispatch(fetchDatosClientes({ query: { filtro: 'CUIT', valor: clienteForm.getFieldsValue().cuitCliente } }));
+
+          if (fetchDatosClientes.fulfilled.match(result)) {
+            Message.success(Texts.SEARCH_CLIENT_OK);
+            resolve();
+          } else {
+            Message.error(Texts.SEARCH_CLIENT_ERROR);
+            reject();
+          }
+        });
       })
-      .catch(() => {});
+      .catch(() => {
+        /* Error al validar. No requiere acción. */
+      });
   };
 
   const fetchCuentasCliente = async (hostId: string, productos: string = 'CA,CC') =>
@@ -125,7 +137,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
           if (nuevaSolicitud.ui.form.status.gastos) gastosForm.resetFields();
           if (nuevaSolicitud.ui.form.status.cuentas) cuentasForm.resetFields();
 
-          dispatch(setEstadoForm({ datosClientes: true, gastos: false, cuentas: false }));
+          dispatch(setEstadoForm({ datosClientes: true, cuentas: false }));
           dispatch(setActiveForm(FormNames.DATOS_BENEFICIARIO));
         })
         .catch((err) => {
@@ -148,7 +160,9 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     dispatch(setEstadoForm({ datosClientes: false, gastos: false, cuentas: false }));
   };
 
-  // renders
+  //#endregion
+
+  //#region Renders
 
   const renderDatosCliente = () => {
     const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente || nuevaSolicitud.info.clientes?.value![0];
@@ -221,6 +235,8 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
       </Form>
     );
   };
+
+  //#endregion
 
   return <div className={styles.contentWrapper}>{renderFormularioCliente()}</div>;
 };

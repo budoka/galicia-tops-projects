@@ -1,5 +1,5 @@
 import { BancoCorresponsal, Cliente, Concepto, InfoState, Keyable, Moneda, Pais } from 'src/features/_shared/data/interfaces';
-import { DetalleGasto as DetalleGastoType, TipoCodigoBanco, TipoPersona as TipoPersonaType } from 'src/features/_shared/data/types';
+import { DetalleGasto as DetalleGastoType, TipoCodigoBanco as TipoCodigoBancoType, TipoPersona as TipoPersonaType } from 'src/features/_shared/data/types';
 
 export interface NuevaSolicitudState {
   info: Partial<NuevaSolicitudInfoState>;
@@ -38,8 +38,8 @@ export interface DatosOperacion {
   fechaEntrada: string;
   cliente?: Cliente;
   beneficiario: Beneficiario;
-  cuentaDebito: Cuenta;
-  cuentaDebitoGastos?: Cuenta;
+  cuentaOrigen: Cuenta;
+  cuentaComisiones?: Cuenta;
   gastos: Gastos;
   importes: Importe[];
   moneda: Moneda;
@@ -79,13 +79,14 @@ export interface Direccion {
 }
 
 export interface CuentaExterior {
-  nombre: string;
-  localidad: string;
+  nombreBanco: string;
+  localidadBanco: string;
   pais: Pais;
-  cuenta: string;
-  tipoCodigo?: TipoCodigoBanco;
+  moneda: Moneda;
+  numero: string;
+  tipoCodigoBanco?: string | TipoCodigoBanco;
   codigoBanco?: string;
-  tipoCodigoAdicional?: string;
+  tipoCodigoBancoAdicional?: string;
   codigoBancoAdicional?: string;
 }
 
@@ -117,4 +118,9 @@ export interface DetalleGastos {
 export interface Importe {
   importe: number;
   concepto: Concepto;
+}
+
+export interface TipoCodigoBanco {
+  id: string;
+  descripcion: TipoCodigoBancoType;
 }

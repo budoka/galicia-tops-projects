@@ -50,39 +50,22 @@ export const tiposCodigoBanco = [
 ];
 
 export const NuevaSolicitud: React.FC = (props) => {
+  const dispatch = useAppDispatch();
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
+  const shared = useAppSelector((state: RootState) => state.shared);
+
+  const state = useContext(StateContext);
   const [clienteForm] = useForm<ClienteForm>();
   const [beneficiarioForm] = useForm<BeneficiarioForm>();
   const [gastosForm] = useForm<GastosForm>();
   const [cuentasForm] = useForm<CuentasForm>();
   const [importesForm] = useForm<ImportesForm>();
-  const state = useContext(StateContext);
-  const dispatch = useAppDispatch();
 
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
-  const shared = useAppSelector((state: RootState) => state.shared);
+  const isContentLoading = isFetchingData(shared);
 
-  /*   useEffect(() => {
+  const hasContentError = hasError(shared);
 
-  }, [nuevaSolicitud.info]); */
-
-  // handlers
-
-  /*   useEffect(() => {
-    const persona = nuevaSolicitud.data.form?.datosOperacion?.cliente;
-    if (persona) {
-      const { hostId } = persona;
-      dispatch(fetchCuentas({ query: { hostId, productos: 'CA,CC' } }))
-        .then(unwrapResult)
-        .then((cuentas) => {
-          console.log(cuentas);
-          const count = cuentas?.length;
-          // console.log(count);
-        //  if (count > 1) {
-        //    dispatch(setCuenta(cuentas[0]));
-       //   }
-        });
-    }
-  }, [nuevaSolicitud.data.form?.datosOperacion?.cliente]); */
+  //#region Handlers
 
   const handleNuevaTransferenciaForm = (values: any) => {
     dispatch(addSolicitud({ body: values }))
@@ -106,18 +89,20 @@ export const NuevaSolicitud: React.FC = (props) => {
     dispatch(setActiveForm(activeKey));
   };
 
-  const isConfirmationEnabled = () => {
+  //#endregion
+
+  //#region Other functions
+
+  const canAdvance = () => {
     const status = nuevaSolicitud.ui.form.status;
     return Object.values(status).every((s) => {
       return s === true;
     });
   };
 
-  const isContentLoading = isFetchingData(shared);
+  //#endregion
 
-  const hasContentError = hasError(shared);
-
-  // renders
+  //#region Renders
 
   const transferenciaTabs: TransferenciaTabs = {
     cliente: (
@@ -152,8 +137,7 @@ export const NuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.gastos} />
           </span>
         }
-        key={FormNames.GASTOS}
-        disabled={!nuevaSolicitud.ui.form.status.datosClientes}>
+        key={FormNames.GASTOS}>
         <GastosFormPanel title={FormNames.GASTOS} form={gastosForm} />
       </TabPane>
     ),
@@ -182,30 +166,6 @@ export const NuevaSolicitud: React.FC = (props) => {
         <ImportesFormPanel title={FormNames.IMPORTES} form={importesForm} />
       </TabPane>
     ),
-    /*     varios: (
-      <TabPane
-        tab={
-          <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.VARIOS}</span>
-            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.varios} />
-          </span>
-        }
-        key={TransferenciaTabsNames.VARIOS}>
-        <VariosFormPanel title={TransferenciaTabsNames.VARIOS} form={transferenciaForm} />
-      </TabPane>
-    ), */
-    /*     intermediarios: (
-      <TabPane
-        tab={
-          <span className={styles.tabWrapper}>
-            <span className={styles.tabLabel}>{TransferenciaTabsNames.INTERMEDIARIO}</span>
-            <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosIntermediarios} />
-          </span>
-        }
-        key={TransferenciaTabsNames.INTERMEDIARIO}>
-        <IntermediariosFormPanel title={TransferenciaTabsNames.GASTOS} form={transferenciaForm} />
-      </TabPane>
-    ), */
     confirmacion: (
       <TabPane
         tab={
@@ -213,7 +173,7 @@ export const NuevaSolicitud: React.FC = (props) => {
             <span className={styles.tabLabel}>{FormNames.CONFIRMACION}</span>
           </span>
         }
-        disabled={!isConfirmationEnabled()}
+        disabled={!canAdvance()}
         key={FormNames.CONFIRMACION}>
         <ConfirmacionPanel title={FormNames.CONFIRMACION} />
       </TabPane>
@@ -229,6 +189,8 @@ export const NuevaSolicitud: React.FC = (props) => {
       </>
     );
   };
+
+  //#endregion
 
   return (
     <Wrapper

@@ -2,7 +2,7 @@ import { Select, Typography } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import React from 'react';
-import { Rules } from 'src/types/interfaces';
+import { ObjectLiteral, Rules } from 'src/types/interfaces';
 import { Keyable } from '../data/interfaces';
 
 const { Option } = Select;
@@ -28,6 +28,10 @@ export function renderOptions<T extends Keyable>(options: T[], descriptionKey: s
 
 export function getOption<T extends Keyable>(option: T, descriptionKey: string = 'value') {
   return { key: option.id, value: option.value ?? option.id, label: option[descriptionKey] ?? option.id } as LabeledValue;
+}
+
+export function getOption2(value: string | number, options: ObjectLiteral[], optionKey: string = 'id'): LabeledValue {
+  return options.find((o) => o[optionKey] === value) as LabeledValue;
 }
 
 export const getRule = (rules: Rules, ruleName: string | string[]): Rule[] => {

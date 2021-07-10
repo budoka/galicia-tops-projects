@@ -104,6 +104,9 @@ export enum Texts {
   ACCOUNT_SOURCE = 'Cuenta Origen de Fondos',
   ACCOUNT_TARGET = 'Cuenta Destino de Fondos',
   ACCOUNT_COMMISSIONS = 'Cuenta Débito de Comisiones',
+  ACCOUNTS_CLIENT = 'Cuentas Cliente',
+  ACCOUNT_BENEFICIARY = 'Cuenta Beneficiario',
+  ACCOUNT_INTERMEDIARY = 'Cuenta Intermediario',
   CONCEPT = 'Concepto',
   FEE_TYPE = 'Tipo de Comisión',
   DATE_BIRTH = 'Fecha de Nacimiento',
@@ -117,6 +120,8 @@ export enum Texts {
   LINKED_BENEFICIARY = 'Vinculado con Beneficiario',
   BANK_CODE = 'Código del Banco',
   BANK_CODE_TYPE = 'Tipo de Código del Banco',
+  BANK_CODE_OPTIONAL = 'Código del Banco Adicional',
+  BANK_CODE_TYPE_OPTIONAL = 'Tipo de Código del Banco Adicional',
   // PLACEHOLDERS
   SELECT_PERSON_TYPE = 'Seleccione un tipo de persona',
   SELECT_COUNTRY = 'Seleccione un país',

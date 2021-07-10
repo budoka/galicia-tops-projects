@@ -19,30 +19,37 @@ interface ConfirmacionPanelProps {
 }
 
 export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
-  const dispatch = useAppDispatch();
-
   const { title } = props;
 
+  const dispatch = useAppDispatch();
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
-  // useEffects
+  //#region UseEffects
 
   useEffect(() => {}, []);
 
-  // handlers
+  //#endregion
+
+  //#region Handlers
 
   const handleOnFinish = () => {
-    if (isConfirmationEnabled()) dispatch(addSolicitud({ body: nuevaSolicitud.data as NuevaSolicitudDataState }));
+    if (canAdvance()) dispatch(addSolicitud({ body: nuevaSolicitud.data as NuevaSolicitudDataState }));
   };
 
-  const isConfirmationEnabled = () => {
+  //#endregion
+
+  //#region Other functions
+
+  const canAdvance = () => {
     const status = nuevaSolicitud.ui.form.status;
     return Object.values(status).every((s) => {
       return s === true;
     });
   };
 
-  // renders
+  //#endregion
+
+  //#region Renders
 
   const renderDatosCliente = () => {
     const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente!;
@@ -52,8 +59,6 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
       fisica: `${cliente?.apellido}, ${cliente?.nombre}`,
       juridica: `${cliente?.razonSocial}`,
     };
-
-    // const documentoCliente = _.first(cliente.documentos.filter((d) => d.tipo === 'CUIT' || d.tipo === 'DU'));
 
     return (
       <Descriptions title="Datos del Cliente" size="small" bordered>
@@ -76,37 +81,40 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         <Descriptions.Item label="Nombre / Razón Social" span={3}>
           {beneficiario?.razonSocial ?? `${beneficiario?.apellido}, ${beneficiario?.nombre}`}
         </Descriptions.Item>
+        <Descriptions.Item label="Tipo de Documento">{beneficiario?.tipoDocumento}</Descriptions.Item>
+        <Descriptions.Item label="Número de Documento">{beneficiario?.numeroDocumento}</Descriptions.Item>
         <Descriptions.Item label="NIF">{beneficiario?.nif}</Descriptions.Item>
         <Descriptions.Item label="Tipo de Persona">{beneficiario?.tipoPersona?.descripcion}</Descriptions.Item>
         <Descriptions.Item label="Pais">{beneficiario?.pais?.nombre}</Descriptions.Item>
-        <Descriptions.Item label="Banco">{beneficiario?.cuentaDestino?.nombre}</Descriptions.Item>
-        <Descriptions.Item label="Código Banco">{beneficiario?.cuentaDestino?.codigoBanco}</Descriptions.Item>
-        <Descriptions.Item label="País Banco">{beneficiario?.cuentaDestino?.pais}</Descriptions.Item>
       </Descriptions>
     );
   };
 
-  const renderDatosVarios = () => {
-    const { cuentaDebito, cuentaDebitoGastos, beneficiario, gastos } = nuevaSolicitud.data.form?.datosOperacion || {};
+  const renderGastos = () => {
+    const { gastos } = nuevaSolicitud.data.form?.datosOperacion || {};
 
     return (
-      <Descriptions title="Varios" size="small" /* layout="vertical" */ column={4} bordered>
-        <Descriptions.Item label="Banco Intermediario">{beneficiario?.cuentaIntermediario?.nombre}</Descriptions.Item>
-        <Descriptions.Item label="Código Banco Intermediario">{beneficiario?.cuentaIntermediario?.codigoBanco}</Descriptions.Item>
-        <Descriptions.Item label="País Banco Intermediario">{beneficiario?.cuentaIntermediario?.pais}</Descriptions.Item>
-        {/*   <Descriptions.Item label="Swift Corresponsal">{gastos?.swiftCorresponsal}</Descriptions.Item> */}
+      <Descriptions title="Gastos" size="small" bordered>
+        <Descriptions.Item label="Detalle de Gastos">{gastos?.detalle.descripcion}</Descriptions.Item>
       </Descriptions>
     );
   };
 
   const renderDatosCuentas = () => {
-    const { cuentaDebito, cuentaDebitoGastos, beneficiario } = nuevaSolicitud.data.form?.datosOperacion || {};
+    const { cuentaOrigen, cuentaComisiones, beneficiario } = nuevaSolicitud.data.form?.datosOperacion || {};
 
     return (
-      <Descriptions title="Cuentas" size="small" layout="vertical" bordered>
-        <Descriptions.Item label="Cuenta Origen de Fondos">{cuentaDebito?.valor}</Descriptions.Item>
-        <Descriptions.Item label="Cuenta Destino de Fondos">{beneficiario?.cuentaDestino?.cuenta}</Descriptions.Item>
-        <Descriptions.Item label="Cuenta Gastos">{cuentaDebitoGastos?.valor ?? 'N/A'}</Descriptions.Item>
+      <Descriptions title="Cuentas" size="small" layout="vertical" column={4} bordered>
+        <Descriptions.Item label="Cuenta Origen de Fondos" style={{ width: 200 }}>
+          {cuentaOrigen?.valor}
+        </Descriptions.Item>
+        <Descriptions.Item label="Cuenta Destino de Fondos">{`${beneficiario?.cuentaDestino?.numero} (${beneficiario?.cuentaDestino?.moneda.id})`}</Descriptions.Item>
+        <Descriptions.Item label="Cuenta Débito de Comisiones" style={{ width: 200 }}>
+          {cuentaComisiones?.valor}
+        </Descriptions.Item>
+        <Descriptions.Item label="Cuenta Intermediario">
+          {beneficiario?.cuentaIntermediario?.numero ? `${beneficiario?.cuentaIntermediario?.numero} (${beneficiario?.cuentaIntermediario?.moneda.id})` : 'N/A'}
+        </Descriptions.Item>
       </Descriptions>
     );
   };
@@ -127,6 +135,23 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
     );
   };
 
+  const renderDatosVarios = () => {
+    const { cuentaOrigen, cuentaComisiones, beneficiario, gastos } = nuevaSolicitud.data.form?.datosOperacion || {};
+
+    return (
+      <Descriptions title="Varios" size="small" bordered>
+        <Descriptions.Item label="Banco Beneficiario">{beneficiario?.cuentaDestino?.nombreBanco}</Descriptions.Item>
+        <Descriptions.Item label="Código Banco Intermediario">{`${beneficiario?.cuentaDestino?.codigoBanco} (${beneficiario?.cuentaDestino?.tipoCodigoBanco})`}</Descriptions.Item>
+        <Descriptions.Item label="País Banco Beneficiario">{beneficiario?.cuentaDestino?.pais.nombre}</Descriptions.Item>
+        <Descriptions.Item label="Banco Intermediario">{beneficiario?.cuentaIntermediario?.nombreBanco}</Descriptions.Item>
+        <Descriptions.Item label="Código Banco Intermediario">{`${beneficiario?.cuentaIntermediario?.codigoBanco} (${beneficiario?.cuentaIntermediario?.tipoCodigoBanco})`}</Descriptions.Item>
+        <Descriptions.Item label="País Banco Intermediario">{beneficiario?.cuentaIntermediario?.pais.nombre}</Descriptions.Item>
+      </Descriptions>
+    );
+  };
+
+  //#endregion
+
   return (
     <>
       <Space size={'middle'} wrap={true} direction="vertical">
@@ -135,6 +160,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         </Row>
         <Row>{renderDatosCliente()}</Row>
         <Row>{renderDatosBeneficiario()}</Row>
+        <Row>{renderGastos()}</Row>
         <Row>{renderDatosCuentas()}</Row>
         <Row>{renderDatosImportes()}</Row>
         <Row>{renderDatosVarios()}</Row>

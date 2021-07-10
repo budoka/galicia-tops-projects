@@ -32,22 +32,19 @@ interface GastosFormPanelProps {
 }
 
 export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
-  const dispatch = useAppDispatch();
-
   const { title, form } = props;
 
+  const dispatch = useAppDispatch();
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
 
-  //const [currentDetalleGastos, setCurrentDetalleGastos] = useState<LabeledValue>(DEFAULT_EXPENSE_DETAIL);
-
-  // useEffects
+  //#region UseEffects
 
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
     const currentStatus = nuevaSolicitud.ui.form.status.gastos;
     if (currentActiveForm === FormNames.GASTOS && currentStatus) {
       const gastos = nuevaSolicitud.data.form?.datosOperacion?.gastos;
-      const cuentaDebitoGastos = nuevaSolicitud.data.form?.datosOperacion?.cuentaDebitoGastos;
+      const cuentaComisiones = nuevaSolicitud.data.form?.datosOperacion?.cuentaComisiones;
       form.resetFields();
       form.setFieldsValue({
         detalle: getOption({ id: gastos?.detalle.id!, descripcion: gastos?.detalle.descripcion }, 'descripcion'),
@@ -57,17 +54,19 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
     }
   }, [nuevaSolicitud.ui.form.active]);
 
-  // handlers
+  //#endregion
 
-  /*   const handleOnDetalleGastosChange = () => {
-    setCurrentDetalleGastos(form.getFieldsValue().gastos.detalle);
-  }; */
+  //#region Handlers
 
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ gastos: true }));
-    dispatch(setActiveForm(FormNames.CUENTAS));
+    if (canAdvance()) dispatch(setActiveForm(FormNames.CUENTAS));
   };
+
+  //#endregion
+
+  //#region Other functions
 
   const setData = () => {
     const { detalle } = form.getFieldsValue() || {};
@@ -79,7 +78,9 @@ export const GastosFormPanel: React.FC<GastosFormPanelProps> = (props) => {
     );
   };
 
-  // renders
+  const canAdvance = () => nuevaSolicitud.ui.form.status.datosClientes;
+
+  //#endregion
 
   return (
     <>

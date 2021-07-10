@@ -34,8 +34,8 @@ interface Beneficiario {
   localidad: string;
   codigoPostal: string;
   isoAlfanumericoPais: string;
-  cuentaBancoDestino: Banco;
-  cuentaBancoIntermediario: Banco;
+  cuentaBancoDestino: CuentaExterior;
+  cuentaBancoIntermediario: CuentaExterior;
 }
 
 interface Direccion {
@@ -45,7 +45,7 @@ interface Direccion {
   departamento?: string;
 }
 
-interface Banco {
+interface CuentaExterior {
   nombre: string;
   localidad: string;
   isoAlfanumericoPais: string;

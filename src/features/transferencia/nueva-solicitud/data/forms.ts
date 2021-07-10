@@ -7,8 +7,6 @@ export enum FormNames {
   GASTOS = 'Gastos',
   CUENTAS = 'Cuentas',
   IMPORTES = 'Importes',
-  INTERMEDIARIO = 'Intermediario',
-  VARIOS = 'Varios',
   CONFIRMACION = 'Confirmación',
 }
 
@@ -27,18 +25,13 @@ export interface BeneficiarioForm extends Omit<Beneficiario, 'fechaNacimiento' |
 
 export interface GastosForm {
   detalle: LabeledValue;
-  /* Se calcula en el back
-  importe: number;
-  monedaId: string;
-  swiftCorresponsal: string; 
-  */
 }
 
 export interface CuentasForm {
-  cuentaDebito: LabeledValue;
-  cuentaDebitoGastos?: LabeledValue;
-  cuentaDestino?: CuentaExterior;
-  cuentaIntermediario?: CuentaExterior;
+  cuentaOrigen: LabeledValue;
+  cuentaComisiones?: LabeledValue;
+  cuentaDestino?: CuentaExteriorForm;
+  cuentaIntermediario?: CuentaIntermediariaExteriorForm;
 }
 
 export interface ImportesForm {
@@ -46,6 +39,16 @@ export interface ImportesForm {
   moneda: LabeledValue;
 }
 
-export interface VariosForm {}
+interface CuentaExteriorForm extends Omit<CuentaExterior, 'moneda' | 'pais' | 'tipoCodigoBanco'> {
+  moneda: LabeledValue;
+  pais: LabeledValue;
+  tipoCodigoBanco: LabeledValue;
+}
+
+interface CuentaIntermediariaExteriorForm extends Omit<CuentaExterior, 'moneda' | 'pais' | 'tipoCodigoBanco'> {
+  moneda: LabeledValue;
+  pais: LabeledValue;
+  tipoCodigoBanco: string;
+}
 
 //#endregion

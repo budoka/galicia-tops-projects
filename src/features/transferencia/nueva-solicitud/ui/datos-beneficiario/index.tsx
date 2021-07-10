@@ -132,16 +132,15 @@ const DEFAULT_PERSON_TYPE = getOption({ id: 'fisica', label: 'Física' }, 'label
 //const DEFAULT_PERSON_TYPE = { key: 'fisica', value: 'fisica', label: 'Física' };
 
 export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (props) => {
-  const dispatch = useAppDispatch();
-
   const { title, form } = props;
 
+  const dispatch = useAppDispatch();
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
   const shared = useAppSelector((state: RootState) => state.shared);
 
   const [currentTipoPersona, setCurrentTipoPersona] = useState<LabeledValue>(DEFAULT_PERSON_TYPE);
 
-  // useEffects
+  //#region UseEffects
 
   useEffect(() => {
     const currentActiveForm = nuevaSolicitud.ui.form.active;
@@ -160,7 +159,9 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
     }
   }, [nuevaSolicitud.ui.form.active]);
 
-  // handlers
+  //#endregion
+
+  //#region Handlers
 
   const handleOnTipoPersonaChange = () => {
     setCurrentTipoPersona(form.getFieldsValue().tipoPersona);
@@ -169,19 +170,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ datosBeneficiario: true }));
-    dispatch(setActiveForm(FormNames.GASTOS));
-  };
-
-  const setData = () => {
-    const { tipoPersona, fechaNacimiento, pais, ...beneficiario } = form.getFieldsValue() || {};
-    dispatch(
-      setDatosBeneficiario({
-        ...beneficiario,
-        tipoPersona: { id: tipoPersona.value, descripcion: tipoPersona.label } as TipoPersona,
-        fechaNacimiento: fechaNacimiento.toISOString(),
-        pais: { id: pais.value, nombre: pais.label } as Pais,
-      }),
-    );
+    if (canAdvance()) dispatch(setActiveForm(FormNames.GASTOS));
   };
 
   const handleFill = () => {
@@ -207,7 +196,29 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
     console.log(form.getFieldsValue());
   };
 
-  // renders
+  //#endregion
+
+  //#region Other functions
+
+  const setData = () => {
+    const { tipoPersona, fechaNacimiento, pais, ...beneficiario } = form.getFieldsValue() || {};
+    dispatch(
+      setDatosBeneficiario({
+        ...beneficiario,
+        tipoPersona: { id: tipoPersona.value, descripcion: tipoPersona.label } as TipoPersona,
+        fechaNacimiento: fechaNacimiento.toISOString(),
+        pais: { id: pais.value, nombre: pais.label } as Pais,
+      }),
+    );
+  };
+
+  const canAdvance = () => {
+    const status = nuevaSolicitud.ui.form.status;
+
+    return status.datosClientes;
+  };
+
+  //#endregion
 
   return (
     <>
@@ -216,7 +227,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
         <Row wrap={false}>
           <Space size={'middle'}>
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.PERSON_TYPE} name={'tipoPersona'} rules={getRule(rules, 'tipoPersona')} required>
                 <Select labelInValue placeholder={Texts.SELECT_PERSON_TYPE} onChange={handleOnTipoPersonaChange}>
                   {renderOptions(tiposPersona, 'descripcion')}
@@ -232,12 +243,12 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
               </Col>
             ) : (
               <>
-                <Col style={{ width: width }}>
+                <Col style={{ width }}>
                   <Form.Item label={Texts.FIRST_NAME} name={'nombre'} rules={getRule(rules, 'nombre')} required>
                     <Input />
                   </Form.Item>
                 </Col>
-                <Col style={{ width: width }}>
+                <Col style={{ width }}>
                   <Form.Item label={Texts.LAST_NAME} name={'apellido'} rules={getRule(rules, 'apellido')} required>
                     <Input />
                   </Form.Item>
@@ -249,19 +260,19 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
         <Row wrap={false}>
           <Space size={'middle'}>
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.DOCUMENT_TYPE} name={'tipoDocumento'} rules={getRule(rules, 'tipoDocumento')}>
                 <Input />
               </Form.Item>
             </Col>
 
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.DOCUMENT_NUMBER} name={'numeroDocumento'} rules={getRule(rules, 'numeroDocumento')}>
                 <Input />
               </Form.Item>
             </Col>
 
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.NIF} name={'nif'} rules={getRule(rules, 'nif')}>
                 <Input />
               </Form.Item>
@@ -315,29 +326,13 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
 
         <Row wrap={false}>
           <Space size={'middle'}>
-            {/*    <Col style={{ width: width }}>
-              <Form.Item label={Texts.CURRENCY} name={'moneda'} rules={getRule(reglas, 'tipoPersona')} required>
-                <Select
-                  labelInValue
-                  showSearch
-                  optionFilterProp="children"
-                  placeholder={Texts.SELECT_CURRENCY}
-                  loading={nuevaSolicitud.info.monedas?.loading}
-                  disabled={nuevaSolicitud.info.monedas?.loading}
-                 
-                >
-                  {renderOptions(nuevaSolicitud.info.monedas?.value!, 'descripcion')}
-                </Select>
-              </Form.Item>
-            </Col> */}
-
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.ZIP_CODE} name={'codigoPostal'} rules={getRule(rules, 'codigoPostal')}>
                 <Input />
               </Form.Item>
             </Col>
 
-            <Col style={{ width: width }}>
+            <Col style={{ width }}>
               <Form.Item label={Texts.COUNTRY} name={'pais'} rules={getRule(rules, 'pais')} required>
                 <Select
                   labelInValue
@@ -353,7 +348,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
           </Space>
         </Row>
 
-        <Form.Item style={{ position: 'sticky', top: 550 }} /* {...tailLayout} */>
+        <Form.Item>
           <Space>
             <Button type="primary" htmlType="submit">
               Confirmar

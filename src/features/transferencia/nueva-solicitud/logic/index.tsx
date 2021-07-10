@@ -14,7 +14,7 @@ import { Beneficiario, Cuenta, CuentaExterior, Gastos, Importe, NuevaSolicitudDa
 
 const FEATURE_NAME = 'nuevaSolicitud';
 
-//#region Async actions
+//#region Async Actions
 
 export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, { state: RootState; rejectValue: HttpResponse }>(
   FEATURE_NAME + '/addSolicitud',
@@ -45,25 +45,25 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
             `${data.form.datosOperacion!.beneficiario.apellido}, ${data.form.datosOperacion!.beneficiario.nombre}`,
           cuentaBancoDestino: {
             ...data.form.datosOperacion!.beneficiario.cuentaDestino!,
-            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaDestino?.cuenta!,
+            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaDestino?.numero!,
             paisId: data.form.datosOperacion!.beneficiario.cuentaDestino?.pais.id!,
           },
           cuentaBancoIntermediario: {
             ...data.form.datosOperacion!.beneficiario.cuentaIntermediario!,
-            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.cuenta!,
+            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.numero!,
             paisId: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.pais.id!,
           },
         },
 
         cuentaDebito: {
-          tipoCuenta: data.form.datosOperacion?.cuentaDebito?.codigo as TipoCuenta,
-          monedaId: data.form.datosOperacion?.cuentaDebito?.monedaIso!,
-          numero: data.form.datosOperacion?.cuentaDebito?.numero?.toString()!,
+          tipoCuenta: data.form.datosOperacion?.cuentaOrigen?.codigo as TipoCuenta,
+          monedaId: data.form.datosOperacion?.cuentaOrigen?.monedaIso!,
+          numero: data.form.datosOperacion?.cuentaOrigen?.numero?.toString()!,
         },
         cuentaDebitoGastos: {
-          tipoCuenta: data.form.datosOperacion?.cuentaDebitoGastos?.codigo as TipoCuenta,
-          monedaId: data.form.datosOperacion?.cuentaDebitoGastos?.monedaIso!,
-          numero: data.form.datosOperacion?.cuentaDebitoGastos?.numero?.toString()!,
+          tipoCuenta: data.form.datosOperacion?.cuentaComisiones?.codigo as TipoCuenta,
+          monedaId: data.form.datosOperacion?.cuentaComisiones?.monedaIso!,
+          numero: data.form.datosOperacion?.cuentaComisiones?.numero?.toString()!,
         },
         gasto: {
           ...data.form.datosOperacion?.gastos,
@@ -102,7 +102,7 @@ const initialState: NuevaSolicitudState = {
   data: {},
   ui: {
     form: {
-      active: FormNames.CUENTAS,
+      active: FormNames.DATOS_CLIENTE,
       status: { datosClientes: false, datosBeneficiario: false, cuentas: false, gastos: false, importes: false },
     },
   },
@@ -138,14 +138,14 @@ const slice = createSlice({
     },
     setDatosCuentas(
       state,
-      action: PayloadAction<{ cuentaDebito: Cuenta; cuentaDebitoGastos: Cuenta; cuentaDestino: CuentaExterior; cuentaIntermediario: CuentaExterior }>,
+      action: PayloadAction<{ cuentaOrigen: Cuenta; cuentaComisiones: Cuenta; cuentaDestino: CuentaExterior; cuentaIntermediario?: CuentaExterior }>,
     ) {
       state.data.form = {
         ...state.data.form,
         datosOperacion: {
           ...state.data.form?.datosOperacion!,
-          cuentaDebito: action.payload.cuentaDebito,
-          cuentaDebitoGastos: action.payload.cuentaDebitoGastos,
+          cuentaOrigen: action.payload.cuentaOrigen,
+          cuentaComisiones: action.payload.cuentaComisiones,
           beneficiario: {
             ...state.data.form?.datosOperacion?.beneficiario!,
             cuentaDestino: action.payload.cuentaDestino,
