@@ -1,6 +1,6 @@
 import { DetalleGasto, TipoCodigoBanco, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 
-export interface AddSolicitudDTO {
+export interface AddSolicitudPayload {
   datosOperacion: DatosOperacion;
   normativas: Normativas;
 }
@@ -24,7 +24,7 @@ interface Normativas {
 }
 
 interface Beneficiario {
-  razonSocial: string;
+  identificacionPersona: string;
   tipoDeDocumento?: string;
   numeroDeDocumento?: string;
   nif?: string;
@@ -35,7 +35,7 @@ interface Beneficiario {
   codigoPostal: string;
   isoAlfanumericoPais: string;
   cuentaBancoDestino: CuentaExterior;
-  cuentaBancoIntermediario: CuentaExterior;
+  cuentaBancoIntermediario?: CuentaExterior;
 }
 
 interface Direccion {
@@ -57,9 +57,9 @@ interface CuentaExterior {
 }
 
 interface Cuenta {
-  tipoCuenta: TipoCuenta;
-  monedaId: string;
-  numero: string;
+  tipoDeCuenta: TipoCuenta;
+  isoMonedaCuenta: string;
+  numeroDeCuenta: string;
   sucursal: string;
 }
 
@@ -78,7 +78,7 @@ interface Importe {
 
 interface Concepto {
   id: string;
-  descripcion: string;
+  codigo: string;
 }
 
 //#endregion

@@ -22,26 +22,20 @@ const rules: Rules = {
       message: 'CUIT no válido',
     },
   ],
-  vinculadoConBeneficiario: [
-    {
-      required: false,
-      message: 'Campo no válido',
-    },
-  ],
 };
 
 interface ClienteFormPanelProps {
   title: string;
   clienteForm: FormInstance<ClienteForm>;
-  variosForm: FormInstance<VariosForm>;
   cuentasForm: FormInstance<CuentasForm>;
+  variosForm: FormInstance<VariosForm>;
 }
 
 export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
-  const { title, clienteForm, variosForm: gastosForm, cuentasForm } = props;
+  const { title, clienteForm, variosForm, cuentasForm } = props;
 
   const dispatch = useAppDispatch();
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.ordenDePago.nuevaSolicitud);
 
   //#region UseEffects
 
@@ -50,13 +44,11 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     const currentStatus = nuevaSolicitud.ui.form.status.datosClientes;
 
     if (currentActiveForm === FormNames.DATOS_CLIENTE && currentStatus) {
-      const cuit = nuevaSolicitud.data.form?.datosOperacion?.cliente?.cuit;
-      const vinculadoConBeneficiario = nuevaSolicitud.data.form?.normativas?.vinculadoConBeneficiario;
+      const cuit = nuevaSolicitud.data.form?.detalles?.cliente?.cuit;
 
       clienteForm.resetFields();
       clienteForm.setFieldsValue({
         cuitCliente: cuit,
-        vinculadoConBeneficiario,
       });
     }
   }, [nuevaSolicitud.ui.form.active]);
@@ -117,27 +109,22 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
 
   const setClientData = async () => {
     const cliente = nuevaSolicitud.info.clientes?.value![0];
-    const vinculadoConBeneficiario = clienteForm.getFieldsValue().vinculadoConBeneficiario ?? false;
 
     if (cliente) {
       await fetchCuentasCliente(cliente.hostId)
         .then(() => {
-          console.log('ok');
           dispatch(
             setDatosCliente({
               cliente: { ...cliente, cuit: clienteForm.getFieldsValue().cuitCliente },
-              vinculadoConBeneficiario: vinculadoConBeneficiario,
             }),
           );
 
           resetForms();
 
           dispatch(setEstadoForm({ datosClientes: true, cuentas: false }));
-          dispatch(setActiveForm(FormNames.DATOS_BENEFICIARIO));
+          dispatch(setActiveForm(FormNames.DATOS_ORDENANTE));
         })
-        .catch((err) => {
-          console.log('error');
-        });
+        .catch((err) => {});
     }
   };
 
@@ -146,16 +133,15 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
 
     clienteForm.setFieldsValue({
       cuitCliente: '',
-      vinculadoConBeneficiario: undefined,
     });
 
     resetForms();
 
-    dispatch(setEstadoForm({ datosClientes: false, varios: false, cuentas: false }));
+    dispatch(setEstadoForm({ datosClientes: false, cuentas: false }));
   };
 
   const resetForms = () => {
-    if (nuevaSolicitud.ui.form.status.varios) gastosForm.resetFields();
+    if (nuevaSolicitud.ui.form.status.varios) variosForm.resetFields();
     if (nuevaSolicitud.ui.form.status.cuentas) cuentasForm.resetFields();
   };
 
@@ -164,7 +150,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   //#region Renders
 
   const renderDatosCliente = () => {
-    const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente || nuevaSolicitud.info.clientes?.value![0];
+    const cliente = nuevaSolicitud.data.form?.detalles?.cliente || nuevaSolicitud.info.clientes?.value![0];
 
     if (!cliente) return undefined;
 
@@ -216,13 +202,6 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
         {nuevaSolicitud.info.clientes?.value?.length! > 0 && (
           <>
             <Form.Item style={{ width: 323 }}>{renderDatosCliente()}</Form.Item>
-            <Form.Item
-              /*   label={Texts.LINKED_BENEFICIARY} */
-              name={'vinculadoConBeneficiario'}
-              rules={getRule(rules, 'vinculadoConBeneficiario')}
-              valuePropName="checked">
-              <Checkbox>{Texts.LINKED_BENEFICIARY}</Checkbox>
-            </Form.Item>
           </>
         )}
 

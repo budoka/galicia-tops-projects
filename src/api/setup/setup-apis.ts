@@ -19,12 +19,20 @@ export const apis: APIList = {
   MENSAJE: {
     baseURL: buildBaseURL('GATEWAY', 'api/v1/mensaje'),
     resources: {
+      AGREGAR_MENSAJE: { path: 'Mensaje/PostManual', config: { verb: 'POST' } },
       MENSAJE: { path: 'Mensaje/:id', config: { verb: 'GET' } },
       MENSAJES: { path: 'Mensaje/GetByFilter', config: { verb: 'POST' } },
     },
   },
   TRANSFERENCIA: {
     baseURL: buildBaseURL('GATEWAY', 'api/v1/transferencia'),
+    resources: {
+      AGREGAR_SOLICITUD: { path: 'Solicitudes', config: { verb: 'POST' } },
+      SOLICITUDES: { path: 'Solicitudes', config: { verb: 'GET' } },
+    },
+  },
+  SOLICITUD: {
+    baseURL: buildBaseURL('GATEWAY', 'api/v1/solicitud'),
     resources: {
       AGREGAR_SOLICITUD: { path: 'Solicitudes', config: { verb: 'POST' } },
       SOLICITUDES: { path: 'Solicitudes', config: { verb: 'GET' } },

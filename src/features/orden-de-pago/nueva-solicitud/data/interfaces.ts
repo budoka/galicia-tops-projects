@@ -22,48 +22,35 @@ export interface NuevaSolicitudUIState {
 }
 
 export interface NuevaSolicitudFormState {
-  datosOperacion: DatosOperacion;
-  normativas: Normativas;
+  uetr: string;
+  detalles: Detalles;
 }
 
 export interface StatusForms {
   datosClientes?: boolean;
-  datosBeneficiario?: boolean;
+  datosOrdenante?: boolean;
   cuentas?: boolean;
-  importes?: boolean;
+  importe?: boolean;
   varios?: boolean;
 }
 
-export interface DatosOperacion {
+export interface Detalles {
   fechaEntrada: string;
   cliente?: Cliente;
-  beneficiario: Beneficiario;
-  cuentaOrigen: Cuenta;
-  cuentaComisiones?: Cuenta;
+  ordenante: Ordenante;
+  cuentaDestino: Cuenta;
   gastos: Gastos;
-  importes: Importe[];
+  importe: number;
   moneda: Moneda;
 }
 
-export interface Normativas {
-  vinculadoConBeneficiario?: boolean;
-}
-
-export interface Beneficiario {
+export interface Ordenante {
   tipoPersona: TipoPersona;
   razonSocial?: string;
   nombre?: string;
   apellido?: string;
-  tipoDocumento?: string;
-  numeroDocumento?: string;
-  nif?: string;
-  fechaNacimiento?: string;
-  domicilio: Direccion;
-  localidad: string;
-  codigoPostal: string;
   pais: Pais;
-  cuentaDestino?: CuentaExterior;
-  cuentaIntermediario?: CuentaExterior;
+  cuentaOrigen: CuentaExterior;
 }
 
 export interface TipoPersona {
@@ -71,23 +58,9 @@ export interface TipoPersona {
   descripcion: TipoPersonaType;
 }
 
-export interface Direccion {
-  calle: string;
-  numero: number;
-  piso?: number;
-  departamento?: string;
-}
-
 export interface CuentaExterior {
-  nombreBanco: string;
-  localidadBanco: string;
-  pais: Pais;
-  moneda: Moneda;
+  swiftBanco: string;
   numero: string;
-  tipoCodigoBanco?: string | TipoCodigoBanco;
-  codigoBanco?: string;
-  tipoCodigoBancoAdicional?: string;
-  codigoBancoAdicional?: string;
 }
 
 export interface Cuenta extends Keyable {
@@ -104,23 +77,12 @@ export interface Cuenta extends Keyable {
 
 export interface Gastos {
   detalle: DetalleGastos;
-  /*   importe?: number;
-  moneda?: Moneda;
-  swiftCorresponsal?: string;
-  cuentaCorresponsal?: string; */
+  importe: number;
+  moneda: Moneda;
+  swiftCorresponsal: string;
 }
 
 export interface DetalleGastos {
   id: string;
   descripcion: DetalleGastoType;
-}
-
-export interface Importe {
-  importe: number;
-  concepto: Concepto;
-}
-
-export interface TipoCodigoBanco {
-  id: TipoCodigoBancoType;
-  descripcion: string;
 }

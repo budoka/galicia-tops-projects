@@ -6,13 +6,24 @@ import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
 import { Cliente, Moneda } from 'src/features/_shared/data/interfaces';
+import { TipoCodigoBanco as TipoCodigoBancoType } from 'src/features/_shared/data/types';
 import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
-import { AddSolicitudDTO } from '../data/dto';
+import { AddSolicitudPayload } from '../data/dto';
 import { FormNames } from '../data/forms';
-import { Beneficiario, Cuenta, CuentaExterior, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
+import {
+  Beneficiario,
+  Cuenta,
+  CuentaExterior,
+  Gastos,
+  Importe,
+  NuevaSolicitudDataState,
+  NuevaSolicitudState,
+  StatusForms,
+  TipoCodigoBanco,
+} from '../data/interfaces';
 
-const FEATURE_NAME = 'nuevaSolicitud';
+const FEATURE_NAME = 'transferencia/nuevaSolicitud';
 
 //#region Async Actions
 
@@ -24,56 +35,79 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
 
     if (!data) throw new Error('No se ha incluido datos para crear una nueva solicitud transferencia.');
 
-    // Configuracion del servicio
-    const api = apis['TRANSFERENCIA'];
-    const resource = api.resources['AGREGAR_SOLICITUD'];
-    const config = buildAxiosRequestConfig(api, resource, { ...options /*  data: requestData  */ });
-
-    // const requestData: AddSolicitudDTO = {
-    const requestData: any = {
+    const requestData: AddSolicitudPayload = {
       datosOperacion: {
-        ...data.form.datosOperacion!,
+        fechaEntrada: data.form.datosOperacion?.fechaEntrada!,
         tipoDocumentoCliente: 'CUIT',
         documentoCliente: data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
         monedaId: data.form.datosOperacion!.moneda.id!,
         beneficiario: {
-          ...data.form.datosOperacion!.beneficiario!,
+          tipoDeDocumento: data.form.datosOperacion?.beneficiario.tipoDocumento,
+          numeroDeDocumento: data.form.datosOperacion?.beneficiario.numeroDocumento,
+          domicilio: data.form.datosOperacion?.beneficiario.domicilio!,
+          codigoPostal: data.form.datosOperacion?.beneficiario.codigoPostal!,
+          localidad: data.form.datosOperacion?.beneficiario.localidad!,
+          fechaNacimiento: data.form.datosOperacion?.beneficiario.fechaNacimiento!,
+          nif: data.form.datosOperacion?.beneficiario.nif!,
           tipoPersona: data.form.datosOperacion?.beneficiario.tipoPersona.id as TipoPersona,
           isoAlfanumericoPais: data.form.datosOperacion!.beneficiario.pais.id!,
-          razonSocial:
+          identificacionPersona:
             data.form.datosOperacion!.beneficiario.razonSocial ??
             `${data.form.datosOperacion!.beneficiario.apellido}, ${data.form.datosOperacion!.beneficiario.nombre}`,
           cuentaBancoDestino: {
-            ...data.form.datosOperacion!.beneficiario.cuentaDestino!,
+            nombre: data.form.datosOperacion!.beneficiario.cuentaDestino?.nombreBanco!,
+            localidad: data.form.datosOperacion!.beneficiario.cuentaDestino?.localidadBanco!,
             nroCuenta: data.form.datosOperacion!.beneficiario.cuentaDestino?.numero!,
-            paisId: data.form.datosOperacion!.beneficiario.cuentaDestino?.pais.id!,
+            isoAlfanumericoPais: data.form.datosOperacion!.beneficiario.cuentaDestino?.pais.id!,
+            codigoBanco: data.form.datosOperacion!.beneficiario.cuentaDestino?.codigoBanco,
+            tipoCodigoDelBanco: (data.form.datosOperacion!.beneficiario.cuentaDestino?.tipoCodigoBanco as TipoCodigoBanco)?.id! as TipoCodigoBancoType,
+            codigoDelBancoAdicional: data.form.datosOperacion!.beneficiario.cuentaDestino?.codigoBancoAdicional,
+            tipoDeCodigoAdicional: data.form.datosOperacion!.beneficiario.cuentaDestino?.tipoCodigoBancoAdicional,
           },
-          cuentaBancoIntermediario: {
-            ...data.form.datosOperacion!.beneficiario.cuentaIntermediario!,
-            nroCuenta: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.numero!,
-            paisId: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.pais.id!,
-          },
+          cuentaBancoIntermediario: !data.form.datosOperacion!.beneficiario.cuentaIntermediario
+            ? undefined
+            : {
+                nombre: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.nombreBanco!,
+                localidad: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.localidadBanco!,
+                nroCuenta: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.numero!,
+                isoAlfanumericoPais: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.pais.id!,
+                codigoBanco: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.codigoBanco,
+                tipoCodigoDelBanco: (data.form.datosOperacion!.beneficiario.cuentaIntermediario?.tipoCodigoBanco as TipoCodigoBanco)
+                  ?.id! as TipoCodigoBancoType,
+                codigoDelBancoAdicional: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.codigoBancoAdicional,
+                tipoDeCodigoAdicional: data.form.datosOperacion!.beneficiario.cuentaIntermediario?.tipoCodigoBancoAdicional,
+              },
         },
-
         cuentaDebito: {
-          tipoCuenta: data.form.datosOperacion?.cuentaOrigen?.codigo as TipoCuenta,
-          monedaId: data.form.datosOperacion?.cuentaOrigen?.monedaIso!,
-          numero: data.form.datosOperacion?.cuentaOrigen?.numero?.toString()!,
+          tipoDeCuenta: data.form.datosOperacion?.cuentaOrigen?.codigo as TipoCuenta,
+          isoMonedaCuenta: data.form.datosOperacion?.cuentaOrigen?.monedaIso!,
+          numeroDeCuenta: data.form.datosOperacion?.cuentaOrigen?.numero?.toString()!,
+          sucursal: data.form.datosOperacion?.cuentaOrigen?.sucursalAdministradora.toString()!,
         },
         cuentaDebitoGastos: {
-          tipoCuenta: data.form.datosOperacion?.cuentaComisiones?.codigo as TipoCuenta,
-          monedaId: data.form.datosOperacion?.cuentaComisiones?.monedaIso!,
-          numero: data.form.datosOperacion?.cuentaComisiones?.numero?.toString()!,
+          tipoDeCuenta: data.form.datosOperacion?.cuentaComisiones?.codigo as TipoCuenta,
+          isoMonedaCuenta: data.form.datosOperacion?.cuentaComisiones?.monedaIso!,
+          numeroDeCuenta: data.form.datosOperacion?.cuentaComisiones?.numero?.toString()!,
+          sucursal: data.form.datosOperacion?.cuentaOrigen?.sucursalAdministradora.toString()!,
         },
         gasto: {
           ...data.form.datosOperacion?.gastos,
           detalle: data.form.datosOperacion?.gastos.detalle.id as DetalleGasto,
         },
+
+        // TODO: Cambiar importes: debe devolver id y codigo || codigo solo? si es id y codigo, fijarse como conseguir el id (porque es de Secopa)
+        importes: data.form.datosOperacion?.importes.map((i) => ({ importe: i.importe, concepto: { id: '1', codigo: i.concepto.id } }))!,
+        // importes: data.form.datosOperacion?.importes!,
       },
       normativas: {
         vinculadoConBeneficiario: data.form.normativas?.vinculadoConBeneficiario!,
       },
     };
+
+    // Configuracion del servicio
+    const api = apis['TRANSFERENCIA'];
+    const resource = api.resources['AGREGAR_SOLICITUD'];
+    const config = buildAxiosRequestConfig(api, resource, { ...options, body: requestData });
 
     console.log(config);
 
@@ -103,7 +137,7 @@ const initialState: NuevaSolicitudState = {
   ui: {
     form: {
       active: FormNames.DATOS_CLIENTE,
-      status: { datosClientes: false, datosBeneficiario: false, cuentas: false, gastos: false, importes: false },
+      status: { datosClientes: false, datosBeneficiario: false, cuentas: false, importes: false, varios: false },
     },
   },
 };
@@ -127,15 +161,6 @@ const slice = createSlice({
     setDatosBeneficiario(state, action: PayloadAction<Beneficiario>) {
       state.data.form = { ...state.data.form, datosOperacion: { ...state.data.form?.datosOperacion!, beneficiario: action.payload } };
     },
-    setDatosGastos(state, action: PayloadAction<Gastos>) {
-      state.data.form = {
-        ...state.data.form,
-        datosOperacion: {
-          ...state.data.form?.datosOperacion!,
-          gastos: action.payload,
-        },
-      };
-    },
     setDatosCuentas(
       state,
       action: PayloadAction<{ cuentaOrigen: Cuenta; cuentaComisiones: Cuenta; cuentaDestino: CuentaExterior; cuentaIntermediario?: CuentaExterior }>,
@@ -158,6 +183,16 @@ const slice = createSlice({
       state.data.form = {
         ...state.data.form,
         datosOperacion: { ...state.data.form?.datosOperacion!, importes: action.payload.importes, moneda: action.payload.moneda },
+      };
+    },
+    setDatosVarios(state, action: PayloadAction<{ fechaEntrda: string; gastos: Gastos }>) {
+      state.data.form = {
+        ...state.data.form,
+        datosOperacion: {
+          ...state.data.form?.datosOperacion!,
+          fechaEntrada: action.payload.fechaEntrda,
+          gastos: action.payload.gastos,
+        },
       };
     },
     setActiveForm(state, action: PayloadAction<string>) {
@@ -207,25 +242,23 @@ const slice = createSlice({
       .addCase(fetchCuentas.rejected, (state, action) => {
         state.info.cuentas = { value: [], loading: false, error: action.payload };
       });
-    /*  builder
+    builder
       .addCase(addSolicitud.pending, (state) => {
-        state.form = { ...state.form, loading: true };
-        state.error = null;
+        state.info.solicitudCreada = { value: false, loading: true };
       })
       .addCase(addSolicitud.fulfilled, (state) => {
-        state.form = { ...state.form, loading: false };
+        state.info.solicitudCreada = { value: true, loading: false };
       })
       .addCase(addSolicitud.rejected, (state, action) => {
-        state.form = { ...state.form, loading: false };
-        state.error = action.error.message ?? null;
-      }); */
+        state.info.solicitudCreada = { value: false, loading: false, error: action.payload };
+      });
   },
 });
 
 const {
   setDatosCliente,
   setDatosBeneficiario,
-  setDatosGastos,
+  setDatosVarios,
   setDatosCuentas,
   setDatosImportes,
   setActiveForm,
@@ -238,7 +271,7 @@ const {
 export {
   setDatosCliente,
   setDatosBeneficiario,
-  setDatosGastos,
+  setDatosVarios,
   setDatosCuentas,
   setDatosImportes,
   setActiveForm,

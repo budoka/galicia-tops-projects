@@ -2,7 +2,7 @@ import moment from 'moment';
 
 export function formatCurrencyAmount(amount: number | string, currency?: string): string {
   if (typeof amount === 'string') amount = Number(amount);
-  amount = amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+  amount = (amount ?? 0)?.toLocaleString(undefined, { minimumFractionDigits: 2 });
   if (currency) amount += ' ' + currency;
   return amount;
 }

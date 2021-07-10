@@ -9,7 +9,7 @@ import { formatCurrencyAmount, formatDate } from 'src/utils/formatters';
 import { Message } from 'src/utils/messages';
 import { tiposPersona } from '..';
 import { renderFormTitle } from '../../../../_shared/ui/utils';
-import { NuevaSolicitudDataState, TipoCodigoBanco } from '../../data/interfaces';
+import { NuevaSolicitudDataState } from '../../data/interfaces';
 import { addSolicitud, cleanState } from '../../logic';
 
 const { Text } = Typography;
@@ -27,7 +27,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   const state = useContext(StateContext);
 
   const dispatch = useAppDispatch();
-  const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
+  const nuevaSolicitud = useAppSelector((state: RootState) => state.ordenDePago.nuevaSolicitud);
 
   //#region UseEffects
 
@@ -75,17 +75,12 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
     });
   };
 
-  const cleanData = () => {
-    dispatch(cleanState());
-  };
-
   //#endregion
 
   //#region Renders
 
   const renderDatosCliente = () => {
-    const cliente = nuevaSolicitud.data.form?.datosOperacion?.cliente!;
-    const vinculadoConBeneficiario = nuevaSolicitud.data.form?.normativas?.vinculadoConBeneficiario;
+    const cliente = nuevaSolicitud.data.form?.detalles?.cliente!;
 
     const nombreCliente = {
       fisica: `${cliente?.apellido}, ${cliente?.nombre}`,
@@ -101,51 +96,38 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
           </Descriptions.Item>
           <Descriptions.Item label="CUIT">{cliente?.cuit}</Descriptions.Item>
           <Descriptions.Item label="Tipo de Persona">{tiposPersona.find((t) => t.id === cliente?.tipo)?.descripcion}</Descriptions.Item>
-          <Descriptions.Item label="Vinculo con Beneficiario">{vinculadoConBeneficiario ? 'Sí' : ' No'}</Descriptions.Item>
-          {/*      <Descriptions.Item label={documentoCliente?.descripcion}>{+documentoCliente?.numero!}</Descriptions.Item> */}
         </Descriptions>
       </>
     );
   };
 
-  const renderDatosBeneficiario = () => {
-    const beneficiario = nuevaSolicitud.data.form?.datosOperacion?.beneficiario;
+  const renderDatosOrdenante = () => {
+    const ordenante = nuevaSolicitud.data.form?.detalles?.ordenante;
 
     return (
       <>
-        <Row>{renderFormTitle('Datos del Beneficiario', 16)}</Row>
+        <Row>{renderFormTitle('Datos del Ordenante', 16)}</Row>
         <Descriptions size="small" bordered>
           <Descriptions.Item label="Nombre / Razón Social" span={3}>
-            {beneficiario?.razonSocial ?? `${beneficiario?.apellido}, ${beneficiario?.nombre}`}
+            {ordenante?.razonSocial ?? `${ordenante?.apellido}, ${ordenante?.nombre}`}
           </Descriptions.Item>
-          <Descriptions.Item label="Tipo de Documento">{beneficiario?.tipoDocumento}</Descriptions.Item>
-          <Descriptions.Item label="Número de Documento">{beneficiario?.numeroDocumento}</Descriptions.Item>
-          <Descriptions.Item label="NIF">{beneficiario?.nif}</Descriptions.Item>
-          <Descriptions.Item label="Tipo de Persona">{beneficiario?.tipoPersona?.descripcion}</Descriptions.Item>
-          <Descriptions.Item label="Pais">{beneficiario?.pais?.nombre}</Descriptions.Item>
+          <Descriptions.Item label="Tipo de Persona">{ordenante?.tipoPersona?.descripcion}</Descriptions.Item>
+          <Descriptions.Item label="Pais">{ordenante?.pais?.nombre}</Descriptions.Item>
         </Descriptions>
       </>
     );
   };
 
   const renderDatosCuentas = () => {
-    const { cuentaOrigen, cuentaComisiones, beneficiario } = nuevaSolicitud.data.form?.datosOperacion || {};
+    const { cuentaDestino, ordenante, gastos } = nuevaSolicitud.data.form?.detalles || {};
 
     return (
       <>
         <Row>{renderFormTitle('Cuentas', 16)}</Row>
         <Descriptions size="small" layout="vertical" column={4} bordered>
-          <Descriptions.Item label="Cuenta Origen de Fondos" style={{ width: 200 }}>
-            {cuentaOrigen?.valor}
-          </Descriptions.Item>
-          <Descriptions.Item label="Cuenta Destino de Fondos">{`${beneficiario?.cuentaDestino?.numero} (${beneficiario?.cuentaDestino?.moneda.id})`}</Descriptions.Item>
-          <Descriptions.Item label="Cuenta Débito de Comisiones" style={{ width: 200 }}>
-            {cuentaComisiones?.valor}
-          </Descriptions.Item>
-          <Descriptions.Item label="Cuenta Intermediario">
-            {beneficiario?.cuentaIntermediario?.numero
-              ? `${beneficiario?.cuentaIntermediario?.numero} (${beneficiario?.cuentaIntermediario?.moneda.id})`
-              : 'N/A'}
+          <Descriptions.Item label="Cuenta Origen de Fondos">{`${ordenante?.cuentaOrigen?.numero} (${ordenante?.cuentaOrigen?.swiftBanco})`}</Descriptions.Item>
+          <Descriptions.Item label="Cuenta Destino de Fondos" style={{ width: 200 }}>
+            {cuentaDestino?.valor}
           </Descriptions.Item>
         </Descriptions>
       </>
@@ -153,26 +135,22 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   };
 
   const renderDatosImportes = () => {
-    const { importes, moneda } = nuevaSolicitud.data.form?.datosOperacion || {};
+    const { importe, moneda, gastos } = nuevaSolicitud.data.form?.detalles || {};
 
     return (
       <>
         <Row>{renderFormTitle('Importes', 16)}</Row>
-        <Descriptions size="small" layout="vertical" bordered>
-          {importes?.map((i, index) => (
-            <Descriptions.Item key={index} label={`Importe N°${index + 1}`}>
-              <span>
-                {formatCurrencyAmount(+i?.importe, moneda?.id)} ({i?.concepto.id})
-              </span>
-            </Descriptions.Item>
-          ))}
+        <Descriptions size="small" layout="vertical" column={4} bordered>
+          <Descriptions.Item label="Importe">{formatCurrencyAmount(importe!, moneda?.id)}</Descriptions.Item>
+          <Descriptions.Item label="Importe Gastos">{formatCurrencyAmount(gastos?.importe!, gastos?.moneda?.id)}</Descriptions.Item>
+          <Descriptions.Item label="Importe Total">{formatCurrencyAmount(+importe! + +gastos?.importe!, moneda?.id)}</Descriptions.Item>
         </Descriptions>
       </>
     );
   };
 
   const renderDatosVarios = () => {
-    const { fechaEntrada, beneficiario, gastos } = nuevaSolicitud.data.form?.datosOperacion || {};
+    const { fechaEntrada, ordenante, gastos } = nuevaSolicitud.data.form?.detalles || {};
 
     return (
       <>
@@ -180,22 +158,6 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         <Descriptions size="small" bordered>
           <Descriptions.Item label="Fecha de Entrada">{fechaEntrada && formatDate(fechaEntrada!, 'DD/MM/YYYY')}</Descriptions.Item>
           <Descriptions.Item label="Detalle de Gastos">{gastos?.detalle?.descripcion}</Descriptions.Item>
-        </Descriptions>
-        <Descriptions size="small" layout="vertical" bordered>
-          <Descriptions.Item label="Banco Beneficiario">{beneficiario?.cuentaDestino?.nombreBanco}</Descriptions.Item>
-          <Descriptions.Item label="Código Banco Intermediario">{`${beneficiario?.cuentaDestino?.codigoBanco} (${
-            (beneficiario?.cuentaDestino?.tipoCodigoBanco as TipoCodigoBanco)?.descripcion
-          })`}</Descriptions.Item>
-          <Descriptions.Item label="País Banco Beneficiario">{beneficiario?.cuentaDestino?.pais?.nombre}</Descriptions.Item>
-          {beneficiario?.cuentaIntermediario && (
-            <>
-              <Descriptions.Item label="Banco Intermediario">{beneficiario?.cuentaIntermediario?.nombreBanco}</Descriptions.Item>
-              <Descriptions.Item label="Código Banco Intermediario">{`${beneficiario?.cuentaIntermediario?.codigoBanco} (${
-                (beneficiario?.cuentaIntermediario?.tipoCodigoBanco as TipoCodigoBanco)?.descripcion
-              })`}</Descriptions.Item>
-              <Descriptions.Item label="País Banco Intermediario">{beneficiario?.cuentaIntermediario?.pais.nombre}</Descriptions.Item>
-            </>
-          )}
         </Descriptions>
       </>
     );
@@ -209,7 +171,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
       <div style={{ overflowY: 'scroll', height: 540, marginBottom: 20, paddingRight: 24 }}>
         <Space size={'large'} wrap={true} direction="vertical">
           {renderDatosCliente()}
-          {renderDatosBeneficiario()}
+          {renderDatosOrdenante()}
           {renderDatosCuentas()}
           {renderDatosImportes()}
           {renderDatosVarios()}
@@ -223,8 +185,8 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
             </Button>
           ) : (
             <>
-              {/*      <Button type="primary" htmlType="button" onClick={handleOnReset}>
-                Ver Transferencias
+              {/*            <Button type="primary" htmlType="button" onClick={handleOnReset}>
+                Ver Ordenes de Pago
               </Button> */}
               <Button type="primary" htmlType="button" onClick={handleOnReset}>
                 Crear Nueva Solicitud

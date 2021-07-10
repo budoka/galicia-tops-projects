@@ -1,7 +1,6 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
 import React, { useEffect, useRef } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
@@ -9,7 +8,7 @@ import { Pattern } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { Concepto } from 'src/features/_shared/data/interfaces';
 import { Rules } from 'src/types/interfaces';
-import { getOption, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { getRule, getValueFromOptions, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
 import { FormNames, ImportesForm } from '../../data/forms';
 import { setActiveForm, setDatosImportes, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
@@ -71,21 +70,9 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
       form.setFieldsValue({
         importes: importes.map((i) => ({
           importe: i.importe,
-          concepto: getOption(
-            {
-              id: i.concepto?.id!,
-              descripcion: i.concepto?.descripcion,
-            },
-            'descripcion',
-          ),
+          concepto: getValueFromOptions(i.concepto?.id!, shared?.conceptos?.value!),
         })),
-        moneda: getOption(
-          {
-            id: moneda?.id!,
-            descripcion: moneda?.descripcion,
-          },
-          'descripcion',
-        ),
+        moneda: getValueFromOptions(moneda?.id!, shared?.monedas?.value!),
       });
     }
   }, [nuevaSolicitud.ui.form.active]);
@@ -97,17 +84,7 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
   const handleOnFinish = () => {
     setData();
     dispatch(setEstadoForm({ importes: true }));
-    if (canAdvance('importes')) dispatch(setActiveForm(FormNames.CONFIRMACION));
-  };
-
-  const canAdvance = (omittedStatus: string) => {
-    const status = nuevaSolicitud.ui.form.status;
-
-    return Object.keys(status)
-      .filter((key) => key !== omittedStatus)
-      .every((key) => {
-        return (status as any)[key] === true;
-      });
+    dispatch(setActiveForm(FormNames.VARIOS));
   };
 
   //#endregion

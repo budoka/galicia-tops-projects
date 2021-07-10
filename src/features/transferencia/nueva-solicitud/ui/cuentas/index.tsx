@@ -1,6 +1,5 @@
 import { Button, Checkbox, Col, Form, Input, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { ArgsProps } from 'antd/lib/message';
 import React, { useEffect, useState } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
@@ -8,7 +7,7 @@ import { Texts } from 'src/constants/texts';
 import { TipoCodigoBanco as TipoCodigoBancoType } from 'src/features/_shared/data/types';
 import { Rules } from 'src/types/interfaces';
 import { tiposCodigoBanco } from '..';
-import { getOption, getOption2, getRule, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
+import { getRule, getValueFromOptions, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
 import { CuentasForm, FormNames } from '../../data/forms';
 import { TipoCodigoBanco } from '../../data/interfaces';
 import { setActiveForm, setDatosCuentas, setEstadoForm } from '../../logic';
@@ -155,7 +154,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
   const nuevaSolicitud = useAppSelector((state: RootState) => state.transferencia.nuevaSolicitud);
   const shared = useAppSelector((state: RootState) => state.shared);
 
-  const [hasIntermediary, setHasIntermediary] = useState<boolean>();
+  const [hasIntermediary, setHasIntermediary] = useState<boolean>(!!nuevaSolicitud.data.form?.datosOperacion?.beneficiario?.cuentaIntermediario);
 
   //#region UseEffects
 
@@ -166,41 +165,23 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
       const { cuentaOrigen, cuentaComisiones, beneficiario } = nuevaSolicitud.data.form?.datosOperacion || {};
       form.resetFields();
       form.setFieldsValue({
-        cuentaOrigen: getOption(
-          {
-            id: cuentaOrigen?.valor!,
-            descripcion: cuentaOrigen?.valor,
-          },
-          'descripcion',
-        ),
-        cuentaComisiones: getOption(
-          {
-            id: cuentaComisiones?.valor!,
-            descripcion: cuentaComisiones?.valor,
-          },
-          'descripcion',
-        ),
+        cuentaOrigen: getValueFromOptions(cuentaOrigen?.valor!, nuevaSolicitud.info.cuentas?.value!),
+        cuentaComisiones: getValueFromOptions(cuentaComisiones?.valor!, nuevaSolicitud.info.cuentas?.value!),
         cuentaDestino: {
           ...beneficiario?.cuentaDestino!,
-          moneda: getOption({ id: beneficiario?.cuentaDestino?.moneda?.id!, nombre: beneficiario?.cuentaDestino?.moneda?.descripcion }, 'descripcion'),
-          pais: getOption({ id: beneficiario?.cuentaDestino?.pais?.id!, nombre: beneficiario?.cuentaDestino?.pais?.nombre }, 'nombre'),
-          tipoCodigoBanco: getOption(
-            {
-              id: (beneficiario?.cuentaDestino?.tipoCodigoBanco as TipoCodigoBanco)?.id!,
-              descripcion: (beneficiario?.cuentaDestino?.tipoCodigoBanco as TipoCodigoBanco)?.descripcion,
-            },
-            'descripcion',
-          ),
+          moneda: getValueFromOptions(beneficiario?.cuentaDestino?.moneda?.id!, shared.monedas?.value!),
+          pais: getValueFromOptions(beneficiario?.cuentaDestino?.pais?.id!, shared.paises?.value!),
+          tipoCodigoBanco: getValueFromOptions((beneficiario?.cuentaDestino?.tipoCodigoBanco as TipoCodigoBanco)?.id!, tiposCodigoBanco),
         },
-        cuentaIntermediario: {
-          ...beneficiario?.cuentaIntermediario!,
-          moneda: getOption(
-            { id: beneficiario?.cuentaIntermediario?.moneda?.id!, nombre: beneficiario?.cuentaIntermediario?.moneda?.descripcion },
-            'descripcion',
-          ),
-          pais: getOption({ id: beneficiario?.cuentaIntermediario?.pais?.id!, nombre: beneficiario?.cuentaIntermediario?.pais?.nombre }, 'nombre'),
-          tipoCodigoBanco: beneficiario?.cuentaIntermediario?.tipoCodigoBanco as string,
-        },
+        cuentaIntermediario: beneficiario?.cuentaIntermediario
+          ? {
+              ...beneficiario?.cuentaIntermediario!,
+              moneda: getValueFromOptions(beneficiario?.cuentaIntermediario?.moneda?.id!, shared.monedas?.value!),
+              pais: getValueFromOptions(beneficiario?.cuentaIntermediario?.pais?.id!, shared.paises?.value!),
+              tipoCodigoBanco: beneficiario?.cuentaIntermediario?.tipoCodigoBanco as string,
+            }
+          : undefined,
+        cuentaIntermediarioHabilitada: hasIntermediary,
       });
     }
   }, [nuevaSolicitud.ui.form.active]);
@@ -219,20 +200,16 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
 
   const handleFill = () => {
     form.setFieldsValue({
-      cuentaOrigen: { key: '1', label: 'TEST A', value: 'A' },
-      cuentaComisiones: { key: '2', label: 'TEST B', value: 'B' },
       cuentaDestino: {
         localidadBanco: 'Localidad',
         nombreBanco: 'Nombre',
         codigoBanco: 'Codigo',
-        tipoCodigoBanco: getOption({ id: 'swift', label: 'SWIFT' }, 'label'),
+        tipoCodigoBanco: getValueFromOptions('aba', tiposCodigoBanco),
         codigoBancoAdicional: 'Codigo 2',
         tipoCodigoBancoAdicional: 'tipooo',
         numero: '1234567889',
-        moneda: getOption2('ARS', shared.monedas?.value!),
-        pais: getOption2('AR', shared.paises?.value!),
-        // moneda: getOption({ id: 'ARS', label: 'ARS (Pero Argentino)' }, 'label'),
-        // pais: getOption({ id: 'ARG', label: 'Argentina' }, 'label'),
+        moneda: getValueFromOptions('ARS', shared.monedas?.value!),
+        pais: getValueFromOptions('AR', shared.paises?.value!),
       },
     });
 
@@ -252,8 +229,8 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
         cuentaDestino: {
           ...cuentaDestino!,
           tipoCodigoBanco: {
-            id: cuentaDestino?.tipoCodigoBanco?.value?.toString()!,
-            descripcion: cuentaDestino?.tipoCodigoBanco?.label?.toString()! as TipoCodigoBancoType,
+            id: cuentaDestino?.tipoCodigoBanco?.value?.toString()! as TipoCodigoBancoType,
+            descripcion: cuentaDestino?.tipoCodigoBanco?.label?.toString()!,
           },
           moneda: { id: cuentaDestino?.moneda?.value?.toString()!, descripcion: cuentaDestino?.moneda?.label?.toString()! },
           pais: { id: cuentaDestino?.pais?.value?.toString()!, nombre: cuentaDestino?.pais?.label?.toString()! },

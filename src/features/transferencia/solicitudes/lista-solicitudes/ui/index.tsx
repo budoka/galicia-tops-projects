@@ -25,11 +25,11 @@ import { getFreshToken } from 'src/utils/auth';
 import { formatCurrencyAmount, formatDate } from 'src/utils/formatters';
 import { getViewWidth } from 'src/utils/screen';
 import { compare } from 'src/utils/string';
-import { InfoMensaje } from '../../info-mensaje/ui';
-import { GetMensajesPayload } from '../data/dto';
+import { InfoMensaje } from '../../info-solicitud/ui';
+import { GetSolicitudesPayload } from '../data/dto';
 import { FiltrosForm } from '../data/forms';
-import { Mensaje } from '../data/interfaces';
-import { fetchMensajes, setMensaje, setModalVisible, setPaginator } from '../logic';
+import { Solicitud } from '../data/interfaces';
+import { fetchSolicitudes, setMensaje, setModalVisible, setPaginator } from '../logic';
 import styles from './style.module.less';
 
 interface TableFilter {
@@ -212,13 +212,13 @@ const columns = [
     width: 100,
     inputType: 'button',
   },
-] as ColumnTypeEx<Mensaje>[];
+] as ColumnTypeEx<Solicitud>[];
 
-export const ListaMensajes: React.FC = (props) => {
+export const ListaSolicitudes: React.FC = (props) => {
   const state = useContext(StateContext);
 
   const dispatch = useAppDispatch();
-  const listaMensajes = useAppSelector((state: RootState) => state.mensaje.listaMensajes);
+  const listaSolicitudes = useAppSelector((state: RootState) => state.transferencia.solicitudes);
   const shared = useAppSelector((state: RootState) => state.shared);
   const router = useAppSelector((state: RootState) => state.router);
 
@@ -232,7 +232,7 @@ export const ListaMensajes: React.FC = (props) => {
     if (column.key === 'ver') {
       return {
         ...column,
-        render: (value: any, record: Mensaje) => (
+        render: (value: any, record: Solicitud) => (
           <Button
             type="primary"
             shape="circle"
@@ -261,7 +261,7 @@ export const ListaMensajes: React.FC = (props) => {
 
     const filtros = { ...rest, moneda: moneda?.value?.toString(), rangoFecha: rangoFecha?.map((f) => formatDate(f, 'DD/MM/YYYY')) };
 
-    const payload: GetMensajesPayload = {
+    const payload: GetSolicitudesPayload = {
       beneficiario: filtros.beneficiario,
       ordenante: filtros.ordenante,
       fechaInicial: filtros.rangoFecha?.length >= 1 ? filtros.rangoFecha[0] : undefined,
@@ -272,7 +272,7 @@ export const ListaMensajes: React.FC = (props) => {
       uetr: filtros.uetr,
       divisa: filtros.moneda,
       referencia: filtros.referencia,
-      pageSize: listaMensajes.data.paginator?.pageSize!,
+      pageSize: listaSolicitudes.data.paginator?.pageSize!,
     };
 
     fetchData(payload);
@@ -299,11 +299,11 @@ export const ListaMensajes: React.FC = (props) => {
 
   //#region Other functions
 
-  const fetchData = async (payload?: GetMensajesPayload) => {
+  const fetchData = async (payload?: GetSolicitudesPayload) => {
     const token = await getFreshToken(state.msalInstance!);
 
     dispatch(
-      fetchMensajes({
+      fetchSolicitudes({
         headers: {
           Authorization: 'Bearer ' + token,
         },
@@ -454,9 +454,9 @@ export const ListaMensajes: React.FC = (props) => {
           size={'small'}
           scroll={{ y: '500px' }}
           fill
-          columns={mergedColumns as ColumnsType<Mensaje> as any}
-          dataSource={listaMensajes.info.mensajes?.value}
-          loading={listaMensajes.info.mensajes?.loading}
+          columns={mergedColumns as ColumnsType<Solicitud> as any}
+          dataSource={listaSolicitudes.info.solicitudes?.value}
+          loading={listaSolicitudes.info.solicitudes?.loading}
           hideRowSelection
           extraColumns={{ showKeyColumn: true, showActionsColumn: false }}
           extraComponents={[
@@ -475,9 +475,9 @@ export const ListaMensajes: React.FC = (props) => {
           ]}
           sortable
           pagination={{
-            current: listaMensajes.data.paginator?.current,
-            pageSize: listaMensajes.data.paginator?.pageSize,
-            total: listaMensajes.data.paginator?.total,
+            current: listaSolicitudes.data.paginator?.current,
+            pageSize: listaSolicitudes.data.paginator?.pageSize,
+            total: listaSolicitudes.data.paginator?.total,
             onChange: handleOnPaginationChange,
           }}
         />
@@ -498,15 +498,15 @@ export const ListaMensajes: React.FC = (props) => {
       {/*   {isContentLoading ? <LoadingContent /> : renderTable()} */}
       {isContentLoading ? <LoadingContent /> : hasContentError ? <ServiceError /> : renderTable()}
       <Modal
-        title={`Mensaje ${listaMensajes.data.idMensaje}`}
+        title={`Mensaje ${listaSolicitudes.data.idMensaje}`}
         centered
-        visible={listaMensajes.ui.modal}
+        visible={listaSolicitudes.ui.modal}
         footer={null}
         width="60%"
         onCancel={() => handleOnModalVisible(false)}
         /*afterClose={clearDetailModal}*/
       >
-        {listaMensajes.data.idMensaje && <InfoMensaje id={listaMensajes.data.idMensaje} />}
+        {listaSolicitudes.data.idMensaje && <InfoMensaje id={listaSolicitudes.data.idMensaje} />}
       </Modal>
     </Wrapper>
   );

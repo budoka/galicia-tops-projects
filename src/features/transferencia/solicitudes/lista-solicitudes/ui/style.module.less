@@ -1,0 +1,43 @@
+/* nueva-transferencia */
+
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/styles/shared.less';
+@import (reference) '~src/app/style.module.less';
+
+.table {
+  //width: 1200px;
+  //min-width: 970px;
+
+  :global .ant-form-item {
+    margin-bottom: 0 !important;
+
+    :global .ant-select-selection-placeholder {
+      text-align: left;
+    }
+
+    button {
+      margin-left: 10px;
+    }
+  }
+
+  :global .ant-table-body {
+    min-height: calc(400px + @scrollbar) !important;
+  }
+
+  :global .ant-table-placeholder {
+    height: 400px !important;
+
+    > td {
+      border-bottom: none !important;
+    }
+  }
+}
+
+.filterForm {
+  width: 100%;
+
+  /* Hide alert (validation error message) */
+  :global .ant-form-item-explain {
+    display: none;
+  }
+}

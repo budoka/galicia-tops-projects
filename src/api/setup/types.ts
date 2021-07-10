@@ -9,6 +9,7 @@ export interface APIList {
   COMMON: API<ResourcesCommon>;
   MENSAJE: API<ResourcesMensaje>;
   TRANSFERENCIA: API<ResourcesTransferencia>;
+  SOLICITUD: API<ResourcesSolicitud>;
 }
 
 // Resources
@@ -23,11 +24,17 @@ export interface ResourcesCommon {
 }
 
 export interface ResourcesMensaje {
+  AGREGAR_MENSAJE: Resource;
   MENSAJE: Resource;
   MENSAJES: Resource;
 }
 
 export interface ResourcesTransferencia {
+  AGREGAR_SOLICITUD: Resource;
+  SOLICITUDES: Resource;
+}
+
+export interface ResourcesSolicitud {
   AGREGAR_SOLICITUD: Resource;
   SOLICITUDES: Resource;
 }

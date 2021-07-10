@@ -105,8 +105,11 @@ export enum Texts {
   ACCOUNT_TARGET = 'Cuenta Destino de Fondos',
   ACCOUNT_COMMISSIONS = 'Cuenta Débito de Comisiones',
   ACCOUNTS_CLIENT = 'Cuentas Cliente',
+  ACCOUNT_CLIENT = 'Cuenta Cliente',
   ACCOUNT_BENEFICIARY = 'Cuenta Beneficiario',
+  ACCOUNT_OUR = 'Cuenta Ordenante',
   ACCOUNT_INTERMEDIARY = 'Cuenta Intermediario',
+  ENTRY_DATE = 'Fecha de Ingreso',
   CONCEPT = 'Concepto',
   FEE_TYPE = 'Tipo de Comisión',
   DATE_BIRTH = 'Fecha de Nacimiento',
@@ -122,6 +125,8 @@ export enum Texts {
   BANK_CODE_TYPE = 'Tipo de Código del Banco',
   BANK_CODE_OPTIONAL = 'Código del Banco Adicional',
   BANK_CODE_TYPE_OPTIONAL = 'Tipo de Código del Banco Adicional',
+  CORRESPONDENT_SWIFT = 'Swift Corresponsal',
+  UETR = 'UETR',
   // PLACEHOLDERS
   SELECT_PERSON_TYPE = 'Seleccione un tipo de persona',
   SELECT_COUNTRY = 'Seleccione un país',
@@ -135,8 +140,9 @@ export enum Texts {
   SELECT_ACCOUNT = 'Seleccione una cuenta',
   SELECT_EXPENSE_DETAIL = 'Seleccione un detalle de gasto',
   // MESSAGES
-  TRANSFER_CREATION_OK = 'Transferencia creada correctamente',
-  TRANSFER_CREATION_ERROR = 'Error al crear transferencia',
+  REQUEST_CREATION_LOADING = 'Creando solicitud',
+  REQUEST_CREATION_OK = 'Solicitud creada correctamente',
+  REQUEST_CREATION_ERROR = 'Error al crear solicitud',
   // SEARCH CLIENT
   SEARCH_CLIENT_LOADING = 'Buscando cliente',
   SEARCH_CLIENT_OK = 'Cliente encontrado',

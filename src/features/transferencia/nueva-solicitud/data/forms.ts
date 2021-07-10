@@ -4,9 +4,9 @@ import { CuentaExterior, Beneficiario } from './interfaces';
 export enum FormNames {
   DATOS_CLIENTE = 'Datos del Cliente',
   DATOS_BENEFICIARIO = 'Datos del Beneficiario',
-  GASTOS = 'Gastos',
   CUENTAS = 'Cuentas',
   IMPORTES = 'Importes',
+  VARIOS = 'Varios',
   CONFIRMACION = 'Confirmación',
 }
 
@@ -22,21 +22,22 @@ export interface BeneficiarioForm extends Omit<Beneficiario, 'fechaNacimiento' |
   tipoPersona: LabeledValue;
   pais: LabeledValue;
 }
-
-export interface GastosForm {
-  detalle: LabeledValue;
-}
-
 export interface CuentasForm {
   cuentaOrigen: LabeledValue;
   cuentaComisiones?: LabeledValue;
   cuentaDestino?: CuentaExteriorForm;
   cuentaIntermediario?: CuentaIntermediariaExteriorForm;
+  cuentaIntermediarioHabilitada?: boolean;
 }
 
 export interface ImportesForm {
   importes: { importe: number; concepto: LabeledValue }[];
   moneda: LabeledValue;
+}
+
+export interface VariosForm {
+  fechaEntrada: moment.Moment;
+  detalle: LabeledValue;
 }
 
 interface CuentaExteriorForm extends Omit<CuentaExterior, 'moneda' | 'pais' | 'tipoCodigoBanco'> {
