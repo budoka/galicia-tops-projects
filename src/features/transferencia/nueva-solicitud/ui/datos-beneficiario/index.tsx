@@ -191,8 +191,6 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
       localidad: 'BS AS',
       codigoPostal: '2525',
     });
-
-    console.log(form.getFieldsValue());
   };
 
   //#endregion

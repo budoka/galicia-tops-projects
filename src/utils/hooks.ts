@@ -49,8 +49,6 @@ export function useScroll(target?: Element) {
   }, []);
 
   function handleResize() {
-    console.log(scroll);
-
     setScroll({
       x: target?.scrollLeft ?? window.scrollX,
       y: target?.scrollTop ?? window.scrollX,

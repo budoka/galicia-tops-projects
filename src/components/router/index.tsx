@@ -9,8 +9,6 @@ type RouterProps = {
 };
 
 export const Router: React.FC<RouterProps> = React.memo((props) => {
-  useEffect(() => console.log('router'));
-
   const views = Object.values(props.views) as View[];
   const homePage = getHomePage();
 

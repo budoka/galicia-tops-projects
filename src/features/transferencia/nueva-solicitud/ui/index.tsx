@@ -74,7 +74,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
   //#region Handlers
 
   const handleOnReset = () => {
-    cleanData();
+    cleanData(true);
   };
 
   const handleTabClick = (activeKey: string) => {
@@ -92,14 +92,16 @@ export const TXNuevaSolicitud: React.FC = (props) => {
     });
   };
 
-  const cleanData = () => {
+  const cleanData = (cleanForms?: boolean) => {
     dispatch(cleanState());
 
-    clienteForm.resetFields();
-    beneficiarioForm.resetFields();
-    cuentasForm.resetFields();
-    importesForm.resetFields();
-    variosForm.resetFields();
+    if (cleanForms) {
+      clienteForm.resetFields();
+      beneficiarioForm.resetFields();
+      cuentasForm.resetFields();
+      importesForm.resetFields();
+      variosForm.resetFields();
+    }
   };
 
   //#endregion

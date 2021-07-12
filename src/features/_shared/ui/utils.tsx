@@ -27,8 +27,6 @@ export function renderOptions<T extends Keyable>(options: T[], descriptionKey: s
 }
 
 export function getValueFromOptions(value: string | number, options: ObjectLiteral[], optionKey: string = 'id', optionLabel: string = 'label'): LabeledValue {
-  console.log(value, options);
-
   if (value === undefined || value === null) throw new Error(`Error obtener la opción. El valor pasado es '${value}'.`);
 
   const foundValue = options.find((o) => o[optionKey] === value);

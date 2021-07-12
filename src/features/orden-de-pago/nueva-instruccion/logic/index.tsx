@@ -95,8 +95,6 @@ export const addInstruccion = createHttpAsyncThunk<NuevaInstruccionDataState, vo
     const resource = api.resources['INSTRUIR_SOLICITUD'];
     const config = buildAxiosRequestConfig(api, resource, { ...options, body: requestData });
 
-    console.log(config);
-
     // Llamado del servicio
     let response;
 
@@ -108,8 +106,6 @@ export const addInstruccion = createHttpAsyncThunk<NuevaInstruccionDataState, vo
 
     // Mapeo de la respuesta
     const responseData = response.data;
-
-    console.log(responseData);
 
     return { status: response.status, data: responseData } as HttpResponse<void>;
   },

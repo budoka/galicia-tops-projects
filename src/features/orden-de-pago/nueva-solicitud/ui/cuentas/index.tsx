@@ -79,8 +79,6 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
         numero: '1234567889',
       },
     });
-
-    console.log(form.getFieldsValue());
   };
 
   //#endregion

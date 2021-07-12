@@ -74,12 +74,9 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
       okText: 'Confirmar',
       cancelText: 'Cancelar',
       onOk() {
-        console.log('OK');
         handleOnReset();
       },
-      onCancel() {
-        console.log('Cancel');
-      },
+      onCancel() {},
     });
 
   //#endregion

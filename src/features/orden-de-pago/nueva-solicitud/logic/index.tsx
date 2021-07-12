@@ -50,8 +50,6 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
     const resource = api.resources['AGREGAR_MENSAJE'];
     const config = buildAxiosRequestConfig(api, resource, { ...options, body: requestData });
 
-    console.log(config);
-
     // Llamado del servicio
     let response;
 
@@ -63,8 +61,6 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
 
     // Mapeo de la respuesta
     const responseData = response.data;
-
-    console.log(responseData);
 
     return { status: response.status, data: responseData } as HttpResponse<void>;
   },

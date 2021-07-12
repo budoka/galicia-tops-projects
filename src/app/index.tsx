@@ -83,7 +83,6 @@ export const App = () => {
 
   useEffect(() => {
     fetchData();
-    console.log('app loaded');
   }, []);
 
   useEffect(() => {

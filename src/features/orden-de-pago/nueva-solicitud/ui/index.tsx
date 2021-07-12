@@ -66,7 +66,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
   //#region Handlers
 
   const handleOnReset = () => {
-    cleanData();
+    cleanData(true);
   };
 
   const handleTabClick = (activeKey: string) => {
@@ -84,14 +84,16 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
     });
   };
 
-  const cleanData = () => {
+  const cleanData = (cleanForms?: boolean) => {
     dispatch(cleanState());
 
-    clienteForm.resetFields();
-    ordenanteForm.resetFields();
-    cuentasForm.resetFields();
-    importeForm.resetFields();
-    variosForm.resetFields();
+    if (cleanForms) {
+      clienteForm.resetFields();
+      ordenanteForm.resetFields();
+      cuentasForm.resetFields();
+      importeForm.resetFields();
+      variosForm.resetFields();
+    }
   };
 
   //#endregion

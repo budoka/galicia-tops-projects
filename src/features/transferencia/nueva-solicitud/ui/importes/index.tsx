@@ -176,7 +176,6 @@ export const ImportesFormPanel: React.FC<ImportesFormPanelProps> = (props) => {
                             <Col>
                               <MinusCircleOutlined
                                 onClick={() => {
-                                  console.log(fields);
                                   remove(field.name);
                                 }}
                               />

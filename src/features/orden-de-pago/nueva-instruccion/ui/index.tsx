@@ -47,7 +47,7 @@ export const ODPNuevaInstruccion: React.FC = (props) => {
   //#region Handlers
 
   const handleOnReset = () => {
-    cleanData();
+    cleanData(true);
   };
 
   const handleTabClick = (activeKey: string) => {
@@ -65,11 +65,13 @@ export const ODPNuevaInstruccion: React.FC = (props) => {
     });
   };
 
-  const cleanData = () => {
+  const cleanData = (cleanForms?: boolean) => {
     dispatch(cleanState());
 
-    solicitudForm.resetFields();
-    instruccionForm.resetFields();
+    if (cleanForms) {
+      solicitudForm.resetFields();
+      instruccionForm.resetFields();
+    }
   };
 
   //#endregion

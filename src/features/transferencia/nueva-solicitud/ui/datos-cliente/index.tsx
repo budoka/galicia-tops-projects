@@ -122,7 +122,6 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
     if (cliente) {
       await fetchCuentasCliente(cliente.hostId)
         .then(() => {
-          console.log('ok');
           dispatch(
             setDatosCliente({
               cliente: { ...cliente, cuit: clienteForm.getFieldsValue().cuitCliente },
@@ -135,9 +134,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
           dispatch(setEstadoForm({ datosClientes: true, cuentas: false }));
           dispatch(setActiveForm(FormNames.DATOS_BENEFICIARIO));
         })
-        .catch((err) => {
-          console.log('error');
-        });
+        .catch((err) => {});
     }
   };
 

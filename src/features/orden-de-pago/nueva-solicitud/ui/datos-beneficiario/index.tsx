@@ -108,8 +108,6 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
       apellido: 'Gomez',
       pais: getValueFromOptions('AR', shared.paises?.value!),
     });
-
-    console.log(form.getFieldsValue());
   };
 
   //#endregion

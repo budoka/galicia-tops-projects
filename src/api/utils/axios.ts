@@ -22,7 +22,6 @@ export const cancelRequest = (source: CancelTokenSource) => {
 };
 
 export const rejectRequest = (err: AxiosError, thunkApi: any) => {
-  console.log({ ...err });
   const { data, status } = (err as AxiosError).response || {};
   const error: HttpResponse = { data, status: status ?? REQUEST_TIMEOUT };
 

@@ -36,8 +36,6 @@ export const InfoMensaje: React.FC<InfoMensajeProps> = (props) => {
   const fetchData = async (id: number) => {
     const token = await getFreshToken(state.msalInstance!);
 
-    console.log('fetchinbg..');
-
     dispatch(
       fetchMensaje({
         headers: {

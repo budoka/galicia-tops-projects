@@ -212,8 +212,6 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
         pais: getValueFromOptions('AR', shared.paises?.value!),
       },
     });
-
-    console.log(form.getFieldsValue());
   };
 
   //#endregion

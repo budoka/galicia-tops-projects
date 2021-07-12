@@ -111,7 +111,6 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
   };
 
   const handleOnDetalleGastosChange = (option: LabeledValue) => {
-    console.log(option);
     setCurrentDetalleGastos(option.value as DetalleGastosType);
   };
 
