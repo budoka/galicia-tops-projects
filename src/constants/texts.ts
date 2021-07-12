@@ -106,6 +106,7 @@ export enum Texts {
   ACCOUNT_COMMISSIONS = 'Cuenta Débito de Comisiones',
   ACCOUNTS_CLIENT = 'Cuentas Cliente',
   ACCOUNT_CLIENT = 'Cuenta Cliente',
+  ACCOUNTS = 'Cuentas',
   ACCOUNT_BENEFICIARY = 'Cuenta Beneficiario',
   ACCOUNT_OUR = 'Cuenta Ordenante',
   ACCOUNT_INTERMEDIARY = 'Cuenta Intermediario',
@@ -139,10 +140,14 @@ export enum Texts {
   SELECT_CONCEPT = 'Seleccione un concepto',
   SELECT_ACCOUNT = 'Seleccione una cuenta',
   SELECT_EXPENSE_DETAIL = 'Seleccione un detalle de gasto',
-  // MESSAGES
+  // REQUEST
   REQUEST_CREATION_LOADING = 'Creando solicitud',
   REQUEST_CREATION_OK = 'Solicitud creada correctamente',
   REQUEST_CREATION_ERROR = 'Error al crear solicitud',
+  // INSTRUCTION
+  INSTRUCTION_CREATION_LOADING = 'Creando instrucción',
+  INSTRUCTION_CREATION_OK = 'Instrucción creada correctamente',
+  INSTRUCTION_CREATION_ERROR = 'Error al crear instrucción',
   // SEARCH CLIENT
   SEARCH_CLIENT_LOADING = 'Buscando cliente',
   SEARCH_CLIENT_OK = 'Cliente encontrado',
@@ -152,4 +157,8 @@ export enum Texts {
   SEARCH_ACCOUNTS_LOADING = 'Buscando cuentas del cliente',
   SEARCH_ACCOUNTS_OK = 'Cuentas encontradas',
   SEARCH_ACCOUNTS_ERROR = 'Error al encontrar cuentas del cliente',
+  // SEARCH REQUEST
+  SEARCH_REQUEST_LOADING = 'Buscando solicitud',
+  SEARCH_REQUEST_OK = 'Solicitud encontrada',
+  SEARCH_REQUEST_ERROR = 'Error al encontrar solicitud',
 }

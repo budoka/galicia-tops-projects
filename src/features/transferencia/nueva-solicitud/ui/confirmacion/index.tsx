@@ -1,4 +1,5 @@
-import { Button, Descriptions, Row, Space, Typography } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Modal, Row, Space, Typography } from 'antd';
 import React, { useContext, useEffect } from 'react';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
@@ -13,6 +14,7 @@ import { NuevaSolicitudDataState, TipoCodigoBanco } from '../../data/interfaces'
 import { addSolicitud, cleanState } from '../../logic';
 
 const { Text } = Typography;
+const { confirm } = Modal;
 
 const width = 250;
 
@@ -63,6 +65,22 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
   const handleOnReset = () => {
     handleReset();
   };
+
+  const showConfirm = () =>
+    confirm({
+      title: 'Cancelar Solicitud',
+      icon: <ExclamationCircleOutlined />,
+      content: '¿Desea cancelar la solicitud y volver a crear otra? (Se perderán todos los datos cargados)',
+      okText: 'Confirmar',
+      cancelText: 'Cancelar',
+      onOk() {
+        console.log('OK');
+        handleOnReset();
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
 
   //#endregion
 
@@ -116,7 +134,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         <Row>{renderFormTitle('Datos del Beneficiario', 16)}</Row>
         <Descriptions size="small" bordered>
           <Descriptions.Item label="Nombre / Razón Social" span={3}>
-            {beneficiario?.razonSocial ?? `${beneficiario?.apellido}, ${beneficiario?.nombre}`}
+            {beneficiario?.razonSocial || `${beneficiario?.apellido}, ${beneficiario?.nombre}`}
           </Descriptions.Item>
           <Descriptions.Item label="Tipo de Documento">{beneficiario?.tipoDocumento}</Descriptions.Item>
           <Descriptions.Item label="Número de Documento">{beneficiario?.numeroDocumento}</Descriptions.Item>
@@ -218,9 +236,14 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
       <Row>
         <Space size={'middle'} wrap={true} direction="horizontal">
           {!nuevaSolicitud.info.solicitudCreada?.value ? (
-            <Button type="primary" htmlType="button" disabled={nuevaSolicitud.info.solicitudCreada?.loading} onClick={handleOnConfirm}>
-              Confirmar
-            </Button>
+            <>
+              <Button type="primary" htmlType="button" disabled={nuevaSolicitud.info.solicitudCreada?.loading} onClick={handleOnConfirm}>
+                Confirmar
+              </Button>
+              <Button type="default" htmlType="button" onClick={showConfirm}>
+                Cancelar
+              </Button>
+            </>
           ) : (
             <>
               {/*      <Button type="primary" htmlType="button" onClick={handleOnReset}>

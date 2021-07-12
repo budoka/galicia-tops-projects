@@ -35,6 +35,7 @@ export interface GetCuentaDTO {
   monedaIso: string;
   saldo: number;
   sucursalAdministradora: number;
+  codigoSubsistema: string;
 }
 
 export interface GetInfoProductosDTO {

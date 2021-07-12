@@ -5,13 +5,11 @@ import { HttpResponse } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
-import { Cliente, Moneda } from 'src/features/_shared/data/interfaces';
-import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
+import { Cliente, Cuenta, Moneda } from 'src/features/_shared/data/interfaces';
 import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
-import { sleep } from 'src/utils/common';
 import { AddSolicitudPayload } from '../data/dto';
 import { FormNames } from '../data/forms';
-import { Ordenante, Cuenta, CuentaExterior, Gastos, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms } from '../data/interfaces';
+import { CuentaExterior, Gastos, NuevaSolicitudDataState, NuevaSolicitudState, Ordenante, StatusForms } from '../data/interfaces';
 
 const FEATURE_NAME = 'ordenDePago/nuevaSolicitud';
 
@@ -42,8 +40,8 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
         importe33B: (+data.form.detalles?.importe! + +data.form.detalles?.gastos.importe!).toString(),
         importe71G: data.form.detalles?.gastos.importe.toString()!,
         moneda: data.form.detalles?.moneda.id!,
-        nombreBeneficiario: data.form.detalles!.cliente?.razonSocial ?? `${data.form.detalles!.cliente?.apellido}, ${data.form.detalles!.cliente?.nombre}`,
-        nombreOrdenante: data.form.detalles!.ordenante?.razonSocial ?? `${data.form.detalles!.ordenante?.apellido}, ${data.form.detalles!.ordenante?.nombre}`,
+        nombreBeneficiario: data.form.detalles!.cliente?.razonSocial || `${data.form.detalles!.cliente?.apellido}, ${data.form.detalles!.cliente?.nombre}`,
+        nombreOrdenante: data.form.detalles!.ordenante?.razonSocial || `${data.form.detalles!.ordenante?.apellido}, ${data.form.detalles!.ordenante?.nombre}`,
       },
     };
 

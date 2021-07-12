@@ -52,8 +52,21 @@ export interface Cliente {
   cuit?: string;
 }
 
-export interface Concepto extends Keyable {
+export interface Cuenta extends Keyable {
   id: string;
+  valor: string;
+  codigo: string;
+  descripcion: string;
+  numero: number;
+  moneda: number;
+  monedaIso: string;
+  saldo: number;
+  sucursalAdministradora: number;
+  codigoSubsistema: string;
+}
+
+export interface Concepto extends Keyable {
+  id: string; // TODO: el id actualmente es el codigo (ej: A07, A08), si se cambia a number se deberia mover el valor a la propiedad codigo
   descripcion: string;
 }
 

@@ -3,4 +3,4 @@ export type KeysMatching<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never 
 export type TipoPersona = 'fisica' | 'juridica';
 export type TipoCuenta = 'ca' | 'cc';
 export type TipoCodigoBanco = 'aba' | 'swift';
-export type DetalleGasto = 'ben' | 'our' | 'sha';
+export type DetalleGastos = 'ben' | 'our' | 'sha';

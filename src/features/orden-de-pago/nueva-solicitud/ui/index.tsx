@@ -10,7 +10,7 @@ import { ServiceError } from 'src/components/service-error';
 import { Wrapper } from 'src/components/wrapper';
 import { SHADOW } from 'src/constants';
 import { cleanState, setActiveForm } from 'src/features/orden-de-pago/nueva-solicitud/logic';
-import { DetalleGasto, TipoPersona } from 'src/features/_shared/data/types';
+import { DetalleGastos, TipoPersona } from 'src/features/_shared/data/types';
 import { hasError, isFetchingData } from 'src/helpers/validations';
 import { getViewWidth } from 'src/utils/screen';
 import { ClienteForm, CuentasForm, FormNames, ImporteForm, OrdenanteForm, VariosForm } from '../data/forms';
@@ -34,9 +34,9 @@ export const tiposPersona = [
 ];
 
 export const detallesGastos = [
-  { id: 'ben', descripcion: 'BEN' } as { id: DetalleGasto; descripcion: string },
-  { id: 'our', descripcion: 'OUR' } as { id: DetalleGasto; descripcion: string },
-  { id: 'sha', descripcion: 'SHA' } as { id: DetalleGasto; descripcion: string },
+  { id: 'ben', descripcion: 'BEN' } as { id: DetalleGastos; descripcion: string },
+  { id: 'our', descripcion: 'OUR' } as { id: DetalleGastos; descripcion: string },
+  { id: 'sha', descripcion: 'SHA' } as { id: DetalleGastos; descripcion: string },
 ];
 
 export const ODPNuevaSolicitud: React.FC = (props) => {
@@ -86,13 +86,12 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
 
   const cleanData = () => {
     dispatch(cleanState());
-    if (nuevaSolicitud.info.solicitudCreada?.value) {
-      clienteForm.resetFields();
-      ordenanteForm.resetFields();
-      cuentasForm.resetFields();
-      importeForm.resetFields();
-      variosForm.resetFields();
-    }
+
+    clienteForm.resetFields();
+    ordenanteForm.resetFields();
+    cuentasForm.resetFields();
+    importeForm.resetFields();
+    variosForm.resetFields();
   };
 
   //#endregion
@@ -108,6 +107,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosClientes} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.DATOS_CLIENTE}>
         <ClienteFormPanel title={FormNames.DATOS_CLIENTE} clienteForm={clienteForm} variosForm={variosForm} cuentasForm={cuentasForm} />
       </TabPane>
@@ -120,6 +120,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosOrdenante} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.DATOS_ORDENANTE}>
         <BeneficiarioFormPanel title={FormNames.DATOS_ORDENANTE} form={ordenanteForm} />
       </TabPane>
@@ -133,7 +134,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
           </span>
         }
         key={FormNames.CUENTAS}
-        disabled={!nuevaSolicitud.ui.form.status.datosClientes}>
+        disabled={!nuevaSolicitud.ui.form.status.datosClientes || nuevaSolicitud.info.solicitudCreada?.value}>
         <CuentasFormPanel title={FormNames.CUENTAS} form={cuentasForm} />
       </TabPane>
     ),
@@ -145,6 +146,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.importe} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.IMPORTES}>
         <ImporteFormPanel title={FormNames.IMPORTES} form={importeForm} variosForm={variosForm} />
       </TabPane>
@@ -158,7 +160,7 @@ export const ODPNuevaSolicitud: React.FC = (props) => {
           </span>
         }
         key={FormNames.VARIOS}
-        disabled={!nuevaSolicitud.ui.form.status.importe}>
+        disabled={!nuevaSolicitud.ui.form.status.importe || nuevaSolicitud.info.solicitudCreada?.value}>
         <VariosFormPanel title={FormNames.VARIOS} form={variosForm} importeForm={importeForm} />
       </TabPane>
     ),

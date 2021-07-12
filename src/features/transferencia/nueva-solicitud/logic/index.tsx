@@ -5,23 +5,12 @@ import { HttpResponse } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
-import { Cliente, Moneda } from 'src/features/_shared/data/interfaces';
-import { TipoCodigoBanco as TipoCodigoBancoType } from 'src/features/_shared/data/types';
-import { DetalleGasto, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
+import { Cliente, Cuenta, Moneda } from 'src/features/_shared/data/interfaces';
+import { DetalleGastos, TipoCodigoBanco as TipoCodigoBancoType, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 import { fetchCuentas, fetchDatosClientes } from 'src/features/_shared/logic';
 import { AddSolicitudPayload } from '../data/dto';
 import { FormNames } from '../data/forms';
-import {
-  Beneficiario,
-  Cuenta,
-  CuentaExterior,
-  Gastos,
-  Importe,
-  NuevaSolicitudDataState,
-  NuevaSolicitudState,
-  StatusForms,
-  TipoCodigoBanco,
-} from '../data/interfaces';
+import { Beneficiario, CuentaExterior, Gastos, Importe, NuevaSolicitudDataState, NuevaSolicitudState, StatusForms, TipoCodigoBanco } from '../data/interfaces';
 
 const FEATURE_NAME = 'transferencia/nuevaSolicitud';
 
@@ -52,7 +41,7 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
           tipoPersona: data.form.datosOperacion?.beneficiario.tipoPersona.id as TipoPersona,
           isoAlfanumericoPais: data.form.datosOperacion!.beneficiario.pais.id!,
           identificacionPersona:
-            data.form.datosOperacion!.beneficiario.razonSocial ??
+            data.form.datosOperacion!.beneficiario.razonSocial ||
             `${data.form.datosOperacion!.beneficiario.apellido}, ${data.form.datosOperacion!.beneficiario.nombre}`,
           cuentaBancoDestino: {
             nombre: data.form.datosOperacion!.beneficiario.cuentaDestino?.nombreBanco!,
@@ -92,7 +81,7 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
         },
         gasto: {
           ...data.form.datosOperacion?.gastos,
-          detalle: data.form.datosOperacion?.gastos.detalle.id as DetalleGasto,
+          detalle: data.form.datosOperacion?.gastos.detalle.id as DetalleGastos,
         },
 
         // TODO: Cambiar importes: debe devolver id y codigo || codigo solo? si es id y codigo, fijarse como conseguir el id (porque es de Secopa)

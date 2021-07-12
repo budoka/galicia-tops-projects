@@ -5,10 +5,9 @@ import { HttpResponse } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
-import { Cuenta } from 'src/features/transferencia/nueva-solicitud/data/interfaces';
 import { getAccountFormat } from 'src/utils/galicia';
 import { GetClienteDTO, GetConceptoDTO, GetCorresponsalDTO, GetInfoProductosDTO, GetMonedaDTO, GetPaisDTO } from '../data/dtos/common.dto';
-import { BancoCorresponsal, Cliente, Concepto, Moneda, Pais, SharedState } from '../data/interfaces';
+import { BancoCorresponsal, Cliente, Concepto, Cuenta, Moneda, Pais, SharedState } from '../data/interfaces';
 
 const FEATURE_NAME = 'shared';
 

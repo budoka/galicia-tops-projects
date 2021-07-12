@@ -1,5 +1,5 @@
-import { BancoCorresponsal, Cliente, Concepto, InfoState, Keyable, Moneda, Pais } from 'src/features/_shared/data/interfaces';
-import { DetalleGasto as DetalleGastoType, TipoCodigoBanco as TipoCodigoBancoType, TipoPersona as TipoPersonaType } from 'src/features/_shared/data/types';
+import { BancoCorresponsal, Cliente, Concepto, Cuenta, InfoState, Keyable, Moneda, Pais } from 'src/features/_shared/data/interfaces';
+import { DetalleGastos as DetalleGastoType, TipoCodigoBanco as TipoCodigoBancoType, TipoPersona as TipoPersonaType } from 'src/features/_shared/data/types';
 
 export interface NuevaSolicitudState {
   info: Partial<NuevaSolicitudInfoState>;
@@ -88,18 +88,6 @@ export interface CuentaExterior {
   codigoBanco?: string;
   tipoCodigoBancoAdicional?: string;
   codigoBancoAdicional?: string;
-}
-
-export interface Cuenta extends Keyable {
-  id: string;
-  valor: string;
-  codigo: string;
-  descripcion: string;
-  numero: number;
-  moneda: number;
-  monedaIso: string;
-  saldo: number;
-  sucursalAdministradora: number;
 }
 
 export interface Gastos {

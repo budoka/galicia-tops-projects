@@ -3,6 +3,7 @@ import { NotFound } from 'src/components/not-found';
 import { Unavailable } from 'src/components/unavailable';
 import { Texts } from 'src/constants/texts';
 import { ListaMensajes } from 'src/features/mensaje/lista-mensajes/ui';
+import { ODPNuevaInstruccion } from 'src/features/orden-de-pago/nueva-instruccion/ui';
 import { ODPNuevaSolicitud } from 'src/features/orden-de-pago/nueva-solicitud/ui';
 import { TXNuevaSolicitud } from 'src/features/transferencia/nueva-solicitud/ui';
 import { View } from 'src/views/types';
@@ -38,7 +39,7 @@ export const views: Views = {
   Crear_Instruccion_Orden_De_Pago: {
     title: Texts.NEW_INSTRUCTION,
     path: '/orden-de-pago/nueva-instruccion',
-    component: <Unavailable />,
+    component: <ODPNuevaInstruccion />,
     scope: 'user.read',
   },
   Solicitudes_Transferencia: {

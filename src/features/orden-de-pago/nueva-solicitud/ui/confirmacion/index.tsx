@@ -1,4 +1,5 @@
-import { Button, Descriptions, Row, Space, Typography } from 'antd';
+import { ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Modal, Row, Space, Typography } from 'antd';
 import React, { useContext, useEffect } from 'react';
 import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
@@ -6,6 +7,7 @@ import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { Texts } from 'src/constants/texts';
 import { getFreshToken } from 'src/utils/auth';
 import { formatCurrencyAmount, formatDate } from 'src/utils/formatters';
+import { sumAmounts } from 'src/utils/maths';
 import { Message } from 'src/utils/messages';
 import { tiposPersona } from '..';
 import { renderFormTitle } from '../../../../_shared/ui/utils';
@@ -13,6 +15,7 @@ import { NuevaSolicitudDataState } from '../../data/interfaces';
 import { addSolicitud, cleanState } from '../../logic';
 
 const { Text } = Typography;
+const { confirm } = Modal;
 
 const width = 250;
 
@@ -75,6 +78,35 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
     });
   };
 
+  const showConfirm = () =>
+    confirm({
+      title: 'Cancelar Solicitud',
+      icon: <ExclamationCircleOutlined />,
+      content: '¿Desea cancelar la solicitud y volver a crear otra? (Se perderán todos los datos cargados)',
+      okText: 'Confirmar',
+      cancelText: 'Cancelar',
+      onOk() {
+        console.log('OK');
+        handleOnReset();
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+
+  /* 
+  const showOk = () =>
+    confirm({
+      title: 'Solicitud creada',
+      icon: <CheckCircleOutlined />,
+      content: `Se ha creado una solicitud con el id ${11111}`, // La respuesta no está configurada para que devuelva el id de la solicitud
+      okText: 'Confirmar',
+      cancelText: 'Cancelar',
+      onOk() {},
+      onCancel() {},
+    });
+ */
+
   //#endregion
 
   //#region Renders
@@ -109,7 +141,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         <Row>{renderFormTitle('Datos del Ordenante', 16)}</Row>
         <Descriptions size="small" bordered>
           <Descriptions.Item label="Nombre / Razón Social" span={3}>
-            {ordenante?.razonSocial ?? `${ordenante?.apellido}, ${ordenante?.nombre}`}
+            {ordenante?.razonSocial || `${ordenante?.apellido}, ${ordenante?.nombre}`}
           </Descriptions.Item>
           <Descriptions.Item label="Tipo de Persona">{ordenante?.tipoPersona?.descripcion}</Descriptions.Item>
           <Descriptions.Item label="Pais">{ordenante?.pais?.nombre}</Descriptions.Item>
@@ -143,7 +175,7 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
         <Descriptions size="small" layout="vertical" column={4} bordered>
           <Descriptions.Item label="Importe">{formatCurrencyAmount(importe!, moneda?.id)}</Descriptions.Item>
           <Descriptions.Item label="Importe Gastos">{formatCurrencyAmount(gastos?.importe!, gastos?.moneda?.id)}</Descriptions.Item>
-          <Descriptions.Item label="Importe Total">{formatCurrencyAmount(+importe! + +gastos?.importe!, moneda?.id)}</Descriptions.Item>
+          <Descriptions.Item label="Importe Total">{formatCurrencyAmount(sumAmounts([importe!, gastos?.importe!]), moneda?.id)}</Descriptions.Item>
         </Descriptions>
       </>
     );
@@ -180,9 +212,14 @@ export const ConfirmacionPanel: React.FC<ConfirmacionPanelProps> = (props) => {
       <Row>
         <Space size={'middle'} wrap={true} direction="horizontal">
           {!nuevaSolicitud.info.solicitudCreada?.value ? (
-            <Button type="primary" htmlType="button" disabled={nuevaSolicitud.info.solicitudCreada?.loading} onClick={handleOnConfirm}>
-              Confirmar
-            </Button>
+            <>
+              <Button type="primary" htmlType="button" disabled={nuevaSolicitud.info.solicitudCreada?.loading} onClick={handleOnConfirm}>
+                Confirmar
+              </Button>
+              <Button type="default" htmlType="button" onClick={showConfirm}>
+                Cancelar
+              </Button>
+            </>
           ) : (
             <>
               {/*            <Button type="primary" htmlType="button" onClick={handleOnReset}>

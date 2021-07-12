@@ -1,6 +1,6 @@
 import { CheckCircleFilled } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { message, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useContext, useEffect } from 'react';
 import { StateContext } from 'src/app';
@@ -12,21 +12,18 @@ import { Wrapper } from 'src/components/wrapper';
 import { SHADOW } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { addSolicitud, cleanState, setActiveForm } from 'src/features/transferencia/nueva-solicitud/logic';
-import { DetalleGasto, TipoCodigoBanco, TipoPersona } from 'src/features/_shared/data/types';
-import { fetchMonedas, fetchPaises, fetchCorresponsales, fetchConceptos } from 'src/features/_shared/logic';
-import { isFetchingData, hasError } from 'src/helpers/validations';
-import { Rules } from 'src/types/interfaces';
-import { getFreshToken } from 'src/utils/auth';
+import { DetalleGastos, TipoCodigoBanco, TipoPersona } from 'src/features/_shared/data/types';
+import { hasError, isFetchingData } from 'src/helpers/validations';
+import { Message } from 'src/utils/messages';
 import { getViewWidth } from 'src/utils/screen';
-import { ClienteForm, BeneficiarioForm, VariosForm, CuentasForm, ImportesForm, FormNames } from '../data/forms';
+import { BeneficiarioForm, ClienteForm, CuentasForm, FormNames, ImportesForm, VariosForm } from '../data/forms';
 import { ConfirmacionPanel } from './confirmacion';
 import { CuentasFormPanel } from './cuentas';
 import { BeneficiarioFormPanel } from './datos-beneficiario';
 import { ClienteFormPanel } from './datos-cliente';
-import { VariosFormPanel } from './varios';
 import { ImportesFormPanel } from './importes';
 import styles from './style.module.less';
-import { Message } from 'src/utils/messages';
+import { VariosFormPanel } from './varios';
 
 const { TabPane } = Tabs;
 
@@ -40,9 +37,9 @@ export const tiposPersona = [
 ];
 
 export const detallesGastos = [
-  { id: 'ben', descripcion: 'BEN' } as { id: DetalleGasto; descripcion: string },
-  { id: 'our', descripcion: 'OUR' } as { id: DetalleGasto; descripcion: string },
-  { id: 'sha', descripcion: 'SHA' } as { id: DetalleGasto; descripcion: string },
+  { id: 'ben', descripcion: 'BEN' } as { id: DetalleGastos; descripcion: string },
+  { id: 'our', descripcion: 'OUR' } as { id: DetalleGastos; descripcion: string },
+  { id: 'sha', descripcion: 'SHA' } as { id: DetalleGastos; descripcion: string },
 ];
 
 export const tiposCodigoBanco = [
@@ -76,17 +73,6 @@ export const TXNuevaSolicitud: React.FC = (props) => {
 
   //#region Handlers
 
-  const handleNuevaTransferenciaForm = (values: any) => {
-    dispatch(addSolicitud({ body: values }))
-      .then(unwrapResult)
-      .then(() => {
-        Message.success(Texts.REQUEST_CREATION_OK);
-      })
-      .catch((err) => {
-        Message.error(Texts.REQUEST_CREATION_ERROR);
-      });
-  };
-
   const handleOnReset = () => {
     cleanData();
   };
@@ -108,13 +94,12 @@ export const TXNuevaSolicitud: React.FC = (props) => {
 
   const cleanData = () => {
     dispatch(cleanState());
-    if (nuevaSolicitud.info.solicitudCreada?.value) {
-      clienteForm.resetFields();
-      beneficiarioForm.resetFields();
-      cuentasForm.resetFields();
-      importesForm.resetFields();
-      variosForm.resetFields();
-    }
+
+    clienteForm.resetFields();
+    beneficiarioForm.resetFields();
+    cuentasForm.resetFields();
+    importesForm.resetFields();
+    variosForm.resetFields();
   };
 
   //#endregion
@@ -130,6 +115,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosClientes} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.DATOS_CLIENTE}>
         <ClienteFormPanel title={FormNames.DATOS_CLIENTE} clienteForm={clienteForm} variosForm={variosForm} cuentasForm={cuentasForm} />
       </TabPane>
@@ -142,6 +128,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.datosBeneficiario} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.DATOS_BENEFICIARIO}>
         <BeneficiarioFormPanel title={FormNames.DATOS_BENEFICIARIO} form={beneficiarioForm} />
       </TabPane>
@@ -155,7 +142,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
           </span>
         }
         key={FormNames.CUENTAS}
-        disabled={!nuevaSolicitud.ui.form.status.datosClientes}>
+        disabled={!nuevaSolicitud.ui.form.status.datosClientes || nuevaSolicitud.info.solicitudCreada?.value}>
         <CuentasFormPanel title={FormNames.CUENTAS} form={cuentasForm} />
       </TabPane>
     ),
@@ -167,6 +154,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.importes} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.IMPORTES}>
         <ImportesFormPanel title={FormNames.IMPORTES} form={importesForm} />
       </TabPane>
@@ -179,6 +167,7 @@ export const TXNuevaSolicitud: React.FC = (props) => {
             <CheckCircleFilled className={styles.tabIcon} hidden={!nuevaSolicitud.ui.form.status.varios} />
           </span>
         }
+        disabled={nuevaSolicitud.info.solicitudCreada?.value}
         key={FormNames.VARIOS}>
         <VariosFormPanel title={FormNames.VARIOS} form={variosForm} />
       </TabPane>

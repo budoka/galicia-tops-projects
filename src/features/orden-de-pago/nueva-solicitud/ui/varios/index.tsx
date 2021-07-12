@@ -1,17 +1,19 @@
 import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { LabeledValue } from 'antd/lib/select';
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RootState } from 'src/app/store';
 import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
-import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants';
+import { DATE_DD_MM_YYYY_FORMAT, Pattern } from 'src/constants';
 import { Texts } from 'src/constants/texts';
+import { DetalleGastos } from 'src/features/transferencia/nueva-solicitud/data/interfaces';
+import { DetalleGastos as DetalleGastosType } from 'src/features/_shared/data/types';
 import { Rules } from 'src/types/interfaces';
-import { updateTry } from 'typescript';
 import { detallesGastos } from '..';
 import { getRule, getValueFromOptions, renderFormTitle, renderOptions } from '../../../../_shared/ui/utils';
 import { FormNames, ImporteForm, VariosForm as VariosForm } from '../../data/forms';
-import { DetalleGastos } from '../../data/interfaces';
+
 import { setActiveForm, setDatosVarios, setEstadoForm } from '../../logic';
 import styles from './style.module.less';
 
@@ -46,6 +48,7 @@ const rules: Rules = {
     importe: [
       {
         required: true,
+        pattern: Pattern.CURRENCY_AMOUNT_POSITIVE,
         message: 'Importe no válido',
       },
     ],
@@ -71,6 +74,8 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
   const nuevaSolicitud = useAppSelector((state: RootState) => state.ordenDePago.nuevaSolicitud);
   const shared = useAppSelector((state: RootState) => state.shared);
 
+  const [currentDetalleGastos, setCurrentDetalleGastos] = useState<DetalleGastosType>();
+
   //#region UseEffects
 
   useEffect(() => {
@@ -79,6 +84,8 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
     if (currentActiveForm === FormNames.VARIOS && currentStatus) {
       const { fechaEntrada, gastos } = nuevaSolicitud.data.form?.detalles || {};
       const uetr = nuevaSolicitud.data.form?.uetr;
+
+      setCurrentDetalleGastos(gastos?.detalle.id as DetalleGastosType);
 
       form.resetFields();
       form.setFieldsValue({
@@ -101,6 +108,11 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
     setData();
     dispatch(setEstadoForm({ varios: true }));
     if (canAdvance('varios')) dispatch(setActiveForm(FormNames.CONFIRMACION));
+  };
+
+  const handleOnDetalleGastosChange = (option: LabeledValue) => {
+    console.log(option);
+    setCurrentDetalleGastos(option.value as DetalleGastosType);
   };
 
   //#endregion
@@ -157,7 +169,7 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
 
             <Col style={{ width }}>
               <Form.Item label={Texts.EXPENSE_DETAIL} name={['gastos', 'detalle']} rules={getRule(rules, ['gastos', 'detalle'])} required>
-                <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL}>
+                <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL} onChange={handleOnDetalleGastosChange}>
                   {renderOptions(detallesGastos, 'descripcion')}
                 </Select>
               </Form.Item>
@@ -177,10 +189,15 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
               </Form.Item>
             </Col>
 
-            <Col style={{ width }}>
-              <Form.Item label={Texts.CURRENCY}>
-                <Input disabled={true} value={nuevaSolicitud.data.form?.detalles?.moneda ? `${nuevaSolicitud.data.form?.detalles?.moneda?.descripcion}` : ''} />
-                {/*   <Select
+            {(currentDetalleGastos === 'ben' || currentDetalleGastos === 'sha') && (
+              <>
+                <Col style={{ width }}>
+                  <Form.Item label={Texts.CURRENCY}>
+                    <Input
+                      disabled={true}
+                      value={nuevaSolicitud.data.form?.detalles?.moneda ? `${nuevaSolicitud.data.form?.detalles?.moneda?.descripcion}` : ''}
+                    />
+                    {/*   <Select
                   labelInValue
                   showSearch
                   optionFilterProp="children"
@@ -189,14 +206,16 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
                   disabled={true}>
                   {renderOptions(shared.monedas?.value!, 'descripcion')}
                 </Select> */}
-              </Form.Item>
-            </Col>
+                  </Form.Item>
+                </Col>
 
-            <Col style={{ width }}>
-              <Form.Item label={Texts.AMOUNT} name={['gastos', 'importe']} rules={getRule(rules, ['gastos', 'importe'])} required>
-                <Input />
-              </Form.Item>
-            </Col>
+                <Col style={{ width }}>
+                  <Form.Item label={Texts.AMOUNT} name={['gastos', 'importe']} rules={getRule(rules, ['gastos', 'importe'])} required>
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </>
+            )}
           </Space>
         </Row>
 

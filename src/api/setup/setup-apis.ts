@@ -34,8 +34,9 @@ export const apis: APIList = {
   SOLICITUD: {
     baseURL: buildBaseURL('GATEWAY', 'api/v1/solicitud'),
     resources: {
-      AGREGAR_SOLICITUD: { path: 'Solicitudes', config: { verb: 'POST' } },
-      SOLICITUDES: { path: 'Solicitudes', config: { verb: 'GET' } },
+      INSTRUIR_SOLICITUD: { path: 'Solicitud/InstruirSolicitud', config: { verb: 'POST' } },
+      SOLICITUD: { path: 'Solicitud/:id', config: { verb: 'GET' } },
+      SOLICITUDES: { path: 'Solicitud/GetSolicitudByFilter', config: { verb: 'GET' } },
     },
   },
 };

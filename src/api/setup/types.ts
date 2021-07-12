@@ -35,6 +35,7 @@ export interface ResourcesTransferencia {
 }
 
 export interface ResourcesSolicitud {
-  AGREGAR_SOLICITUD: Resource;
+  INSTRUIR_SOLICITUD: Resource;
+  SOLICITUD: Resource;
   SOLICITUDES: Resource;
 }

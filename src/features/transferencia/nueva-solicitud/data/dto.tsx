@@ -1,4 +1,4 @@
-import { DetalleGasto, TipoCodigoBanco, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
+import { DetalleGastos, TipoCodigoBanco, TipoCuenta, TipoPersona } from 'src/features/_shared/data/types';
 
 export interface AddSolicitudPayload {
   datosOperacion: DatosOperacion;
@@ -64,7 +64,7 @@ interface Cuenta {
 }
 
 interface Gasto {
-  detalle: DetalleGasto;
+  detalle: DetalleGastos;
   importe?: number;
   monedaId?: string;
   swiftCorresponsal?: string;

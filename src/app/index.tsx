@@ -83,10 +83,13 @@ export const App = () => {
 
   useEffect(() => {
     fetchData();
+    console.log('app loaded');
   }, []);
 
   useEffect(() => {
-    if (!hasError(shared)) fetchData();
+    if (hasError(shared)) {
+      fetchData();
+    }
   }, [router.location.key]);
 
   //#endregion
