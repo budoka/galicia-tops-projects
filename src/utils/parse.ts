@@ -1,4 +1,4 @@
-import { ObjectLiteral } from 'src/types';
+import { ObjectLiteral } from 'src/types/interfaces';
 
 /**
  * Get the parsed value with the expected type.
@@ -13,18 +13,14 @@ export function parseValue(value: string) {
 }
 
 export function parseObject2<S, T extends object = any>(source: S): T {
-  console.log('parseObject');
   const keys = Object.keys(source);
   const target: T = {} as T;
-  console.log(keys);
 
   const values: T = Object.assign(target, source);
-  console.log(values);
   return values;
 }
 
 export function parseObject<S, T extends object>(source: S) {
-  console.log('parseObject');
   const sKeys = Object.keys(source);
   const sValues = Object.values(source);
 

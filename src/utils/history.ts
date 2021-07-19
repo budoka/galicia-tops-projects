@@ -1,6 +1,7 @@
 import { matchPath, useLocation } from 'react-router-dom';
-import { history } from 'src/store';
-import { View, views } from 'src/views';
+import { history } from 'src/app/store';
+import { getHomePage, views } from 'src/views';
+import { View } from 'src/views/types';
 
 /**
  * Get current route (location pathname).
@@ -13,7 +14,7 @@ export const getRoute = () => {
  * Go to home page.
  */
 export function goHome() {
-  history.push('/');
+  history.push(getHomePage());
 }
 
 /**

@@ -5,7 +5,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
 import { ELLIPSIS, SHADOW, UNSELECTABLE } from '../../constants';
-import { BasicComponentProps } from '../../types';
+import { BasicComponentProps } from '../../types/interfaces';
 import { Loading } from '../loading';
 import { IListCardItem } from './interfaces';
 import styles from './style.module.less';
@@ -56,11 +56,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
         <span className={cardDescriptionClassName} title={item.description?.toString()}>
           {item.description}
         </span>
-        {item.loading ? (
-          <Loading />
-        ) : (
-          item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={showZero} />
-        )}
+        {item.loading ? <Loading /> : item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={showZero} />}
       </Card.Grid>
     );
   };

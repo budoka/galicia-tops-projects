@@ -9,8 +9,6 @@ export function getScreenOrientation(size: Size) {
   return orientation;
 }
 
-export function getViewWidth(loading: boolean) {
-  return loading ? '100%' : VIEW.MAX_WIDTH
+export function getViewWidth(loadingOrError: boolean) {
+  return loadingOrError ? '100%' : VIEW.MAX_WIDTH;
 }
-
-

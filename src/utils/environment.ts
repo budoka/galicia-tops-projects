@@ -28,6 +28,23 @@ const environmentData: EnvironmentData = {
 };
 
 /**
+ * Check if the environment variable exist.
+ * The checked value is cached for a better performance.
+ * @param variableName Variable name
+ */
+export function checkVar(variableName: string) {
+  if (!variableName) throw new EnviromentError(`Malformed environment variable name.`);
+
+  // Check if the variable is cached and return it.
+  if (environmentData.cache[variableName]) return true;
+
+  const value = process.env[PREFIX_REACT_APP + 'ENVIRONMENT'] ? process.env[PREFIX_REACT_APP + variableName] : window[PREFIX_REACT_APP + variableName];
+
+  if (value === undefined) return false;
+  else return true;
+}
+
+/**
  * Get the environment variable.
  * The retrieved value is cached for a better performance.
  * @param variableName Variable name
@@ -38,11 +55,29 @@ export function getVar(variableName: string) {
   // Check if the variable is cached and return it.
   if (environmentData.cache[variableName]) return environmentData.cache[variableName];
 
-  const value = process.env[PREFIX_REACT_APP + 'ENVIRONMENT']
-    ? process.env[PREFIX_REACT_APP + variableName]
-    : window[PREFIX_REACT_APP + variableName];
+  const value = process.env[PREFIX_REACT_APP + 'ENVIRONMENT'] ? process.env[PREFIX_REACT_APP + variableName] : window[PREFIX_REACT_APP + variableName];
 
   if (value === undefined) throw new EnviromentError(`Unable to get environment variable: '${variableName}'.`);
+  const parsedValue = parseValue(value);
+
+  // Cache the value and return it.
+  return (environmentData.cache[variableName] = parsedValue);
+}
+
+/**
+ * Get the environment variable or null.
+ * The retrieved value is cached for a better performance.
+ * @param variableName Variable name
+ */
+export function getVarOrNull(variableName: string) {
+  if (!variableName) throw new EnviromentError(`Malformed environment variable name.`);
+
+  // Check if the variable is cached and return it.
+  if (environmentData.cache[variableName]) return environmentData.cache[variableName];
+
+  const value = process.env[PREFIX_REACT_APP + 'ENVIRONMENT'] ? process.env[PREFIX_REACT_APP + variableName] : window[PREFIX_REACT_APP + variableName];
+
+  if (value === undefined) return null;
   const parsedValue = parseValue(value);
 
   // Cache the value and return it.

@@ -1,29 +1,17 @@
-import { Breadcrumb, Divider } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
-import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { matchPath } from 'react-router';
-import { Router } from 'react-router-dom';
-import { STICKY, UNSELECTABLE } from 'src/constants';
-import { RootState } from 'src/reducers';
-import { BasicComponentProps } from 'src/types';
-import { useScroll } from 'src/utils/hooks';
-import { views } from 'src/views';
-import { siderItems } from '../../app';
-import { Cart } from '../cart';
+import { RootState } from 'src/app/store';
+import { useAppSelector } from 'src/app/store/hooks';
+import { BasicComponentProps } from 'src/types/interfaces';
 import { ContentHeader } from '../content-header';
-import { SiderChildItem, SiderItem, SiderParentItem } from '../sider/types';
-import { Wrapper } from '../wrapper';
 import { Scroll } from './interface';
-import styles from './style.module.less';
 
 interface ContentWrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {}
 
 export const ContentWrapper: React.FC<ContentWrapperProps> = React.memo((props) => {
   const { className, children } = props;
 
-  const router = useSelector((state: RootState) => state.router);
+  const router = useAppSelector((state: RootState) => state.router);
 
   const [scroll, setScroll] = useState<Scroll>({ x: 0, y: 0 });
 

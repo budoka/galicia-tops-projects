@@ -15,7 +15,7 @@ export const getStoredPropertyValue = (property: string, storage: Storage = sess
       const data = JSON.parse(objectValue);
       //console.log(data);
       const propertyValue = data[property];
-      console.log(propertyValue);
+      // console.log(propertyValue);
       if (propertyValue) return propertyValue;
     }
   }

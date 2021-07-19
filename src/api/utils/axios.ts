@@ -1,18 +1,14 @@
-import { useCallback } from 'react';
-import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { message } from 'antd';
-import { API, Resource, RequestConfig } from 'src/api/types';
+import axios, { AxiosError, CancelTokenSource } from 'axios';
+import { API, HttpRequest, HttpResponse, Resource } from 'src/api/types';
 import { buildAxiosRequestConfig } from 'src/api/utils/api';
 
-export const doRequest = async <RequestBody = void, ResponseBody = unknown>(
-  api: API<unknown>,
-  resource: Resource,
-  config?: RequestConfig<RequestBody>,
-) => {
-  const requestData = config?.data;
+const REQUEST_TIMEOUT = 408;
+
+export const doRequest = async <RequestBody = void, ResponseBody = unknown>(api: API<unknown>, resource: Resource, config?: HttpRequest<RequestBody>) => {
+  const body = config?.body;
 
   // Configuracion del servicio
-  const axiosConfig = buildAxiosRequestConfig(api, resource, { ...config, data: requestData });
+  const axiosConfig = buildAxiosRequestConfig(api, resource, { ...config, body });
 
   // Respuesta del servicio
   const response = await axios.request<ResponseBody>(axiosConfig);
@@ -23,4 +19,11 @@ export const doRequest = async <RequestBody = void, ResponseBody = unknown>(
 
 export const cancelRequest = (source: CancelTokenSource) => {
   if (source) source.cancel();
+};
+
+export const rejectRequest = (err: AxiosError, thunkApi: any) => {
+  const { data, status } = (err as AxiosError).response || {};
+  const error: HttpResponse = { data, status: status ?? REQUEST_TIMEOUT };
+
+  return thunkApi.rejectWithValue(error);
 };

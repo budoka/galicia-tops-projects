@@ -7,8 +7,9 @@ import { API, Resource } from '../types';
 
 export interface APIList {
   COMMON: API<ResourcesCommon>;
-  GATEWAY: API<ResourcesGateway>;
+  MENSAJE: API<ResourcesMensaje>;
   TRANSFERENCIA: API<ResourcesTransferencia>;
+  SOLICITUD: API<ResourcesSolicitud>;
 }
 
 // Resources
@@ -18,15 +19,23 @@ export interface ResourcesCommon {
   CORRESPONSALES: Resource;
   DATOS_CLIENTES: Resource;
   MONEDAS: Resource;
+  PAISES: Resource;
   PRODUCTOS: Resource;
 }
 
-export interface ResourcesGateway {
+export interface ResourcesMensaje {
+  AGREGAR_MENSAJE: Resource;
   MENSAJE: Resource;
   MENSAJES: Resource;
 }
 
 export interface ResourcesTransferencia {
   AGREGAR_SOLICITUD: Resource;
+  SOLICITUDES: Resource;
+}
+
+export interface ResourcesSolicitud {
+  INSTRUIR_SOLICITUD: Resource;
+  SOLICITUD: Resource;
   SOLICITUDES: Resource;
 }

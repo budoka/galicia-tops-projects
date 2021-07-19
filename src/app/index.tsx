@@ -1,28 +1,38 @@
-import { ContainerOutlined, FileAddOutlined, HomeOutlined, RetweetOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FileAddOutlined, RetweetOutlined } from '@ant-design/icons';
 import { Layout } from 'antd';
 import _ from 'lodash';
-import { UserAgentApplication, Account } from 'msal';
+import { Account, UserAgentApplication } from 'msal';
 import React, { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
+import 'src/api/setup/setup-axios';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { useAzureAuth } from 'src/auth/hook/useAzureAuth';
 import { ContentWrapper } from 'src/components/content-wrapper';
 import { Header } from 'src/components/header';
 import { LoadingContent } from 'src/components/loading';
 import 'src/components/message/setup-message';
 import { Router } from 'src/components/router';
-import { Sider } from 'src/components/sider';
-import { SiderChildItem, SiderItem } from 'src/components/sider/types';
+import { ServiceError } from 'src/components/service-error';
 import { APP_TITLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
-import { RootState } from 'src/reducers';
-import 'src/api/setup/setup-axios';
-import { useAppDispatch } from 'src/store';
+import { NavigatorMenu } from 'src/features/navigator-menu/ui';
+import { MenuChildItem, MenuItem } from 'src/features/navigator-menu/ui/types';
+import { setUsuario } from 'src/features/sesion/sesion.slice';
+import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
+import { hasError, isFetchingData } from 'src/helpers/validations';
+import { getFreshToken } from 'src/utils/auth';
 import { getLegajoFromEmail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import { BackToTop } from '../components/back-to-top';
+import { RootState } from './store';
 import styles from './style.module.less';
+
+/**
+ * Configuración de context para hacer funcionar la autenticacion con msal.
+ * TODO: Se debe reemplazar el por la library de msal nueva (requiere sacar el context 'StateContext' y las referencias #REF-MSAL.
+ *       A su vez se requiere cambiar la configuracion de Azure para que acepte
+ */
 
 export type State = {
   account?: Account;
@@ -31,32 +41,99 @@ export type State = {
 
 export const StateContext = createContext<State>({});
 
-export const siderItems: SiderItem[] = [
-  { view: views['Inicio'], icon: <HomeOutlined /> },
+/**
+ * Inicio de App
+ */
+
+export const menuItems: MenuItem[] = [
+  // { view: views['Inicio'], icon: <HomeOutlined /> },
   { view: views['Mensajes'], icon: <ContainerOutlined /> },
-  { title: Texts.REQUESTS, icon: <FileAddOutlined />, children: [{ view: views['Solicitudes'] }, { view: views['Crear_Solicitud'] }] },
-  { title: Texts.TRANSFERS, icon: <RetweetOutlined />, children: [{ view: views['Crear_Transferencia'] }] },
+  {
+    title: Texts.PAY_ORDER,
+    icon: <FileAddOutlined />,
+    children: [{ view: views['Crear_Solicitud_Orden_De_Pago'] }, { view: views['Crear_Instruccion_Orden_De_Pago'] }],
+  },
+  { title: Texts.TRANSFER, icon: <RetweetOutlined />, children: [{ view: views['Crear_Solicitud_Transferencia'] }] },
 ].map((parent) => {
   if (!parent.children) return parent;
   return {
     ...parent,
-    children: (parent.children as SiderChildItem[]).map((item) => ({ ...item, parent: parent.title })),
+    children: (parent.children as MenuChildItem[]).map((item) => ({ ...item, parent: parent.title })),
   };
 });
 
 export const App = () => {
   const dispatch = useAppDispatch();
   const auth = useAzureAuth();
-  const router = useSelector((state: RootState) => state.router);
-  const sesion = useSelector((state: RootState) => state.sesion.data);
+  const router = useAppSelector((state: RootState) => state.router);
+  const sesion = useAppSelector((state: RootState) => state.sesion.data);
+  const shared = useAppSelector((state: RootState) => state.shared);
   const contentRef = React.createRef();
 
   useEffect(() => {
+    /*   console.log('********************************');
+    console.log(auth, sesion); */
     if (!auth.data || !_.isEmpty(sesion)) return;
     const nombreUsuario = auth.data.account?.name;
     const legajo = getLegajoFromEmail(auth.data.account?.username)!;
-    // dispatch(fetchInfoSesion({ data: { nombreUsuario, legajo } }));
+    dispatch(setUsuario({ nombreUsuario, legajo }));
   }, [auth.data]);
+
+  //#region UseEffect
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (hasError(shared)) {
+      fetchData();
+    }
+  }, [router.location.key]);
+
+  //#endregion
+
+  //#region Other functions
+
+  const fetchData = async () => {
+    const token = await getFreshToken(gS.msalInstance!);
+
+    dispatch(
+      fetchMonedas({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchPaises({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchCorresponsales({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    dispatch(
+      fetchConceptos({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }),
+    );
+
+    /*  return () => {
+      dispatch(cleanState());
+    }; */
+  };
 
   const getTitle = () => {
     const view = Object.values(views).find((v) => {
@@ -71,6 +148,10 @@ export const App = () => {
     return title;
   };
 
+  //#endregion
+
+  // TODO: Eliminar
+  // #REF-MSAL
   const [gS, setGS] = useState<State>({
     msalInstance: new UserAgentApplication({
       auth: {
@@ -81,6 +162,8 @@ export const App = () => {
     }),
   });
 
+  // TODO: Eliminar
+  // #REF-MSAL
   /* if (gS && gS.msalInstance) {
     gS.msalInstance.handleRedirectCallback((error, response) => {
       // console.log("REDIRECT CALLED BACK");
@@ -91,10 +174,17 @@ export const App = () => {
       // }
     });
   } */
-  if (gS && gS.msalInstance && !gS.msalInstance.getAccount() && !gS.msalInstance.getLoginInProgress()) {
-    gS.msalInstance.loginRedirect({ scopes: ['user.read'] });
-  } else if (gS && gS.msalInstance && !gS.account) {
-    setGS({ ...gS, account: gS.msalInstance.getAccount() });
+
+  // TODO: Eliminar
+  // #REF-MSAL
+  if (gS && gS.msalInstance && !gS.msalInstance?.getAccount() && !gS.msalInstance?.getLoginInProgress()) {
+    gS?.msalInstance.loginRedirect({ scopes: ['user.read'] });
+  } else if (gS && gS?.msalInstance && !gS.account) {
+    setGS({ ...gS, account: gS?.msalInstance?.getAccount() });
+
+    const nombreUsuario = gS?.msalInstance?.getAccount()?.name;
+    const legajo = getLegajoFromEmail(gS?.msalInstance?.getAccount()?.userName)!;
+    dispatch(setUsuario({ nombreUsuario, legajo }));
   }
 
   /*   return !auth.disabled && _.isEmpty(sesion) ? (
@@ -117,6 +207,9 @@ export const App = () => {
     </>
   );
  */
+
+  // TODO: Reemplazar por la autenticacion con msal 2.
+  // #REF-MSAL
   return (
     <StateContext.Provider value={gS}>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
@@ -125,9 +218,9 @@ export const App = () => {
       <Layout style={{ height: '100vh' }}>
         <Header className={styles.header} />
         <Layout className={styles.main}>
-          <Sider items={siderItems} />
+          <NavigatorMenu items={menuItems} />
           <ContentWrapper className={styles.content}>
-            <Router views={views} />
+            {isFetchingData(shared) ? <LoadingContent /> : hasError(shared) ? <ServiceError /> : <Router views={views} />}
           </ContentWrapper>
         </Layout>
       </Layout>

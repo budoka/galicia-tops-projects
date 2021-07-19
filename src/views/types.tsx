@@ -5,4 +5,5 @@ export interface View {
   path?: string;
   component: JSX.Element;
   scope?: Scope;
+  homePage?: boolean;
 }

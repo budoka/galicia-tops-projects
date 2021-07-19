@@ -1,3 +1,5 @@
+// window.REACT_APP_API_URL_DEBUG = 'https://localhost:5003/';
+
 window.PORT = '8080';
 window.REACT_APP_ENVIRONMENT = 'Local';
 
@@ -10,10 +12,7 @@ window.REACT_APP_TENANT = '9eea4475-3e4a-4124-9621-552fa654f21c';
 window.REACT_APP_API_PREFIX = 'https://';
 
 /* SUFFIX */
-window.REACT_APP_API_SUFFIX = '-exto-tops-dev.devcloud.bancogalicia.com.ar';
-// window.REACT_APP_API_SUFFIX = 'localhost';
+window.REACT_APP_API_SUFFIX = '-exto-tops-dev.devcloud.bancogalicia.com.ar/';
 
 /* APIs  */
-window.REACT_APP_API_TRANSFERENCIA = 'transferencia';
-window.REACT_APP_API_COMMON = 'common';
 window.REACT_APP_API_GATEWAY = 'gateway';

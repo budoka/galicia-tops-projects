@@ -3,12 +3,12 @@ import { Button, Layout } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'src/app/store';
+import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
 import { APP_TITLE, SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
-import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
-import { RootState } from 'src/reducers';
+import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/navigator-menu/logic';
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
 import { getScreenOrientation } from 'src/utils/screen';
@@ -20,11 +20,13 @@ interface HeaderProps extends LayoutProps {
   hideSiderButton?: boolean;
 }
 
+const WIDTH = 800;
+
 export const Header: React.FC<HeaderProps> = (props) => {
-  const sesion = useSelector((state: RootState) => state.sesion);
-  const settings = useSelector((state: RootState) => state.configuracion);
-  const menu = useSelector((state: RootState) => state.menu);
-  const dispatch = useDispatch();
+  const sesion = useAppSelector((state: RootState) => state.sesion);
+  const settings = useAppSelector((state: RootState) => state.configuracion);
+  const menu = useAppSelector((state: RootState) => state.menu);
+  const dispatch = useAppDispatch();
   const size = useWindowSize();
 
   const [rotate, setRotate] = useState(false);
@@ -45,7 +47,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
     const orientation = getScreenOrientation(size);
     if (orientation !== settings.orientation) dispatch(setOrientation(orientation));
 
-    const shouldCollapse = size.width <= 612;
+    const shouldCollapse = size.width <= WIDTH;
     if (shouldCollapse) {
       if (shouldCollapse !== menu.collapsed || shouldCollapse === menu.forcedCollapsed) {
         if (menu.buttonVisible) dispatch(toggleButtonVisible(false));
@@ -65,7 +67,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
   }, [menu.openMenu]);
 
   useEffect(() => {
-    const shouldIgnore = size.width <= 612;
+    const shouldIgnore = size.width <= WIDTH;
     if (shouldIgnore) return;
     else if (menu.forcedCollapsed) {
       if (menu.openMenu) dispatch(setOpenMenu(''));

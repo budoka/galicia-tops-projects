@@ -1,12 +1,5 @@
-import { Action, createAsyncThunk, createSlice, PayloadAction, Reducer, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
-import axios from 'axios';
-import moment from 'moment';
-import { apis } from 'src/api/setup/setup-apis';
-import { RequestConfig } from 'src/api/types';
-import { RootState } from 'src/reducers';
-import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { splitStringByWords } from 'src/utils/string';
-import { InfoAzure, InfoSesion, SesionResponseBody, SesionSliceState } from './types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { InfoSesion, SesionSliceState } from './types';
 
 const FEATURE_NAME = 'sesion';
 
@@ -56,7 +49,11 @@ const initialState: SesionSliceState = {
 const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setUsuario(state, action: PayloadAction<InfoSesion>) {
+      state.data = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     /*   builder
       .addCase(fetchInfoSesion.pending, (state) => {
@@ -75,7 +72,8 @@ const slice = createSlice({
   },
 });
 
-// export { fetchInfoSesion };
+const { setUsuario } = slice.actions;
 
-//export default slice.reducer;
-export default slice.reducer as Reducer<typeof initialState>;
+export { setUsuario };
+
+export default slice.reducer;

@@ -2,7 +2,7 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import { Badge, Button } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
-import { BasicComponentProps } from 'src/types';
+import { BasicComponentProps } from 'src/types/interfaces';
 import styles from './style.module.less';
 
 interface CartProps extends Pick<BasicComponentProps<HTMLButtonElement>, 'className' | 'style' | 'onClick'> {
