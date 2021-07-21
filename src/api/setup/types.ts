@@ -10,6 +10,7 @@ export interface APIList {
   MENSAJE: API<ResourcesMensaje>;
   TRANSFERENCIA: API<ResourcesTransferencia>;
   SOLICITUD: API<ResourcesSolicitud>;
+  SECOPA: API<ResourcesSecopa>;
 }
 
 // Resources
@@ -38,4 +39,8 @@ export interface ResourcesSolicitud {
   INSTRUIR_SOLICITUD: Resource;
   SOLICITUD: Resource;
   SOLICITUDES: Resource;
+}
+
+export interface ResourcesSecopa {
+  CONCEPTOS: Resource;
 }

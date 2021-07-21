@@ -12,7 +12,6 @@ export interface SolicitudForm {
 }
 
 export interface InstruccionForm {
-  solicitudId: number;
   cuentaDestino: LabeledValue;
   cuentaComision: LabeledValue;
   concepto: LabeledValue;

@@ -113,7 +113,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                   placeholder={Texts.SELECT_ACCOUNT}
                   loading={nuevaSolicitud.info.cuentas?.loading}
                   disabled={nuevaSolicitud.info.cuentas?.loading}>
-                  {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'valor')}
+                  {renderOptions(nuevaSolicitud.info.cuentas?.value!, { labelKey: 'valor' })}
                 </Select>
               </Form.Item>
             </Col>

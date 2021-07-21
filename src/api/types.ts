@@ -27,6 +27,7 @@ export interface HttpRequest<RequestBody = DataDictionary | void> {
   body?: Data<RequestBody>;
   timeout?: number;
   cancelToken?: CancelToken;
+  retries?: number;
 }
 
 export interface HttpResponse<ResponseBody = DataDictionary | void> {
@@ -44,4 +45,5 @@ export interface API<ResourcesType> {
 export interface Resource {
   path: string;
   config?: HttpRequest;
+  debugUrl?: string;
 }

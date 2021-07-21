@@ -263,7 +263,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                     placeholder={Texts.SELECT_ACCOUNT}
                     loading={nuevaSolicitud.info.cuentas?.loading}
                     disabled={nuevaSolicitud.info.cuentas?.loading}>
-                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'valor')}
+                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, { labelKey: 'valor' })}
                   </Select>
                 </Form.Item>
               </Col>
@@ -275,7 +275,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                     placeholder={Texts.SELECT_ACCOUNT}
                     loading={nuevaSolicitud.info.cuentas?.loading}
                     disabled={nuevaSolicitud.info.cuentas?.loading}>
-                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, 'valor')}
+                    {renderOptions(nuevaSolicitud.info.cuentas?.value!, { labelKey: 'valor' })}
                   </Select>
                 </Form.Item>
               </Col>
@@ -307,7 +307,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                     placeholder={Texts.SELECT_COUNTRY}
                     loading={shared.paises?.loading}
                     disabled={shared.paises?.loading}>
-                    {renderOptions(shared.paises?.value!, 'nombre')}
+                    {renderOptions(shared.paises?.value!, { labelKey: 'nombre' })}
                   </Select>
                 </Form.Item>
               </Col>
@@ -325,7 +325,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                     placeholder={Texts.SELECT_CURRENCY}
                     loading={shared.monedas?.loading}
                     disabled={shared.monedas?.loading}>
-                    {renderOptions(shared.monedas?.value!, 'descripcion')}
+                    {renderOptions(shared.monedas?.value!, { labelKey: 'descripcion' })}
                   </Select>
                 </Form.Item>
               </Col>
@@ -342,7 +342,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                   name={['cuentaDestino', 'tipoCodigoBanco']}
                   rules={getRule(rules, ['cuentaDestino', 'tipoCodigoBanco'])}>
                   <Select labelInValue optionFilterProp="children" placeholder={Texts.SELECT_BANK_CODE_TYPE}>
-                    {renderOptions(tiposCodigoBanco, 'descripcion')}
+                    {renderOptions(tiposCodigoBanco, { labelKey: 'descripcion' })}
                   </Select>
                 </Form.Item>
               </Col>
@@ -417,7 +417,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                         placeholder={Texts.SELECT_COUNTRY}
                         loading={shared.paises?.loading}
                         disabled={shared.paises?.loading}>
-                        {renderOptions(shared.paises?.value!, 'nombre')}
+                        {renderOptions(shared.paises?.value!, { labelKey: 'nombre' })}
                       </Select>
                     </Form.Item>
                   </Col>
@@ -439,7 +439,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                         placeholder={Texts.SELECT_CURRENCY}
                         loading={shared.monedas?.loading}
                         disabled={shared.monedas?.loading}>
-                        {renderOptions(shared.monedas?.value!, 'descripcion')}
+                        {renderOptions(shared.monedas?.value!, {labelKey: 'descripcion'})}
                       </Select>
                     </Form.Item>
                   </Col>
@@ -456,7 +456,7 @@ export const CuentasFormPanel: React.FC<CuentasFormPanelProps> = (props) => {
                       name={['cuentaIntermediario', 'tipoCodigoBanco']}
                       rules={getRule(rules, ['cuentaIntermediario', 'tipoCodigoBanco'])}>
                       <Select labelInValue optionFilterProp="children" placeholder={Texts.SELECT_BANK_CODE_TYPE}>
-                        {renderOptions(tiposCodigoBanco, 'descripcion')}
+                        {renderOptions(tiposCodigoBanco, {labelKey: 'descripcion'})}
                       </Select>
                     </Form.Item>
                   </Col>

@@ -203,7 +203,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
       setDatosBeneficiario({
         ...beneficiario,
         tipoPersona: { id: tipoPersona.value, descripcion: tipoPersona.label } as TipoPersona,
-        fechaNacimiento: fechaNacimiento.toISOString(),
+        fechaNacimiento: fechaNacimiento.toISOString(true),
         pais: { id: pais.value, nombre: pais.label } as Pais,
       }),
     );
@@ -221,7 +221,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
             <Col style={{ width }}>
               <Form.Item label={Texts.PERSON_TYPE} name={'tipoPersona'} rules={getRule(rules, 'tipoPersona')} required>
                 <Select labelInValue placeholder={Texts.SELECT_PERSON_TYPE} onChange={handleOnTipoPersonaChange}>
-                  {renderOptions(tiposPersona, 'descripcion')}
+                  {renderOptions(tiposPersona, { labelKey: 'descripcion' })}
                 </Select>
               </Form.Item>
             </Col>
@@ -332,7 +332,7 @@ export const BeneficiarioFormPanel: React.FC<BeneficiarioFormPanelProps> = (prop
                   placeholder={Texts.SELECT_COUNTRY}
                   loading={shared.paises?.loading}
                   disabled={shared.paises?.loading}>
-                  {renderOptions(shared.paises?.value!, 'nombre')}
+                  {renderOptions(shared.paises?.value!, { labelKey: 'nombre' })}
                 </Select>
               </Form.Item>
             </Col>

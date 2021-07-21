@@ -6,7 +6,16 @@ import { buildAxiosRequestConfig } from 'src/api/utils/api';
 import { rejectRequest } from 'src/api/utils/axios';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
 import { getAccountFormat } from 'src/utils/galicia';
-import { GetClienteDTO, GetConceptoDTO, GetCorresponsalDTO, GetInfoProductosDTO, GetMonedaDTO, GetPaisDTO } from '../data/dtos/common.dto';
+import { compare } from 'src/utils/string';
+import {
+  GetClienteDTO,
+  GetConceptoDTO,
+  GetConceptoSecopaDTO,
+  GetCorresponsalDTO,
+  GetInfoProductosDTO,
+  GetMonedaDTO,
+  GetPaisDTO,
+} from '../data/dtos/common.dto';
 import { BancoCorresponsal, Cliente, Concepto, Cuenta, Moneda, Pais, SharedState } from '../data/interfaces';
 
 const FEATURE_NAME = 'shared';
@@ -127,9 +136,44 @@ export const fetchConceptos = createHttpAsyncThunk<void, Concepto[], { state: Ro
     const responseData = response.data;
 
     const conceptos = responseData.map((c) => ({
-      id: c.codigo,
+      id: -1,
+      codigo: c.codigo,
       descripcion: `${c.codigo} (${c.descripcion})`,
     })) as Concepto[];
+
+    return { status: response.status, data: conceptos } as HttpResponse<Concepto[]>;
+  },
+);
+
+export const fetchConceptosSecopa = createHttpAsyncThunk<void, Concepto[], { state: RootState; rejectValue: HttpResponse }>(
+  FEATURE_NAME + '/fetchConceptosSecopa',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+
+    // Configuracion del servicio
+    const api = apis['SECOPA'];
+    const resource = api.resources['CONCEPTOS'];
+    const config = buildAxiosRequestConfig(api, resource, options);
+
+    // Llamado del servicio
+    let response;
+
+    try {
+      response = await axios.request<GetConceptoSecopaDTO[]>(config);
+    } catch (err) {
+      return rejectRequest(err, thunkApi);
+    }
+
+    // Mapeo de la respuesta
+    const responseData = response.data;
+
+    const conceptos = responseData
+      .map((c) => ({
+        id: c.id,
+        codigo: c.codigo,
+        descripcion: `${c.codigo} (${c.descripcion})`,
+      }))
+      .sort((a, b) => compare(a.codigo, b.codigo)) as Concepto[];
 
     return { status: response.status, data: conceptos } as HttpResponse<Concepto[]>;
   },
@@ -251,13 +295,13 @@ const slice = createSlice({
         state.corresponsales = { value: [], loading: false, error: action.payload };
       });
     builder
-      .addCase(fetchConceptos.pending, (state) => {
+      .addCase(fetchConceptosSecopa.pending, (state) => {
         state.conceptos = { value: [], loading: true };
       })
-      .addCase(fetchConceptos.fulfilled, (state, action) => {
+      .addCase(fetchConceptosSecopa.fulfilled, (state, action) => {
         state.conceptos = { value: action.payload?.data, loading: false };
       })
-      .addCase(fetchConceptos.rejected, (state, action) => {
+      .addCase(fetchConceptosSecopa.rejected, (state, action) => {
         state.conceptos = { value: [], loading: false, error: action.payload };
       });
   },

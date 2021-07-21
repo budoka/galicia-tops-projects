@@ -13,6 +13,12 @@ export interface GetConceptoDTO {
   grupoConceptoCodigo: string;
 }
 
+export interface GetConceptoSecopaDTO {
+  id: number;
+  codigo: string;
+  descripcion: string;
+}
+
 export interface GetCorresponsalDTO {
   codigo: string;
   moneda: GetMonedaDTO;

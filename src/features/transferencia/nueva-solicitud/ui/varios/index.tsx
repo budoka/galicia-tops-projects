@@ -77,7 +77,7 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
 
     dispatch(
       setDatosVarios({
-        fechaEntrda: fechaEntrada.toISOString(),
+        fechaEntrda: fechaEntrada.toISOString(true),
         gastos: {
           detalle: { id: detalle.value, descripcion: detalle.label } as DetalleGastos,
         },
@@ -113,7 +113,7 @@ export const VariosFormPanel: React.FC<VariosFormPanelProps> = (props) => {
             <Col style={{ width }}>
               <Form.Item label={Texts.EXPENSE_DETAIL} name={['detalle']} rules={getRule(rules, 'detalle')} required>
                 <Select labelInValue placeholder={Texts.SELECT_EXPENSE_DETAIL}>
-                  {renderOptions(detallesGastos, 'descripcion')}
+                  {renderOptions(detallesGastos, { labelKey: 'descripcion' })}
                 </Select>
               </Form.Item>
             </Col>

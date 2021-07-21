@@ -131,9 +131,7 @@ export const ClienteFormPanel: React.FC<ClienteFormPanelProps> = (props) => {
   const resetData = () => {
     dispatch(resetCliente());
 
-    clienteForm.setFieldsValue({
-      cuitCliente: '',
-    });
+    clienteForm.resetFields();
 
     resetForms();
 

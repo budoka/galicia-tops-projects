@@ -77,7 +77,7 @@ interface Importe {
 }
 
 interface Concepto {
-  id: string;
+  id: number;
   codigo: string;
 }
 

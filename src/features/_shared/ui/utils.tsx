@@ -16,33 +16,47 @@ export const renderFormTitle = (title: string, fontSize = 18) => {
   );
 };
 
-export function renderOptions<T extends Keyable>(options: T[], descriptionKey: string = 'value') {
+export function renderOptions<T extends Keyable>(options: T[], keys?: { idKey?: string; valueKey?: string; labelKey?: string }) {
   if (!options) return;
 
-  return options.map((option) => (
-    <Option key={option.id ?? option.value} value={option.value ?? option.id}>
-      {option[descriptionKey] ?? option.id}
-    </Option>
-  ));
+  const idKey = keys?.idKey ?? 'id';
+  const valueKey = keys?.valueKey ?? 'value';
+  const labelKey = keys?.labelKey ?? 'value';
+
+  return options.map((option) => {
+    return (
+      <Option key={option[idKey]} id={option[idKey]} value={option[valueKey] ?? option[idKey]}>
+        {option[labelKey] ?? option[valueKey]}
+      </Option>
+    );
+  });
 }
 
-export function getValueFromOptions(value: string | number, options: ObjectLiteral[], optionKey: string = 'id', optionLabel: string = 'label'): LabeledValue {
+export function getValueFromOptions(
+  value: string | number,
+  options: ObjectLiteral[],
+  keys?: { idKey?: string; valueKey?: string; labelKey?: string },
+): LabeledValue {
   if (value === undefined || value === null) throw new Error(`Error obtener la opción. El valor pasado es '${value}'.`);
 
-  const foundValue = options.find((o) => o[optionKey] === value);
+  const idKey = keys?.idKey ?? 'id';
+  const valueKey = keys?.valueKey ?? 'value';
+  const labelKey = keys?.labelKey ?? 'label';
 
-  if (!foundValue) throw new Error(`Error obtener la opción. La propiedad '${optionKey}' no existe o el valor ${value} no existe`);
+  const foundValue = options.find((o) => o[idKey] === value);
+
+  if (!foundValue) throw new Error(`Error obtener la opción. La propiedad '${idKey}' no existe o el valor ${value} no existe`);
 
   const restOfProperties = Object.keys(foundValue).filter((k) => k !== 'id');
 
-  const labelProperty = restOfProperties.length === 1 ? restOfProperties[0] : restOfProperties.find((p) => p === optionLabel);
+  const labelProperty = restOfProperties.length === 1 ? restOfProperties[0] : restOfProperties.find((p) => p === labelKey);
 
   if (!labelProperty)
-    if (optionLabel !== 'label') throw new Error(`Error al obtener la descripción. La opción no tiene la propiedad ${optionLabel}.`);
+    if (labelKey !== 'label') throw new Error(`Error al obtener la descripción. La opción no tiene la propiedad ${labelKey}.`);
     else
       throw new Error(`Error al obtener la descripción. La opción tiene más de una propiedad. Por favor elija la propiedad que corresponda a la descripción.`);
 
-  return { key: foundValue.id, value: foundValue.value ?? foundValue.id, label: foundValue[labelProperty] ?? foundValue.id } as LabeledValue;
+  return { key: foundValue[idKey], value: foundValue[valueKey] ?? foundValue[idKey], label: foundValue[labelProperty] ?? foundValue[valueKey] } as LabeledValue;
 }
 
 export const getRule = (rules: Rules, ruleName: string | string[]): Rule[] => {

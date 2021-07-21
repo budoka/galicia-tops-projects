@@ -19,7 +19,7 @@ import { Texts } from 'src/constants/texts';
 import { NavigatorMenu } from 'src/features/navigator-menu/ui';
 import { MenuChildItem, MenuItem } from 'src/features/navigator-menu/ui/types';
 import { setUsuario } from 'src/features/sesion/sesion.slice';
-import { fetchConceptos, fetchCorresponsales, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
+import { fetchConceptos, fetchConceptosSecopa, fetchCorresponsales, fetchMonedas, fetchPaises } from 'src/features/_shared/logic';
 import { hasError, isFetchingData } from 'src/helpers/validations';
 import { getFreshToken } from 'src/utils/auth';
 import { getLegajoFromEmail } from 'src/utils/galicia';
@@ -123,12 +123,14 @@ export const App = () => {
     );
 
     dispatch(
-      fetchConceptos({
+      fetchConceptosSecopa({
         headers: {
           Authorization: 'Bearer ' + token,
         },
       }),
     );
+
+    // console.log(token);
 
     /*  return () => {
       dispatch(cleanState());

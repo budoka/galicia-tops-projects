@@ -71,13 +71,16 @@ export const InstruccionFormPanel: React.FC<InstruccionFormPanelProps> = (props)
     const currentStatus = nuevaInstruccion.ui.form.status.instruccion;
     if (currentActiveForm === FormNames.INSTRUCCION && currentStatus) {
       const { concepto, cuentaComision, cuentaDestino, importe, solicitudId } = nuevaInstruccion.data.form || {};
+      solicitudForm.resetFields();
+      solicitudForm.setFieldsValue({
+        solicitudId,
+      });
       instruccionForm.resetFields();
       instruccionForm.setFieldsValue({
-        concepto: getValueFromOptions(concepto?.id!, shared.conceptos?.value!),
+        concepto: getValueFromOptions(concepto?.id!, shared.conceptos?.value!, { labelKey: 'descripcion' }),
         cuentaComision: getValueFromOptions(cuentaComision?.valor!, nuevaInstruccion.info.cuentas?.value!),
         cuentaDestino: getValueFromOptions(cuentaDestino?.valor!, nuevaInstruccion.info.cuentas?.value!),
         importe,
-        solicitudId,
       });
     }
   }, [nuevaInstruccion.ui.form.active]);
@@ -135,15 +138,15 @@ export const InstruccionFormPanel: React.FC<InstruccionFormPanelProps> = (props)
   const resetDataSolicitud = () => {
     dispatch(resetSolicitud());
 
-    solicitudForm.setFieldsValue({
-      solicitudId: undefined,
-    });
+    solicitudForm.resetFields();
+    instruccionForm.resetFields();
 
     dispatch(setEstadoForm({ solicitud: false, instruccion: false }));
   };
 
   const setData = () => {
-    const { concepto, cuentaComision, cuentaDestino, importe, solicitudId } = instruccionForm.getFieldsValue() || {};
+    const { solicitudId } = solicitudForm.getFieldsValue() || {};
+    const { concepto, cuentaComision, cuentaDestino, importe } = instruccionForm.getFieldsValue() || {};
     dispatch(
       setDatosInstruccion({
         concepto: shared.conceptos?.value?.find((c) => c.id === concepto?.value)!,
@@ -234,7 +237,7 @@ export const InstruccionFormPanel: React.FC<InstruccionFormPanelProps> = (props)
                       placeholder={Texts.SELECT_ACCOUNT}
                       loading={nuevaInstruccion.info.cuentas?.loading}
                       disabled={nuevaInstruccion.info.cuentas?.loading || !nuevaInstruccion.ui.form.status.solicitud}>
-                      {renderOptions(nuevaInstruccion.info.cuentas?.value!, 'valor')}
+                      {renderOptions(nuevaInstruccion.info.cuentas?.value!, { labelKey: 'valor' })}
                     </Select>
                   </Form.Item>
                 </Col>
@@ -246,7 +249,7 @@ export const InstruccionFormPanel: React.FC<InstruccionFormPanelProps> = (props)
                       placeholder={Texts.SELECT_ACCOUNT}
                       loading={nuevaInstruccion.info.cuentas?.loading}
                       disabled={nuevaInstruccion.info.cuentas?.loading || !nuevaInstruccion.ui.form.status.solicitud}>
-                      {renderOptions(nuevaInstruccion.info.cuentas?.value!, 'valor')}
+                      {renderOptions(nuevaInstruccion.info.cuentas?.value!, { labelKey: 'valor' })}
                     </Select>
                   </Form.Item>
                 </Col>
@@ -272,7 +275,7 @@ export const InstruccionFormPanel: React.FC<InstruccionFormPanelProps> = (props)
                       placeholder={Texts.SELECT_CONCEPT}
                       loading={shared.conceptos?.loading}
                       disabled={shared.conceptos?.loading || !nuevaInstruccion.ui.form.status.solicitud}>
-                      {renderOptions(shared.conceptos?.value!, 'descripcion')}
+                      {renderOptions(shared.conceptos?.value!, { labelKey: 'descripcion' })}
                     </Select>
                   </Form.Item>
                 </Col>

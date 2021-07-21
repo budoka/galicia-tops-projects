@@ -174,7 +174,7 @@ const columns = [
     title: Texts.DATE,
     width: 200,
     sorter: { compare: (a, b) => compare(a.fecha, b.fecha), multiple: -1 },
-    render: (value, record, index) => formatDate(record.fecha, 'DD/MM/YYYY hh:mm'),
+    render: (value, record, index) => formatDate(record.fecha, 'DD/MM/YYYY HH:mm'),
   },
   {
     key: 'ordenante',

@@ -174,7 +174,7 @@ const columns = [
     title: Texts.DATE,
     width: 200,
     sorter: { compare: (a, b) => compare(a.fecha, b.fecha), multiple: -1 },
-    render: (value, record, index) => formatDate(record.fecha, 'DD/MM/YYYY hh:mm'),
+    render: (value, record, index) => formatDate(record.fecha, 'DD/MM/YYYY HH:mm'),
   },
   {
     key: 'ordenante',
@@ -506,7 +506,7 @@ export const ListaMensajes: React.FC = (props) => {
         onCancel={() => handleOnModalVisible(false)}
         /*afterClose={clearDetailModal}*/
       >
-        {listaMensajes.data.idMensaje && <InfoMensaje id={listaMensajes.data.idMensaje} />}
+        {listaMensajes.data.idMensaje ? <InfoMensaje id={listaMensajes.data.idMensaje} /> : <LoadingContent />}
       </Modal>
     </Wrapper>
   );
