@@ -12,7 +12,9 @@ window.REACT_APP_TENANT = '9eea4475-3e4a-4124-9621-552fa654f21c';
 window.REACT_APP_API_PREFIX = 'https://';
 
 /* SUFFIX */
-window.REACT_APP_API_SUFFIX = '-exto-tops-dev.devcloud.bancogalicia.com.ar/';
+window.REACT_APP_API_TOPS_SUFFIX = '-exto-tops-dev.devcloud.bancogalicia.com.ar/';
+window.REACT_APP_API_SECOPA_SUFFIX = '-exse-secopa-dev.devcloud.bancogalicia.com.ar/';
 
 /* APIs  */
 window.REACT_APP_API_GATEWAY = 'gateway';
+window.REACT_APP_API_SECOPA = 'secopa';

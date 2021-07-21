@@ -6,7 +6,7 @@ import { APIList } from './types';
 // const { verb, path, headers } = resources['MONEDAS'];
 export const apis: APIList = {
   COMMON: {
-    baseURL: buildBaseURL('GATEWAY', 'api/v1/common'),
+    baseURL: buildBaseURL('GATEWAY', { extraSuffix: 'api/v1/common' }),
     resources: {
       CONCEPTOS: { path: 'Concepto', config: { verb: 'GET' } },
       CORRESPONSALES: { path: 'Corresponsal', config: { verb: 'GET' } },
@@ -17,26 +17,36 @@ export const apis: APIList = {
     },
   },
   MENSAJE: {
-    baseURL: buildBaseURL('GATEWAY', 'api/v1/mensaje'),
+    baseURL: buildBaseURL('GATEWAY', { extraSuffix: 'api/v1/mensaje' }),
     resources: {
-      AGREGAR_MENSAJE: { path: 'Mensaje/PostManual', config: { verb: 'POST' } },
+      AGREGAR_MENSAJE: { path: 'Mensaje/PostManual', config: { verb: 'POST', timeout: 40000, retries: 0 } },
       MENSAJE: { path: 'Mensaje/:id', config: { verb: 'GET' } },
       MENSAJES: { path: 'Mensaje/GetByFilter', config: { verb: 'POST' } },
     },
   },
   TRANSFERENCIA: {
-    baseURL: buildBaseURL('GATEWAY', 'api/v1/transferencia'),
+    baseURL: buildBaseURL('GATEWAY', { hostSuffix: '', extraSuffix: 'api/v1/transferencia' }),
     resources: {
-      AGREGAR_SOLICITUD: { path: 'Solicitudes', config: { verb: 'POST' } },
+      AGREGAR_SOLICITUD: { debugUrl: 'https://localhost:8001/api/v1/Solicitudes', path: 'Solicitudes', config: { verb: 'POST', timeout: 40000, retries: 0 } },
       SOLICITUDES: { path: 'Solicitudes', config: { verb: 'GET' } },
     },
   },
   SOLICITUD: {
-    baseURL: buildBaseURL('GATEWAY', 'api/v1/solicitud'),
+    baseURL: buildBaseURL('GATEWAY', { extraSuffix: 'api/v1/solicitud' }),
     resources: {
-      INSTRUIR_SOLICITUD: { path: 'Solicitud/InstruirSolicitud', config: { verb: 'POST' } },
+      INSTRUIR_SOLICITUD: {
+        //debugUrl: 'https://localhost:44336/api/v1/Solicitud/InstruirSolicitud',
+        path: 'Solicitud/InstruirSolicitud',
+        config: { verb: 'POST', timeout: 40000, retries: 0 },
+      },
       SOLICITUD: { path: 'Solicitud/:id', config: { verb: 'GET' } },
       SOLICITUDES: { path: 'Solicitud/GetSolicitudByFilter', config: { verb: 'GET' } },
+    },
+  },
+  SECOPA: {
+    baseURL: buildBaseURL('GATEWAY', { extraSuffix: 'api/v1/secopa' }),
+    resources: {
+      CONCEPTOS: { path: 'Comex/ConceptosBoletos', config: { verb: 'GET' } },
     },
   },
 };

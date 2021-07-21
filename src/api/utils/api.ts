@@ -6,11 +6,15 @@ import { getVar, getVarOrNull } from 'src/utils/environment';
 /**
  * Build the url of an API.
  * @param apiId api's id
+ * @param extra extra reference
  */
-export function buildBaseURL(apiId: string, extraSuffix?: string) {
+export function buildBaseURL(apiId: string, extra?: { hostSuffix?: string; extraSuffix?: string }) {
+  const hostSuffix = extra?.hostSuffix || 'TOPS';
+  const extraSuffix = extra?.extraSuffix || '';
+
   const PREFIX_API = 'API_';
   const prefix = getVar(PREFIX_API + 'PREFIX');
-  const suffix = getVar(PREFIX_API + 'SUFFIX');
+  const suffix = getVar(PREFIX_API + hostSuffix + '_SUFFIX');
   apiId = getVar(PREFIX_API + apiId).toString();
 
   return (getVarOrNull('API_URL_DEBUG')?.toString() ?? prefix + apiId + suffix) + extraSuffix;
@@ -37,14 +41,15 @@ export function buildEndpoint(baseURL: string, path: string, placeholders?: Plac
  */
 export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceType>, resource: Resource, config: HttpRequest<Data> = {}) {
   const { baseURL } = api;
-  const { path, config: defaultOptions } = resource;
+  const { path, config: defaultOptions, debugUrl } = resource;
   const { placeholders, cancelToken } = config!;
-  const endpoint = buildEndpoint(baseURL, path, placeholders);
+  const endpoint = debugUrl ?? buildEndpoint(baseURL, path, placeholders);
   const verb = config?.verb ?? defaultOptions?.verb;
   const headers = { ...defaultOptions?.headers, ...config?.headers };
   const query = { ...defaultOptions?.query, ...config?.query };
   const body = { ...defaultOptions?.body, ...config?.body };
   const timeout = config?.timeout ?? defaultOptions?.timeout;
+  const retries = config?.retries ?? defaultOptions?.retries;
 
   const axiosConfig: AxiosRequestConfig = {
     method: verb,
@@ -54,6 +59,10 @@ export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceTyp
     data: body,
     cancelToken,
     timeout,
+    raxConfig: {
+      ...axios.defaults.raxConfig,
+      retry: retries,
+    },
   };
 
   return axiosConfig;

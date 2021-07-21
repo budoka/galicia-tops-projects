@@ -66,7 +66,8 @@ export interface Cuenta extends Keyable {
 }
 
 export interface Concepto extends Keyable {
-  id: string; // TODO: el id actualmente es el codigo (ej: A07, A08), si se cambia a number se deberia mover el valor a la propiedad codigo
+  id: number;
+  codigo: string;
   descripcion: string;
 }
 

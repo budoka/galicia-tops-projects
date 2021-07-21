@@ -13,7 +13,7 @@ export interface AddInstruccionPayload {
   idSolicitud: number;
   cuentaAcreditaCapital: Cuenta;
   cuentaDebitoComision: Cuenta;
-  codigoConcepto: Concepto;
+  concepto: Concepto;
   monto: number;
 }
 

@@ -28,7 +28,7 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
       datosOperacion: {
         fechaEntrada: data.form.datosOperacion?.fechaEntrada!,
         tipoDocumentoCliente: 'CUIT',
-        documentoCliente: data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
+        documentoCliente: data.form.datosOperacion?.cliente?.cuit!, //data.form.datosOperacion?.cliente?.documentos.find((d) => d.tipo === 'CUIT')?.numero!,
         monedaId: data.form.datosOperacion!.moneda.id!,
         beneficiario: {
           tipoDeDocumento: data.form.datosOperacion?.beneficiario.tipoDocumento,
@@ -85,7 +85,7 @@ export const addSolicitud = createHttpAsyncThunk<NuevaSolicitudDataState, void, 
         },
 
         // TODO: Cambiar importes: debe devolver id y codigo || codigo solo? si es id y codigo, fijarse como conseguir el id (porque es de Secopa)
-        importes: data.form.datosOperacion?.importes.map((i) => ({ importe: i.importe, concepto: { id: '1', codigo: i.concepto.id } }))!,
+        importes: data.form.datosOperacion?.importes.map((i) => ({ importe: i.importe, concepto: { id: i.concepto.id, codigo: i.concepto.codigo } }))!,
         // importes: data.form.datosOperacion?.importes!,
       },
       normativas: {

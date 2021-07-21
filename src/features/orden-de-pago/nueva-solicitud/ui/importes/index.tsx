@@ -117,7 +117,7 @@ export const ImporteFormPanel: React.FC<ImporteFormPanelProps> = (props) => {
                   placeholder={Texts.SELECT_CURRENCY}
                   loading={shared.monedas?.loading}
                   disabled={shared.monedas?.loading}>
-                  {renderOptions(shared.monedas?.value!, 'descripcion')}
+                  {renderOptions(shared.monedas?.value!, { labelKey: 'descripcion' })}
                 </Select>
               </Form.Item>
             </Col>

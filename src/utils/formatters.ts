@@ -7,7 +7,7 @@ export function formatCurrencyAmount(amount: number | string, currency?: string)
   return amount;
 }
 
-export function formatDate(value: string | moment.Moment, format: 'DD/MM/YYYY' | 'DD/MM/YYYY hh:mm'): string {
-  if (typeof value === 'string') value = moment(value);
+export function formatDate(value: string | moment.Moment, format: 'DD/MM/YYYY' | 'DD/MM/YYYY HH:mm'): string {
+  if (typeof value === 'string') value = moment(value); //.utcOffset("-03:00");
   return value.format(format);
 }

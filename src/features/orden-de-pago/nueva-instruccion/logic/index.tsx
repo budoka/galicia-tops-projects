@@ -65,7 +65,7 @@ export const addInstruccion = createHttpAsyncThunk<NuevaInstruccionDataState, vo
     if (!data) throw new Error('No se ha incluido datos para crear una nueva instrucción de orden de pago.');
 
     const requestData: AddInstruccionPayload = {
-      codigoConcepto: { id: 1, codigo: data.form.concepto?.id!, descripcion: data.form.concepto?.descripcion! },
+      concepto: { id: data.form.concepto?.id!, codigo: data.form.concepto?.codigo!, descripcion: data.form.concepto?.descripcion! },
       monto: data.form.importe!,
       idSolicitud: data.form.solicitudId!,
       cuentaAcreditaCapital: {
