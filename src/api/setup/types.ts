@@ -6,41 +6,16 @@
 import { API, Resource } from '../types';
 
 export interface APIList {
-  COMMON: API<ResourcesCommon>;
-  MENSAJE: API<ResourcesMensaje>;
-  TRANSFERENCIA: API<ResourcesTransferencia>;
-  SOLICITUD: API<ResourcesSolicitud>;
-  SECOPA: API<ResourcesSecopa>;
+  GATEWAY: API<ResourcesGateway>;
 }
 
 // Resources
 
-export interface ResourcesCommon {
-  CONCEPTOS: Resource;
-  CORRESPONSALES: Resource;
-  DATOS_CLIENTES: Resource;
-  MONEDAS: Resource;
-  PAISES: Resource;
-  PRODUCTOS: Resource;
-}
-
-export interface ResourcesMensaje {
-  AGREGAR_MENSAJE: Resource;
-  MENSAJE: Resource;
-  MENSAJES: Resource;
-}
-
-export interface ResourcesTransferencia {
-  AGREGAR_SOLICITUD: Resource;
-  SOLICITUDES: Resource;
-}
-
-export interface ResourcesSolicitud {
-  INSTRUIR_SOLICITUD: Resource;
-  SOLICITUD: Resource;
-  SOLICITUDES: Resource;
-}
-
-export interface ResourcesSecopa {
-  CONCEPTOS: Resource;
+export interface ResourcesGateway {
+  AUTH_LOGIN: Resource;
+  AUTH_REGISTER: Resource;
+  AUTH_TOKEN: Resource;
+  USERS_GET_ONE: Resource;
+  USERS_GET_MANY: Resource;
+  DEVELOPERS_GET_ONE: Resource;
 }

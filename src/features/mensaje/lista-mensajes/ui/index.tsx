@@ -5,31 +5,26 @@ import { useForm } from 'antd/lib/form/Form';
 import { LabeledValue } from 'antd/lib/select';
 import _ from 'lodash';
 import moment from 'moment';
-import { ColumnsType } from 'rc-table/lib/interface';
 import React, { CSSProperties, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { StateContext } from 'src/app';
 import { RootState } from 'src/app/store';
-import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/store.hooks';
 import { LoadingContent } from 'src/components/loading';
 import { ServiceError } from 'src/components/service-error';
 import { ColumnTypeEx, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
-import { cleanState } from 'src/features/transferencia/nueva-solicitud/logic';
 import { Paginator } from 'src/features/_shared/data/interfaces';
 import { getRule } from 'src/features/_shared/ui/utils';
-import { isFetchingData, hasError } from 'src/helpers/validations';
-import { Rules } from 'src/types/interfaces';
-import { getFreshToken } from 'src/utils/auth';
-import { formatCurrencyAmount, formatDate } from 'src/utils/formatters';
-import { getViewWidth } from 'src/utils/screen';
-import { compare } from 'src/utils/string';
+import { hasError, isFetchingData } from 'src/helpers/validation.helper';
+import { Rules } from 'src/types';
+import { formatCurrencyAmount, formatDate } from 'src/utils/formatter.utils';
+import { getViewWidth } from 'src/utils/screen.utils';
+import { compare } from 'src/utils/string.utils';
 import { InfoMensaje } from '../../info-mensaje/ui';
 import { GetMensajesPayload } from '../data/dto';
 import { FiltrosForm } from '../data/forms';
 import { Mensaje } from '../data/interfaces';
-import { fetchMensajes, setMensaje, setModalVisible, setPaginator } from '../logic';
+import { setMensaje, setModalVisible, setPaginator } from '../logic';
 import styles from './style.module.less';
 
 interface TableFilter {
@@ -215,8 +210,6 @@ const columns = [
 ] as ColumnTypeEx<Mensaje>[];
 
 export const ListaMensajes: React.FC = (props) => {
-  const state = useContext(StateContext);
-
   const dispatch = useAppDispatch();
   const listaMensajes = useAppSelector((state: RootState) => state.mensaje.listaMensajes);
   const shared = useAppSelector((state: RootState) => state.shared);
@@ -259,7 +252,7 @@ export const ListaMensajes: React.FC = (props) => {
   const handleOnFinish = () => {
     const { moneda, rangoFecha, ...rest } = busquedaForm.getFieldsValue();
 
-    const filtros = { ...rest, moneda: moneda?.value?.toString(), rangoFecha: rangoFecha?.map((f) => formatDate(f, 'DD/MM/YYYY')) };
+    const filtros = { ...rest, moneda: moneda?.value?.toString(), rangoFecha: rangoFecha?.map((f: any) => formatDate(f, 'DD/MM/YYYY')) };
 
     const payload: GetMensajesPayload = {
       beneficiario: filtros.beneficiario,
@@ -300,20 +293,9 @@ export const ListaMensajes: React.FC = (props) => {
   //#region Other functions
 
   const fetchData = async (payload?: GetMensajesPayload) => {
-    const token = await getFreshToken(state.msalInstance!);
-
-    dispatch(
-      fetchMensajes({
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-        body: payload,
-      }),
-    );
-
-    return () => {
+    /*  return () => {
       dispatch(cleanState());
-    };
+    }; */
   };
 
   const resetFilters = () => {
@@ -434,12 +416,10 @@ export const ListaMensajes: React.FC = (props) => {
           })}
         </Row>
         <Row style={{ alignItems: 'flex-end', marginTop: 10, marginRight: 10 }}>
-          <Button type="primary" htmlType="submit" style={{ backgroundColor: '#fa7923', border: 'none', marginLeft: 'auto', marginRight: 10 }}>
+          <Button type="primary" htmlType="submit" style={{ marginLeft: 'auto', marginRight: 10 }}>
             Buscar
           </Button>
-          <Button style={{ color: '#fa7923', borderColor: '#fa7923' }} onClick={handleOnReset}>
-            Limpiar
-          </Button>
+          <Button onClick={handleOnReset}>Limpiar</Button>
         </Row>
       </Form>
     );
@@ -454,18 +434,12 @@ export const ListaMensajes: React.FC = (props) => {
           size={'small'}
           scroll={{ y: '500px' }}
           fill
-          columns={mergedColumns as ColumnsType<Mensaje> as any}
+          columns={mergedColumns as any}
           dataSource={listaMensajes.info.mensajes?.value}
           loading={listaMensajes.info.mensajes?.loading}
           hideRowSelection
           extraColumns={{ showKeyColumn: true, showActionsColumn: false }}
           extraComponents={[
-            {
-              key: 'filters',
-              node: renderFilters(mergedFilters),
-              position: 'top',
-              style: { width: '100%' },
-            },
             {
               key: 'records-count-tag',
               node: 'records-count-tag',

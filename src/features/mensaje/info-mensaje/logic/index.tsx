@@ -1,12 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { apis } from 'src/api/setup/setup-apis';
+import { apis } from 'src/api/setup/api-list.config';
 import { HttpResponse } from 'src/api/types';
-import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { rejectRequest } from 'src/api/utils/axios';
+import { buildAxiosRequestConfig } from 'src/api/utils/api.utils';
+import { rejectRequest } from 'src/api/utils/axios.utils';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
-import { Paginator } from 'src/features/_shared/data/interfaces';
-import { sleep } from 'src/utils/common';
 import { GetMensajeDTO } from '../data/dto';
 import { InfoMensajeState, Mensaje } from '../data/interfaces';
 
@@ -20,8 +18,8 @@ export const fetchMensaje = createHttpAsyncThunk<void, Mensaje, { state: RootSta
     const { dispatch, getState } = thunkApi;
 
     // Configuracion del servicio
-    const api = apis['MENSAJE'];
-    const resource = api.resources['MENSAJE'];
+    const api = apis['GATEWAY'];
+    const resource = api.resources['DEVELOPERS_GET_ONE'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
     // Llamado del servicio
@@ -79,7 +77,6 @@ const slice = createSlice({
       })
       .addCase(fetchMensaje.fulfilled, (state, action) => {
         state.info.mensajes = { value: { ...state.info.mensajes?.value, [`${action.payload?.data?.id}`]: action.payload?.data! }, loading: false };
-        //  state.data.paginator = { value: action.payload?.data, loading: false };
       })
       .addCase(fetchMensaje.rejected, (state, action) => {
         state.info.mensajes = { ...state.info.mensajes, loading: false, error: action.payload };

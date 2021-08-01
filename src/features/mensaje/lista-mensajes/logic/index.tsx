@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { apis } from 'src/api/setup/setup-apis';
+import { apis } from 'src/api/setup/api-list.config';
 import { HttpResponse } from 'src/api/types';
-import { buildAxiosRequestConfig } from 'src/api/utils/api';
-import { rejectRequest } from 'src/api/utils/axios';
+import { buildAxiosRequestConfig } from 'src/api/utils/api.utils';
+import { rejectRequest } from 'src/api/utils/axios.utils';
 import { createHttpAsyncThunk, RootState } from 'src/app/store';
 import { Paginator } from 'src/features/_shared/data/interfaces';
-import { sleep } from 'src/utils/common';
 import { GetMensajesDTO, GetMensajesPayload } from '../data/dto';
 import { Filtros, ListaMensajesState, Mensaje } from '../data/interfaces';
 
@@ -21,8 +20,8 @@ export const fetchMensajes = createHttpAsyncThunk<GetMensajesPayload, Mensaje[],
     const data = options?.body;
 
     // Configuracion del servicio
-    const api = apis['MENSAJE'];
-    const resource = api.resources['MENSAJES'];
+    const api = apis['GATEWAY'];
+    const resource = api.resources['DEVELOPERS_GET_ONE'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
     // Llamado del servicio
@@ -58,7 +57,7 @@ export const fetchMensajes = createHttpAsyncThunk<GetMensajesPayload, Mensaje[],
 const initialState: ListaMensajesState = {
   info: {},
   data: {
-    paginator: { pageSize: 10, current: 1 },
+    paginator: { pageSize: 20, current: 1 },
   },
   ui: {},
 };

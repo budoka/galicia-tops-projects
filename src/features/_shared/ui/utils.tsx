@@ -2,7 +2,7 @@ import { Select, Typography } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import React from 'react';
-import { ObjectLiteral, Rules } from 'src/types/interfaces';
+import { ObjectLiteral, Rules } from 'src/types';
 import { Keyable } from '../data/interfaces';
 
 const { Option } = Select;

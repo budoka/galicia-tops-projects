@@ -1,4 +1,5 @@
-export const APP_TITLE = 'TOPS';
+export const APP_TITLE = 'Selehann Interview';
+export const APP_VERSION = require('../../package.json').version;
 export const FIXED = 'fixed';
 export const STICKY = 'sticky';
 export const UNSELECTABLE = 'unselectable';
@@ -13,12 +14,6 @@ export const VIEW = {
   MAX_WIDTH: 1250,
 };
 
-/* export enum Pattern {
-  OnlyNumbers = '^\\d+$',
-  OnlyWords = '^([a-záéíóúäëïöü]+( ?[a-záéíóúäëïöü])+ ?)$',
-}
- */
-
 export class Pattern {
   public static readonly ANY = /^.+$/;
   public static readonly ONLY_NUMBERS = /^\d+$/;
@@ -26,10 +21,5 @@ export class Pattern {
   public static readonly CURRENCY_AMOUNT = /^[+-]?[0-9]{1,9}(?:\.[0-9]{2})?$/i;
   public static readonly CURRENCY_AMOUNT_POSITIVE = /^[0-9]{1,9}(?:\.[0-9]{2})?$/i;
 }
-
-/* export const PATTERN_ANY = /^.+$/;
-export const PATTERN_ONLY_NUMBERS = /^\\d+$/;
-export const PATTERN_ONLY_WORDS = /^([a-záéíóúäëïöü]+( ?[a-záéíóúäëïöü])+ ?)$/i;
- */
 
 export const LOCALE_ES = 'es-AR';

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
-import { getEnvironment, getVar } from 'src/utils/environment';
-import { getDeviceType } from 'src/utils/mobile';
-import { getScreenOrientation } from 'src/utils/screen';
+import { getEnvironment, getVar } from 'src/configuration/configuration.utils';
+import { getDeviceType } from 'src/utils/mobile.utils';
+import { getScreenOrientation } from 'src/utils/screen.utils';
 import { ConfiguracionSliceState, Device, ScreenOrientation } from './types';
 
 const FEATURE_NAME = 'configuracion';

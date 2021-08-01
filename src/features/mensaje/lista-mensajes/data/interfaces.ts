@@ -1,5 +1,5 @@
 import { InfoState, Keyable, Paginator } from 'src/features/_shared/data/interfaces';
-import { IElement } from 'src/types/interfaces';
+import { IElement } from 'src/types';
 
 export interface ListaMensajesState {
   info: Partial<ListaMensajesInfoState>;

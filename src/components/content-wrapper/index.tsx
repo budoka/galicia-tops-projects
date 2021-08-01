@@ -1,12 +1,17 @@
 import { Content } from 'antd/lib/layout/layout';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { RootState } from 'src/app/store';
-import { useAppSelector } from 'src/app/store/hooks';
-import { BasicComponentProps } from 'src/types/interfaces';
+import { useAppSelector } from 'src/app/store/store.hooks';
+import { APP_VERSION } from 'src/constants';
+import { BasicComponentProps } from 'src/types';
 import { ContentHeader } from '../content-header';
+import { Footer } from '../footer';
 import { Scroll } from './interface';
 
-interface ContentWrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {}
+interface ContentWrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {
+  authenticated: boolean;
+}
 
 export const ContentWrapper: React.FC<ContentWrapperProps> = React.memo((props) => {
   const { className, children } = props;
@@ -26,16 +31,20 @@ export const ContentWrapper: React.FC<ContentWrapperProps> = React.memo((props) 
 
   return (
     <>
-      <Content
-        id="content"
-        className={className}
-        onScroll={(event: React.UIEvent<HTMLDivElement, UIEvent>) => {
-          onScroll(event);
-        }}>
-        <ContentHeader scroll={scroll} />
-        {children}
-        {/*   <Footer info={<Link to="#">Portal Unificado v{version}</Link>} /> */}
-      </Content>
+      {props.authenticated ? (
+        <Content
+          id="content"
+          className={className}
+          onScroll={(event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+            onScroll(event);
+          }}>
+          <ContentHeader scroll={scroll} />
+          {children}
+          {<Footer info={<Link to="#">Selehann Interview v{APP_VERSION}</Link>} />}
+        </Content>
+      ) : (
+        children
+      )}
     </>
   );
 });

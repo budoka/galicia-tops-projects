@@ -3,7 +3,7 @@ import { Button, message } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { Texts } from '../../../../constants/texts';
-import { BasicComponentProps } from '../../../../types/interfaces';
+import { BasicComponentProps } from '../../../../types';
 import styles from './style.module.less';
 
 interface ExportButtonProps extends Pick<BasicComponentProps<HTMLButtonElement>, 'className' | 'style'> {

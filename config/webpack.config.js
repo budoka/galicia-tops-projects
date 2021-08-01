@@ -27,7 +27,6 @@ const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 
 const postcssNormalize = require('postcss-normalize');
 
-const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 // const darkTheme = require('@ant-design/dark-theme').default;
 
@@ -341,6 +340,8 @@ module.exports = function (webpackEnv) {
               options: {
                 cache: true,
                 formatter: require.resolve('react-dev-utils/eslintFormatter'),
+                emitWarning: true, // new
+                failOnWarning: false, // new
                 eslintPath: require.resolve('eslint'),
                 resolvePluginsRelativeTo: __dirname,
               },

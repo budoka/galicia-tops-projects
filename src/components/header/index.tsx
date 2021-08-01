@@ -4,15 +4,22 @@ import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RootState } from 'src/app/store';
-import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/store.hooks';
 import { APP_TITLE, SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
 import { setOpenMenu, toggleButtonVisible, toggleCollapse, toggleForcedCollapse } from 'src/features/navigator-menu/logic';
-import { goHome } from 'src/utils/history';
-import { useWindowSize } from 'src/utils/hooks';
-import { getScreenOrientation } from 'src/utils/screen';
+import { useWindowSize } from 'src/hooks/window-size.hook';
+import { goHome } from 'src/utils/history.utils';
+import { getScreenOrientation } from 'src/utils/screen.utils';
+import { FlickerImage } from '../flicker-image';
+import { logout } from 'src/features/auth/logic';
 import styles from './style.module.less';
+import exit from 'src/_assets/exit.svg';
+import exitHover from 'src/_assets/exit-hover.svg';
+import _ from 'lodash';
+import { Message } from 'src/helpers/message.helper';
+import { useHistory } from 'react-router-dom';
 
 const { Header: HeaderAnt } = Layout;
 
@@ -23,13 +30,14 @@ interface HeaderProps extends LayoutProps {
 const WIDTH = 800;
 
 export const Header: React.FC<HeaderProps> = (props) => {
-  const sesion = useAppSelector((state: RootState) => state.sesion);
-  const settings = useAppSelector((state: RootState) => state.configuracion);
-  const menu = useAppSelector((state: RootState) => state.menu);
+  const username = useAppSelector((s) => s.auth.data.session?.username!);
+  const settings = useAppSelector((s) => s.configuracion);
+  const menu = useAppSelector((s) => s.menu);
   const dispatch = useAppDispatch();
   const size = useWindowSize();
 
   const [rotate, setRotate] = useState(false);
+  const history = useHistory();
 
   const headerClassName = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.header);
 
@@ -112,10 +120,20 @@ export const Header: React.FC<HeaderProps> = (props) => {
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
           {Texts.USER + ': '}
-          <span className={styles.info}>
-            {sesion.data?.nombreUsuario} ({sesion.data?.legajo})
-          </span>
+          <span className={styles.info}>{_.capitalize(username)}</span>
         </span>
+        <FlickerImage
+          wrapperClassName={styles.logoutWrapper}
+          className={styles.logout}
+          src={exit}
+          altsrc={exitHover}
+          alt="Salir"
+          onClick={() => {
+            dispatch(logout());
+            history.push('auth');
+            Message.info('Session finished!');
+          }}
+        />
       </div>
     );
   };

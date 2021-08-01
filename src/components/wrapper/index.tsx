@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { BasicComponentProps } from 'src/types/interfaces';
+import { BasicComponentProps } from 'src/types';
 import styles from './style.module.less';
 
 type Direction = 'row' | 'column';

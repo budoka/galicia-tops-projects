@@ -1,8 +1,8 @@
 import { Action, AnyAction, AsyncThunk, AsyncThunkPayloadCreator, configureStore, Dispatch, Middleware, ThunkAction } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import { createRootReducer } from 'src/reducers';
-import { config } from './config';
+import { createRootReducer } from 'src/app/reducers';
+import { config } from './store.config';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { HttpResponse, HttpRequest } from 'src/api/types';
 

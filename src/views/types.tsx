@@ -1,7 +1,7 @@
-export type Scope = 'user.read' | 'user.write';
+export type Scope = 'admin';
 
 export interface View {
-  title: string;
+  title?: string;
   path?: string;
   component: JSX.Element;
   scope?: Scope;

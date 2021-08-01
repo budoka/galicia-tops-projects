@@ -1,17 +1,17 @@
 import { Layout, Menu } from 'antd';
 import { SiderProps } from 'antd/lib/layout';
-import { MenuMode } from 'antd/lib/menu';
+import { MenuMode } from 'rc-menu/lib/interface';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { RootState } from 'src/app/store';
-import { useAppDispatch, useAppSelector } from 'src/app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'src/app/store/store.hooks';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants';
 import { setOpenMenu } from 'src/features/navigator-menu/logic';
-import { ObjectLiteral } from 'src/types/interfaces';
-import { getMatchedPathname } from 'src/utils/history';
+import { ObjectLiteral } from 'src/types';
+import { getMatchedPathname } from 'src/utils/history.utils';
 import { View } from 'src/views/types';
 import styles from './style.module.less';
 import { MenuChildItem, MenuItem, MenuParentItem } from './types';
@@ -56,7 +56,7 @@ export const NavigatorMenu: React.FC<MenuProps> = React.memo((props) => {
     Object.entries(views).some(([key, view]) => {
       if (key === pathname) {
         const menuTitle = (view as View).title;
-        if (!menu.collapsed && key !== menu.openMenu && menuTitle !== menu.openMenu) dispatch(setOpenMenu((view as View).title));
+        if (!menu.collapsed && key !== menu.openMenu && menuTitle !== menu.openMenu) dispatch(setOpenMenu((view as View).title!));
         return true;
       }
     });
@@ -100,7 +100,7 @@ export const NavigatorMenu: React.FC<MenuProps> = React.memo((props) => {
       } else if ((item as MenuChildItem).view.path) {
         // Child
         key = path = (item as MenuChildItem).view.path!;
-        title = (item as MenuChildItem).view.title;
+        title = (item as MenuChildItem).view.title!;
 
         return (
           <Menu.Item key={key} hidden={(item as MenuChildItem).hidden}>
@@ -123,7 +123,7 @@ export const NavigatorMenu: React.FC<MenuProps> = React.memo((props) => {
         // selectedKeys={[window.location.pathname]}
         openKeys={menu.openMenu ? [menu.openMenu] : []}
         onOpenChange={onOpenChange}
-        onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
+        onSelect={({ key, keyPath, selectedKeys, domEvent }) => {
           if (menu.collapsed) dispatch(setOpenMenu(''));
         }}
         theme={props.theme ?? 'light'}

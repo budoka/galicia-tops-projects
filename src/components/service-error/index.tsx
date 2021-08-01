@@ -2,7 +2,7 @@ import { Button, Result } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Wrapper } from 'src/components/wrapper';
-import { getRoute, goHome, goTo } from 'src/utils/history';
+import { getRoute, goHome, goTo } from 'src/utils/history.utils';
 
 export const ServiceError: React.FC = (props) => {
   const history = useHistory();

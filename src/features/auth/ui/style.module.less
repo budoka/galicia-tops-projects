@@ -1,0 +1,33 @@
+/* navigator-menu */
+
+@import (reference) '~src/styles/global.less';
+
+.tabs {
+  height: 330px;
+  // border: 1px solid @border-color-base;
+  .form {
+    .formItem {
+      .input {
+        width: 100%;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .checkbox {
+        width: 100%;
+      }
+
+      .radioGroup {
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: center;
+      }
+
+      :global(.ant-form-item-explain) {
+        align-self: center;
+      }
+    }
+  }
+}

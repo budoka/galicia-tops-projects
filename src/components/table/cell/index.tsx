@@ -9,7 +9,7 @@ import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
 
 import { DATE_DD_MM_YYYY_FORMAT, ELLIPSIS } from '../../../constants';
-import { BasicComponentProps } from '../../../types/interfaces';
+import { BasicComponentProps } from '../../../types';
 import { InputType } from '..';
 import styles from './style.module.less';
 

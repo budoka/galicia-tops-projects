@@ -1,4 +1,12 @@
+import { HttpResponse } from 'src/api/types';
 import { TipoPersona } from './types';
+
+export interface RequestState<RequestDto, ResponseDto> {
+  request?: RequestDto;
+  response?: HttpResponse<ResponseDto>;
+  loading: boolean;
+  error?: unknown;
+}
 
 export interface InfoState<T> {
   value?: T;

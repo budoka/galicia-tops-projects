@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { Texts } from 'src/constants/texts';
-import { BasicComponentProps } from 'src/types/interfaces';
+import { BasicComponentProps } from 'src/types';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router';
-import { InfoSesion } from 'src/features/sesion/types';
+import { Session } from 'src/features/auth/data/types';
+import { getPayloadProperty } from 'src/utils/auth.utils';
 
 export interface PrivateRouteProps extends RouteProps {
-  session: InfoSesion;
+  session: Session;
   loginRedirect: string;
 }
 
@@ -12,7 +13,7 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({ session, loginRedire
     <Route
       {...rest}
       render={({ location }) =>
-        session.idUsuario ? (
+        getPayloadProperty(session.refreshToken, 'role') ? (
           children
         ) : (
           <Redirect

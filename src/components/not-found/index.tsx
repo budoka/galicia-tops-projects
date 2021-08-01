@@ -1,7 +1,7 @@
 import { Button, Result } from 'antd';
 import React from 'react';
 import { Wrapper } from 'src/components/wrapper';
-import { goHome } from 'src/utils/history';
+import { goHome } from 'src/utils/history.utils';
 
 export const NotFound: React.FC = (props) => {
   return (

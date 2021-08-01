@@ -14,9 +14,9 @@ interface DataDictionary {
   [key: string]: any;
 }
 
-export interface Headers extends BasicDictionary {}
-export interface Query extends BasicDictionary {}
-export interface Placeholders extends PlaceholdersDictionary {}
+export type Headers = BasicDictionary;
+export type Query = BasicDictionary;
+export type Placeholders = PlaceholdersDictionary;
 export type Data<T> = T;
 
 export interface HttpRequest<RequestBody = DataDictionary | void> {

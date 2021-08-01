@@ -1,5 +1,5 @@
-import { Device } from 'src/utils/mobile';
-import { ScreenOrientation } from 'src/utils/screen';
+import { Device } from 'src/utils/mobile.utils';
+import { ScreenOrientation } from 'src/utils/screen.utils';
 
 export interface ConfiguracionSliceState {
   environment: string;

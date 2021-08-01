@@ -1,11 +1,8 @@
 export enum Texts {
-  HOME = 'Inicio',
   EXPORT = 'Exportar',
   EXPORTING = 'Exportando',
   FILTER = 'Filtrar',
   CLEAN = 'Limpiar',
-  LOADING = 'Cargando',
-  USER = 'Usuario',
   SECTOR = 'Sector',
   PROFILE = 'Perfil',
   STATUS = 'Estado',
@@ -161,4 +158,14 @@ export enum Texts {
   SEARCH_REQUEST_LOADING = 'Buscando solicitud',
   SEARCH_REQUEST_OK = 'Solicitud encontrada',
   SEARCH_REQUEST_ERROR = 'Error al encontrar solicitud',
+  /////
+  /////
+  HOME = 'Home',
+  LOADING = 'Loading',
+  USER = 'User',
+  SERVER_UNAVAILABLE = 'Server unavailable!',
+  LOGIN_SUCCESS = 'Logged in successfully!',
+  LOGIN_FAILED = 'Invalid credentials!',
+  REGISTER_FAILED = 'User already exist!',
+  SESSION_EXPIRED = 'Session expired!',
 }

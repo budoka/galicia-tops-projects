@@ -1,5 +1,5 @@
 import { InfoState } from 'src/features/_shared/data/interfaces';
-import { Dictionary } from 'src/types/interfaces';
+import { Dictionary } from 'src/types';
 
 export interface InfoMensajeState {
   info: Partial<InfoMensajeInfoState>;
